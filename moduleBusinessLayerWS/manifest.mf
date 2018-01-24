@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: be.naturalsciences.bmdc.ears.moduleBusinessLayerWS
+OpenIDE-Module-Localizing-Bundle: be/naturalsciences/bmdc/ears/base/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
+

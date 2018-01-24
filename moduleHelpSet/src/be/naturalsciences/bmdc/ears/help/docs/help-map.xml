@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE map PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN" "http://java.sun.com/products/javahelp/map_2_0.dtd">
+<map version="2.0">
+    <mapID target="be.naturalsciences.bmdc.ears.help.about" url="help_about_en.html"/>
+ 
+    <mapID target="be.naturalsciences.bmdc.ears.help.started" url="getting_started_en.html"/>
+     
+     
+    <mapID target="be.naturalsciences.bmdc.ears.help.ontologies" url="ontologies_en.html"/>
+
+    <mapID target="be.naturalsciences.bmdc.ears.help.interface" url="interface_en.html"/>
+    <mapID target="be.naturalsciences.bmdc.ears.help.update" url="update_en.html">
+</map>

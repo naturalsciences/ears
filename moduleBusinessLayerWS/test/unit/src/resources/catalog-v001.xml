@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica-test.683.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-test2.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica-test.398.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica-test.650.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-corrupt.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-test.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica-test.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-corrupt_2.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica-test-yesnamechanged.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-schema-20160224.rdf.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica2.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-corrupt_5.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-corrupt_4.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica-test.466.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1464348681763" name="duplicate:http://ontologies.ef-ears.eu/ears2/1" uri="earsv2-onto-belgica-test%20(copy).rdf"/>
+    </group>
+</catalog>
