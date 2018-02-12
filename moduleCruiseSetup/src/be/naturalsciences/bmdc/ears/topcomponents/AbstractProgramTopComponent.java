@@ -312,9 +312,9 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
         for (IOrganisation org : StaticMetadataSearcher.getInstance().getOrganisations(true)) {
             countries.add(org.getCountryObject());
         }
-        projectCountryList = new ComboBoxColumnEditor(countries, projectEdmerpTable, ProjectTableModel.findCol(ProjectTableModel.COUNTRY), "You can choose a country to narrow down organisations.", this);
-        projectOrganisationList = new ComboBoxColumnEditor(null, projectEdmerpTable, ProjectTableModel.findCol(ProjectTableModel.ORG), "Choose an organisation.", this);
-        projectList = new ComboBoxColumnEditor(null, projectEdmerpTable, ProjectTableModel.findCol(ProjectTableModel.NAME), "Choose a project.", this);
+        projectCountryList = new ComboBoxColumnEditor(countries, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.COUNTRY), "You can choose a country to narrow down organisations.", this);
+        projectOrganisationList = new ComboBoxColumnEditor(null, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.ORG), "Choose an organisation.", this);
+        projectList = new ComboBoxColumnEditor(null, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.NAME), "Choose a project.", this);
     }
 
     @Override

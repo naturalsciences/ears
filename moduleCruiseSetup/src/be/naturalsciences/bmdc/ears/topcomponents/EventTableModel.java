@@ -30,7 +30,7 @@ import javax.swing.JTable;
  * @author yvan
  * @param <E>
  */
-public class EntityTableModelEvent extends EntityTableModel<EventBean> {
+public class EventTableModel extends EntityTableModel<EventBean> {
 
     private List<EventBean> entities = new ArrayList<>();
     private RestClientEvent restClientEvent;
@@ -48,13 +48,15 @@ public class EntityTableModelEvent extends EntityTableModel<EventBean> {
     public static final String PROCESS = "Process";
     public static final String ACTION = "Action";
     public static final String ACTOR = "Actor";
+    public static final String PROGRAM = "Program";
+    public static final String LABEL = "Label";
     public static final String DELETE = "Delete";
     public static final String PROPERTIES = "Properties";
 
-    public static final String[] COLUMN_NAMES = {DATE, TIME, TIMEZONE, TOOL_CATEGORY, TOOL, PROCESS, ACTION, ACTOR, DELETE, PROPERTIES};
+    public static final String[] COLUMN_NAMES = {DATE, TIME, TIMEZONE, TOOL_CATEGORY, TOOL, PROCESS, ACTION, ACTOR, PROGRAM, LABEL, DELETE, PROPERTIES};
     //private final String[] columnNames = {"Date", "Time", "TZ", "tool category", "tool", "process", "action", "actor", "Delete", "Properties"};//7 colonnes
 
-    public EntityTableModelEvent(JTable table, List<EventBean> entities) {
+    public EventTableModel(JTable table, List<EventBean> entities) {
         super(table, entities);
         try {
             restClientEvent = new RestClientEvent();
@@ -115,6 +117,10 @@ public class EntityTableModelEvent extends EntityTableModel<EventBean> {
                 return false;
             case ACTOR:
                 return true;
+            case PROGRAM:
+                return false;
+            case LABEL:
+                return false;
             case DELETE:
                 return true;
             case PROPERTIES:
@@ -138,36 +144,58 @@ public class EntityTableModelEvent extends EntityTableModel<EventBean> {
             case DATE:
                 if (value != null && !value.equals(originalValue)) {
                     OffsetDateTime originalDate = OffsetDateTime.parse(originalValue.toString() + "T" + this.getValueAt(rowIndex, 1) + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
-                    OffsetDateTime oD = OffsetDateTime.parse(value.toString() + "T" + this.getValueAt(rowIndex, 1) + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
-                    event.setTimeStampDt(oD);
-                    IResponseMessage response = restClientEvent.modifyEvent(event);
-                    if (response.isBad()) {
-                        Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
-                        event.setTimeStampDt(originalDate);
+                    OffsetDateTime oD = null;
+                    try {
+                        oD = OffsetDateTime.parse(value.toString() + "T" + this.getValueAt(rowIndex, 1) + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
+                    } catch (java.time.format.DateTimeParseException ex) {
+                        Messaging.report("Date format incorrect", ex, this.getClass(), true);
+                    }
+                    if (oD != null) {
+                        event.setTimeStampDt(oD);
+                        IResponseMessage response = restClientEvent.modifyEvent(event);
+                        if (response.isBad()) {
+                            Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
+                            event.setTimeStampDt(originalDate);
+                        }
                     }
                 }
                 break;
             case TIME:
                 if (value != null && !value.equals(originalValue)) {
                     OffsetDateTime originalDate = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + originalValue.toString() + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
-                    OffsetDateTime oT = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + value.toString() + ".000" + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
-                    event.setTimeStampDt(oT);
-                    IResponseMessage response = restClientEvent.modifyEvent(event);
-                    if (response.isBad()) {
-                        Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
-                        event.setTimeStampDt(originalDate);
+                    OffsetDateTime oT = null;
+                    try {
+                        oT = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + value.toString() + ".000" + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
+                    } catch (java.time.format.DateTimeParseException ex) {
+                        Messaging.report("Date format incorrect", ex, this.getClass(), true);
                     }
+                    if (oT != null) {
+                        event.setTimeStampDt(oT);
+                        IResponseMessage response = restClientEvent.modifyEvent(event);
+                        if (response.isBad()) {
+                            Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
+                            event.setTimeStampDt(originalDate);
+                        }
+                    }
+
                 }
                 break;
             case TIMEZONE:
                 if (value != null && !value.equals(originalValue)) {
                     OffsetDateTime originalDate = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + this.getValueAt(rowIndex, 1) + originalValue.toString(), DateTimeFormatter.ISO_DATE_TIME);
-                    OffsetDateTime oZ = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + this.getValueAt(rowIndex, 1) + value.toString(), DateTimeFormatter.ISO_DATE_TIME);
-                    event.setTimeStampDt(oZ);
-                    IResponseMessage response = restClientEvent.modifyEvent(event);
-                    if (response.isBad()) {
-                        Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
-                        event.setTimeStampDt(originalDate);
+                    OffsetDateTime oZ = null;
+                    try {
+                        oZ = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + this.getValueAt(rowIndex, 1) + value.toString(), DateTimeFormatter.ISO_DATE_TIME);
+                    } catch (java.time.format.DateTimeParseException ex) {
+                        Messaging.report("Date format incorrect", ex, this.getClass(), true);
+                    }
+                    if (oZ != null) {
+                        event.setTimeStampDt(oZ);
+                        IResponseMessage response = restClientEvent.modifyEvent(event);
+                        if (response.isBad()) {
+                            Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
+                            event.setTimeStampDt(originalDate);
+                        }
                     }
                 }
                 break;
@@ -196,19 +224,7 @@ public class EntityTableModelEvent extends EntityTableModel<EventBean> {
 
     @Override
     public void addEntity(EventBean e) {
-        //l id doit être renvoyé par le ws A faire
-//.queryParam("id", LocalDateTime.ofInstant(newEvent.getTimeStampDt().toInstant(), newEvent.getTimeStampDt().getOffset()).toLocalTime().toString().replace(".", "").replace(":", "").subSequence(0, 9))//OK    eventId devient Id for insert in get (wrong) confusions OK
-
-        // e.setEventId(e.getProgram().getProgramId() + e.getTimeStampDt().toEpochSecond());
         e.setEventId(LocalDateTime.ofInstant(e.getTimeStampDt().toInstant(), e.getTimeStampDt().getOffset()).toLocalTime().toString().replace(".", "").replace(":", "").subSequence(0, 9).toString());
-
-        //e.setTimeStamp(e.getTimeStampDt().toString());//mandatory
-        //e.setActor(e.getActor()); //mandatory
-        //e.seProcessUri(e.getProcessName());//ok
-        //e.setToolCategoryUri(e.getToolCategoryName());
-        //HashSet hs = new HashSet();
-        //hs.add(e.getToolNames());
-        //e.setToolSet(hs);
         IResponseMessage response = restClientEvent.postEvent(e);
         if (!response.isBad()) {
             entities.add(e);
@@ -249,8 +265,12 @@ public class EntityTableModelEvent extends EntityTableModel<EventBean> {
                 return event.getActionName();
             case ACTOR:
                 return event.getActor();
+            case PROGRAM:
+                return event.getProgramProperty();
+            case LABEL:
+                return event.getLabel();
             case DELETE:
-                java.net.URL imageURL = EntityTableModelEvent.class.getResource("/images/deleteImg.png");
+                java.net.URL imageURL = EventTableModel.class.getResource("/images/deleteImg.png");
                 Icon favicon = new ImageIcon(imageURL);
                 if (imageURL != null) {
                     // ImageIcon icon = new ImageIcon(favicon);

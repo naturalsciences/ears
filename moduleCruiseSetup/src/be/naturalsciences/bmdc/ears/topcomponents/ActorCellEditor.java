@@ -72,7 +72,7 @@ public class ActorCellEditor extends AbstractCellEditor
     public void actionPerformed(ActionEvent event) {
         JComboBox<String> comboCountry = (JComboBox<String>) event.getSource();
         this.actualActor = (String) comboCountry.getSelectedItem();
-        int actorColumn = ((EntityTableModelEvent) this.jTableEvent.getModel()).findColumn(EntityTableModelEvent.ACTOR);
+        int actorColumn = ((EventTableModel) this.jTableEvent.getModel()).findColumn(EventTableModel.ACTOR);
         this.jTableEvent.setValueAt(this.actualActor, this.numRows, actorColumn);
 
     }

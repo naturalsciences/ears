@@ -35,7 +35,7 @@ public class EventPropertyCellRenderer extends DefaultTableCellRenderer {
             boolean isSelected, boolean hasFocus, int row, int column) {
         if (isActive()) {
             setFont(CreateEventTopComponent.DEFAULT_FONT);
-            EntityTableModelEvent entityTableModelEvent = (EntityTableModelEvent) table.getModel();
+            EventTableModel entityTableModelEvent = (EventTableModel) table.getModel();
             //  if (entityTableModelEvent.getRowCount() > row) {
             entityTableModelEvent.getRowCount();
             /*EventBean event = null;

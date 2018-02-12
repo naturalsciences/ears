@@ -41,8 +41,6 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
         }
 
         rowSorter = new TableRowSorter<>(this);
-        //ys   this.table.setRowSorter(rowSorter);
-
         //initRenders();
     }
 
@@ -105,7 +103,7 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
         return -1;
     }
 
-    public static int findCol(String name) {
+    public static int findColumnStatic(String name) {
         for (int i = 0; i < COLUMN_NAMES.length; i++) {
             if (COLUMN_NAMES[i].equals(name)) {
                 return i;

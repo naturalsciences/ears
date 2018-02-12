@@ -61,7 +61,7 @@ class EventPropertyEditor extends AbstractCellEditor implements TableCellEditor,
     //Implement the one method defined by TableCellEditor.
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        this.currentEvent = ((EntityTableModelEvent) table.getModel()).getEntities().get(row);
+        this.currentEvent = ((EventTableModel) table.getModel()).getEntities().get(row);
         if (this.currentEvent.hasProperties()) {
             button = new JButton();
             button.setText("Properties");

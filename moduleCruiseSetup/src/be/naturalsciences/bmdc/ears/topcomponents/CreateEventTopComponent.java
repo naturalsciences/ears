@@ -32,6 +32,7 @@ import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import com.github.lgooddatepicker.tableeditors.DateTableEditor;
 import com.github.lgooddatepicker.tableeditors.TimeTableEditor;
 import com.github.lgooddatepicker.zinternaltools.InternalUtilities;
+import gnu.trove.map.hash.THashMap;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -46,6 +47,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
@@ -105,9 +107,10 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
     private final InstanceContent content = new InstanceContent();
     public final static Font DEFAULT_FONT = new Font("Sans Serif", Font.BOLD, 12);
-    //private List<EventBean> events = new ArrayList();
-    //private Set<String> actors = new THashSet<>();
+
     private TableColumn actorColumn;
+    private TableColumn propertyColumn;
+
     private Lookup.Result<EventBean> eventResult;
     private Lookup.Result<Actor> actorResult;
     private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
@@ -127,8 +130,10 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
     private static RestClientEvent restClientEvent;
 
-    private EntityTableModelEvent model;
+    private EventTableModel model;
     JPopupMenu popupMenu = new JPopupMenu();
+
+    private Map<TableColumn, int[]> columnWidths;
 
     public CreateEventTopComponent() {
         initComponents();
@@ -172,7 +177,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                         "Do you really want to delete this event " + "[" + modelRow + "]",
                         JOptionPane.OK_CANCEL_OPTION);
                 if (rep == 0) {
-                    ((EntityTableModelEvent) table.getModel()).removeRow(modelRow);
+                    ((EventTableModel) table.getModel()).removeRow(modelRow);
                 }
 
             }
@@ -190,6 +195,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         });
 
         eventPropertyCellRenderer = new EventPropertyCellRenderer(false);
+        columnWidths = new THashMap();
     }
 
     public static RestClientEvent getRestClientEvent() {
@@ -208,16 +214,24 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         eventTable = new javax.swing.JTable()
         ;
         jToolBar1 = new javax.swing.JToolBar();
-        checkBox_TZ = new javax.swing.JCheckBox();
-        checkBox_ToolCat = new javax.swing.JCheckBox();
-        checkBox_Process = new javax.swing.JCheckBox();
-        checkBox_Actor = new javax.swing.JCheckBox();
+        timeZoneCheckBox = new javax.swing.JCheckBox();
+        toolCatCheckBox = new javax.swing.JCheckBox();
+        processCheckBox = new javax.swing.JCheckBox();
+        actorCheckBox = new javax.swing.JCheckBox();
+        programCheckbox = new javax.swing.JCheckBox();
+        labelCheckbox = new javax.swing.JCheckBox();
+        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
         comboFilterDateOfEvent = new javax.swing.JComboBox();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
         jButton1 = new javax.swing.JButton();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
-        mainActorCombobox = new javax.swing.JComboBox();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
+        jLabel1 = new javax.swing.JLabel();
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
+        mainActorCombobox = new javax.swing.JComboBox();
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
+        filler8 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
         exportEventButton = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(1535, 1135));
@@ -235,64 +249,102 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        checkBox_TZ.setSelected(true);
-        checkBox_TZ.setText(org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.checkBox_TZ.text")); // NOI18N
-        checkBox_TZ.setToolTipText(org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.checkBox_TZ.toolTipText")); // NOI18N
-        checkBox_TZ.setFocusable(false);
-        checkBox_TZ.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        checkBox_TZ.addItemListener(new java.awt.event.ItemListener() {
+        timeZoneCheckBox.setSelected(true);
+        timeZoneCheckBox.setText(org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.timeZoneCheckBox.text")); // NOI18N
+        timeZoneCheckBox.setToolTipText(org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.timeZoneCheckBox.toolTipText")); // NOI18N
+        timeZoneCheckBox.setFocusable(false);
+        timeZoneCheckBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        timeZoneCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                checkBox_TZItemStateChanged(evt);
+                timeZoneCheckBoxItemStateChanged(evt);
             }
         });
-        checkBox_TZ.addActionListener(new java.awt.event.ActionListener() {
+        timeZoneCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_TZActionPerformed(evt);
+                timeZoneCheckBoxActionPerformed(evt);
             }
         });
-        jToolBar1.add(checkBox_TZ);
+        jToolBar1.add(timeZoneCheckBox);
 
-        checkBox_ToolCat.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(checkBox_ToolCat, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.checkBox_ToolCat.text")); // NOI18N
-        checkBox_ToolCat.addItemListener(new java.awt.event.ItemListener() {
+        toolCatCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(toolCatCheckBox, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.toolCatCheckBox.text")); // NOI18N
+        toolCatCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                checkBox_ToolCatItemStateChanged(evt);
+                toolCatCheckBoxItemStateChanged(evt);
             }
         });
-        checkBox_ToolCat.addActionListener(new java.awt.event.ActionListener() {
+        toolCatCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_ToolCatActionPerformed(evt);
+                toolCatCheckBoxActionPerformed(evt);
             }
         });
-        jToolBar1.add(checkBox_ToolCat);
+        jToolBar1.add(toolCatCheckBox);
 
-        checkBox_Process.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(checkBox_Process, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.checkBox_Process.text")); // NOI18N
-        checkBox_Process.addItemListener(new java.awt.event.ItemListener() {
+        processCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(processCheckBox, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.processCheckBox.text")); // NOI18N
+        processCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                checkBox_ProcessItemStateChanged(evt);
+                processCheckBoxItemStateChanged(evt);
             }
         });
-        checkBox_Process.addActionListener(new java.awt.event.ActionListener() {
+        processCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_ProcessActionPerformed(evt);
+                processCheckBoxActionPerformed(evt);
             }
         });
-        jToolBar1.add(checkBox_Process);
+        jToolBar1.add(processCheckBox);
 
-        checkBox_Actor.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(checkBox_Actor, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.checkBox_Actor.text")); // NOI18N
-        checkBox_Actor.addItemListener(new java.awt.event.ItemListener() {
+        actorCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(actorCheckBox, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.actorCheckBox.text")); // NOI18N
+        actorCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                checkBox_ActorItemStateChanged(evt);
+                actorCheckBoxItemStateChanged(evt);
             }
         });
-        checkBox_Actor.addActionListener(new java.awt.event.ActionListener() {
+        actorCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_ActorActionPerformed(evt);
+                actorCheckBoxActionPerformed(evt);
             }
         });
-        jToolBar1.add(checkBox_Actor);
+        jToolBar1.add(actorCheckBox);
+
+        programCheckbox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(programCheckbox, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.programCheckbox.text")); // NOI18N
+        programCheckbox.setFocusable(false);
+        programCheckbox.setMaximumSize(new java.awt.Dimension(96, 32));
+        programCheckbox.setMinimumSize(new java.awt.Dimension(96, 32));
+        programCheckbox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        programCheckbox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                programCheckboxItemStateChanged(evt);
+            }
+        });
+        programCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                programCheckboxActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(programCheckbox);
+
+        labelCheckbox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(labelCheckbox, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.labelCheckbox.text")); // NOI18N
+        labelCheckbox.setFocusable(false);
+        labelCheckbox.setMaximumSize(new java.awt.Dimension(96, 32));
+        labelCheckbox.setMinimumSize(new java.awt.Dimension(96, 32));
+        labelCheckbox.setPreferredSize(new java.awt.Dimension(96, 32));
+        labelCheckbox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        labelCheckbox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                labelCheckboxItemStateChanged(evt);
+            }
+        });
+        labelCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                labelCheckboxActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(labelCheckbox);
+        jToolBar1.add(filler7);
         jToolBar1.add(filler3);
 
         comboFilterDateOfEvent.setMaximumSize(new java.awt.Dimension(100, 25));
@@ -309,6 +361,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             }
         });
         jToolBar1.add(comboFilterDateOfEvent);
+        jToolBar1.add(filler2);
 
         org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.jButton1.text")); // NOI18N
         jButton1.setFocusable(false);
@@ -320,7 +373,12 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             }
         });
         jToolBar1.add(jButton1);
-        jToolBar1.add(filler2);
+        jToolBar1.add(filler5);
+        jToolBar1.add(filler1);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.jLabel1.text")); // NOI18N
+        jToolBar1.add(jLabel1);
+        jToolBar1.add(filler6);
 
         mainActorCombobox.setMaximumSize(new java.awt.Dimension(200, 32767));
         mainActorCombobox.setMinimumSize(new java.awt.Dimension(200, 25));
@@ -341,7 +399,8 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             }
         });
         jToolBar1.add(mainActorCombobox);
-        jToolBar1.add(filler1);
+        jToolBar1.add(filler4);
+        jToolBar1.add(filler8);
 
         org.openide.awt.Mnemonics.setLocalizedText(exportEventButton, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.exportEventButton.text")); // NOI18N
         exportEventButton.setFocusable(false);
@@ -381,28 +440,28 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void checkBox_ActorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_ActorActionPerformed
+    private void actorCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actorCheckBoxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_checkBox_ActorActionPerformed
+    }//GEN-LAST:event_actorCheckBoxActionPerformed
 
-    private void checkBox_ActorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkBox_ActorItemStateChanged
+    private void actorCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_actorCheckBoxItemStateChanged
         // TODO add your handling code here:
-        updateColumnWidth(evt, this.getModel().findColumn(EntityTableModelEvent.ACTOR), 200, 500);
-    }//GEN-LAST:event_checkBox_ActorItemStateChanged
+        updateColumnWidth(evt, this.getModel().findColumn(EventTableModel.ACTOR));
+    }//GEN-LAST:event_actorCheckBoxItemStateChanged
 
-    private void checkBox_ToolCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_ToolCatActionPerformed
+    private void toolCatCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolCatCheckBoxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_checkBox_ToolCatActionPerformed
+    }//GEN-LAST:event_toolCatCheckBoxActionPerformed
 
-    private void checkBox_ProcessItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkBox_ProcessItemStateChanged
+    private void processCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_processCheckBoxItemStateChanged
         // TODO add your handling code here:
-        updateColumnWidth(evt, this.getModel().findColumn(EntityTableModelEvent.PROCESS), 200, 1000);
-    }//GEN-LAST:event_checkBox_ProcessItemStateChanged
+        updateColumnWidth(evt, this.getModel().findColumn(EventTableModel.PROCESS));
+    }//GEN-LAST:event_processCheckBoxItemStateChanged
 
-    private void checkBox_ToolCatItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkBox_ToolCatItemStateChanged
+    private void toolCatCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_toolCatCheckBoxItemStateChanged
         // TODO add your handling code here:
-        updateColumnWidth(evt, this.getModel().findColumn(EntityTableModelEvent.TOOL_CATEGORY), 200, 1000);
-    }//GEN-LAST:event_checkBox_ToolCatItemStateChanged
+        updateColumnWidth(evt, this.getModel().findColumn(EventTableModel.TOOL_CATEGORY));
+    }//GEN-LAST:event_toolCatCheckBoxItemStateChanged
 
     private void mainActorComboboxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_mainActorComboboxItemStateChanged
         Actor actor = null;
@@ -418,18 +477,18 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         // TODO add your handling code here:
     }//GEN-LAST:event_mainActorComboboxActionPerformed
 
-    private void checkBox_ProcessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_ProcessActionPerformed
+    private void processCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_processCheckBoxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_checkBox_ProcessActionPerformed
+    }//GEN-LAST:event_processCheckBoxActionPerformed
 
-    private void checkBox_TZItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkBox_TZItemStateChanged
+    private void timeZoneCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_timeZoneCheckBoxItemStateChanged
         // TODO add your handling code here:
-        updateColumnWidth(evt, this.getModel().findColumn(EntityTableModelEvent.TIMEZONE), 80, 80);
-    }//GEN-LAST:event_checkBox_TZItemStateChanged
+        updateColumnWidth(evt, this.getModel().findColumn(EventTableModel.TIMEZONE));
+    }//GEN-LAST:event_timeZoneCheckBoxItemStateChanged
 
-    private void checkBox_TZActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_TZActionPerformed
+    private void timeZoneCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timeZoneCheckBoxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_checkBox_TZActionPerformed
+    }//GEN-LAST:event_timeZoneCheckBoxActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -484,37 +543,73 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         // TODO add your handling code here:
     }//GEN-LAST:event_comboFilterDateOfEventActionPerformed
 
+    private void programCheckboxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_programCheckboxItemStateChanged
+        // TODO add your handling code here:
+        updateColumnWidth(evt, this.getModel().findColumn(EventTableModel.PROGRAM));
+    }//GEN-LAST:event_programCheckboxItemStateChanged
+
+    private void programCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_programCheckboxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_programCheckboxActionPerformed
+
+    private void labelCheckboxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_labelCheckboxItemStateChanged
+        // TODO add your handling code here:
+        updateColumnWidth(evt, this.getModel().findColumn(EventTableModel.LABEL));
+    }//GEN-LAST:event_labelCheckboxItemStateChanged
+
+    private void labelCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_labelCheckboxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_labelCheckboxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox checkBox_Actor;
-    private javax.swing.JCheckBox checkBox_Process;
-    private javax.swing.JCheckBox checkBox_TZ;
-    private javax.swing.JCheckBox checkBox_ToolCat;
+    private javax.swing.JCheckBox actorCheckBox;
     private javax.swing.JComboBox comboFilterDateOfEvent;
     private javax.swing.JTable eventTable;
     private javax.swing.JButton exportEventButton;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
+    private javax.swing.Box.Filler filler4;
+    private javax.swing.Box.Filler filler5;
+    private javax.swing.Box.Filler filler6;
+    private javax.swing.Box.Filler filler7;
+    private javax.swing.Box.Filler filler8;
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JCheckBox labelCheckbox;
     private javax.swing.JComboBox mainActorCombobox;
     private javax.swing.JScrollPane o_ScrollPaneForEventTable;
+    private javax.swing.JCheckBox processCheckBox;
+    private javax.swing.JCheckBox programCheckbox;
+    private javax.swing.JCheckBox timeZoneCheckBox;
+    private javax.swing.JCheckBox toolCatCheckBox;
     // End of variables declaration//GEN-END:variables
 
-    private void updateColumnWidth(ItemEvent evt, int column, int max, int min) {
+    /**
+     * *
+     * Sets the column with the given int to its preferred column width or zero
+     * width depending on the given Checkbox (de)selection event.
+     *
+     * @param evt
+     * @param column
+     * @param max
+     * @param min
+     */
+    private void updateColumnWidth(ItemEvent evt, int column) {
         final TableColumnAdjuster tca = new TableColumnAdjuster(eventTable);
         TableColumnModel tcm = eventTable.getColumnModel();
-
+        TableColumn tableColumn = tcm.getColumn(column);
+        int[] columnWidth = columnWidths.get(tableColumn);
         if (evt.getStateChange() == evt.DESELECTED) {
-            eventTable.getColumnModel().getColumn(column).setWidth(0);
-            eventTable.getColumnModel().getColumn(column).setMaxWidth(0);
-            eventTable.getColumnModel().getColumn(column).setMinWidth(0);
-            eventTable.getColumnModel().getColumn(column).setPreferredWidth(0);
+            tableColumn.setWidth(0);
+            tableColumn.setMaxWidth(0);
+            tableColumn.setMinWidth(0);
+            tableColumn.setPreferredWidth(0);
         } else {
-
-            eventTable.getColumnModel().getColumn(column).setMaxWidth(max);
-            eventTable.getColumnModel().getColumn(column).setMinWidth(min);
-            eventTable.getColumnModel().getColumn(column).setPreferredWidth(min);
+            tableColumn.setMaxWidth(columnWidth[1]);
+            tableColumn.setMinWidth(columnWidth[0]);
+            tableColumn.setPreferredWidth(columnWidth[0]);
             tca.restoreColumns();
         }
     }
@@ -527,11 +622,12 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         return result;
     }
 
-    private EntityTableModelEvent getModel() {
-        return (EntityTableModelEvent) eventTable.getModel();
+    private EventTableModel getModel() {
+        return (EventTableModel) eventTable.getModel();
     }
 
     private void setColumnWidths(TableColumn column, int max, int min) {
+        columnWidths.put(column, new int[]{min, max});
         if (min == max) {
             column.setResizable(false);
         } else {
@@ -542,25 +638,14 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         column.setPreferredWidth(min);
     }
 
-    /*private void deleteBlankLine(JTable table) {
-
-        if (table.getModel().getValueAt(0, 1).toString().length() == 0) {
-            ((DefaultTableModel) table.getModel()).removeRow(1);
-            ((DefaultTableModel) table.getModel()).fireTableDataChanged();
-        }
-    }*/
     @Override
     protected void componentShowing() {
-        // comboFilterDateOfEvent.removeAllItems();
-        // eventDateForFilter.add("");
     }
 
     private void updateEventModel() {
         if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
             CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
             List<EventBean> events = (List<EventBean>) restClientEvent.getEventByCruise(currentCruise);
-            //Collection lookupAll = Utilities.actionsGlobalContext().lookupAll(Individuals.class);
-
             Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
             for (EventBean event : events) {
                 if (event.getProperties() != null) {
@@ -603,7 +688,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                 }
             }
 
-            model = new EntityTableModelEvent(eventTable, events);
+            model = new EventTableModel(eventTable, events);
             eventTable.setModel(model);
         }
     }
@@ -624,16 +709,18 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
             TableColumnModel tableColumnModel = eventTable.getColumnModel();
 
-            int dateColumnId = model.findColumn(EntityTableModelEvent.DATE);
-            int timeColumnId = model.findColumn(EntityTableModelEvent.TIME);
-            int timeZoneColumnId = model.findColumn(EntityTableModelEvent.TIMEZONE);
-            int toolCategoryColumnId = model.findColumn(EntityTableModelEvent.TOOL_CATEGORY);
-            int toolColumnId = model.findColumn(EntityTableModelEvent.TOOL);
-            int processColumnId = model.findColumn(EntityTableModelEvent.PROCESS);
-            int actionColumnId = model.findColumn(EntityTableModelEvent.ACTION);
-            int actorColumnId = model.findColumn(EntityTableModelEvent.ACTOR);
-            int propertyColumnId = model.findColumn(EntityTableModelEvent.PROPERTIES);
-            int deleteColumnId = model.findColumn(EntityTableModelEvent.DELETE);
+            int dateColumnId = model.findColumn(EventTableModel.DATE);
+            int timeColumnId = model.findColumn(EventTableModel.TIME);
+            int timeZoneColumnId = model.findColumn(EventTableModel.TIMEZONE);
+            int toolCategoryColumnId = model.findColumn(EventTableModel.TOOL_CATEGORY);
+            int toolColumnId = model.findColumn(EventTableModel.TOOL);
+            int processColumnId = model.findColumn(EventTableModel.PROCESS);
+            int actionColumnId = model.findColumn(EventTableModel.ACTION);
+            int actorColumnId = model.findColumn(EventTableModel.ACTOR);
+            int programColumnId = model.findColumn(EventTableModel.PROGRAM);
+            int labelColumnId = model.findColumn(EventTableModel.LABEL);
+            int propertyColumnId = model.findColumn(EventTableModel.PROPERTIES);
+            int deleteColumnId = model.findColumn(EventTableModel.DELETE);
 
             TableColumn dateColumn = tableColumnModel.getColumn(dateColumnId);
             TableColumn timeColumn = tableColumnModel.getColumn(timeColumnId);
@@ -643,7 +730,10 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             TableColumn processColumn = tableColumnModel.getColumn(processColumnId);
             TableColumn actionColumn = tableColumnModel.getColumn(actionColumnId);
             actorColumn = tableColumnModel.getColumn(actorColumnId);
-            TableColumn propertyColumn = tableColumnModel.getColumn(propertyColumnId);
+            TableColumn programColumn = tableColumnModel.getColumn(programColumnId);
+            TableColumn labelColumn = tableColumnModel.getColumn(labelColumnId);
+            propertyColumn = tableColumnModel.getColumn(propertyColumnId);
+            TableColumn deleteColumn = tableColumnModel.getColumn(deleteColumnId);
 
             setColumnWidths(dateColumn, 80, 80);
             setColumnWidths(timeColumn, 80, 50);
@@ -653,12 +743,16 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             setColumnWidths(processColumn, 1000, 80);
             setColumnWidths(actionColumn, 1000, 80);
             setColumnWidths(actorColumn, 500, 80);
+            setColumnWidths(programColumn, 500, 80);
+            setColumnWidths(labelColumn, 500, 80);
             setColumnWidths(propertyColumn, 100, 100);
+            setColumnWidths(deleteColumn, 60, 60);
+
+            eventTable.getTableHeader().setReorderingAllowed(false);
 
             // This decides how many clicks are required to edit a cell in the table editors demo.
             // (Set this to 1 or 2 clicks, as desired.)
             int clickCountToEdit = 1;
-
             // Set all the default table editors to start with the desired number of clicks.
             // The default table editors are the ones supplied by the JTable class.
             InternalUtilities.setDefaultTableEditorsClicks(eventTable, clickCountToEdit);
@@ -667,8 +761,6 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             // Note: The editors and renders for each type should be separate instances of the 
             // matching table editor class. Don't use the same instance as both a renderer and editor.
             // If you did, it would be immediately obvious because the cells would not render properly.
-            eventTable.getTableHeader().setReorderingAllowed(false);
-
             eventTable.setDefaultRenderer(LocalDate.class, new DateTableEditor());
             DateTableEditor dateEdit = new DateTableEditor();
             dateEdit.clickCountToEdit = clickCountToEdit;
@@ -681,17 +773,13 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
             // Explicitly set the default editor instance (data type) for each column, by looking at 
             // the most common data type found in each column.
-            zSetAllColumnEditorsAndRenderers(eventTable);
-
+            //   zSetAllColumnEditorsAndRenderers(eventTable);
             //add actor column
             actorColumn.setCellRenderer(new ActorCellRenderer());
             actorColumn.setCellEditor(new ActorCellEditor(actors));
 
             //add delete button
             ButtonColumn deleteButtonColumn = new ButtonColumn(eventTable, deleteEventAction, deleteColumnId);
-            tableColumnModel.getColumn(deleteColumnId).setMaxWidth(60);
-            tableColumnModel.getColumn(deleteColumnId).setMinWidth(60);
-            tableColumnModel.getColumn(deleteColumnId).setPreferredWidth(60);
 
             //add property column
             propertyColumn.setCellRenderer(eventPropertyCellRenderer);
@@ -699,8 +787,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
             eventTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
-            //sorting by something
-            //https://docs.oracle.com/javase/7/docs/api/javax/swing/RowFilter.html
+            //sorting
             eventTable.setAutoCreateRowSorter(true);
             eventTableSorter = new TableRowSorter<>(this.getModel());
             eventTable.setRowSorter(eventTableSorter);

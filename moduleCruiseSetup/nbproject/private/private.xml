@@ -6,6 +6,7 @@
             <file>file:/home/thomas/NetBeansProjects/earsapp/moduleCruiseSetup/nbproject/project.properties</file>
             <file>file:/home/thomas/NetBeansProjects/earsapp/moduleCruiseSetup/nbproject/project.xml</file>
             <file>file:/home/thomas/NetBeansProjects/earsapp/moduleCruiseSetup/src/be/naturalsciences/bmdc/ears/application/Startable.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleCruiseSetup/src/be/naturalsciences/bmdc/ears/validators/SeaAreaValidator.java</file>
             <file>file:/home/thomas/NetBeansProjects/earsapp/moduleCruiseSetup/src/be/naturalsciences/bmdc/ears/topcomponents/EventPropertyDialog.java</file>
         </group>
     </open-files>
