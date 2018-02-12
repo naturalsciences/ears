@@ -168,7 +168,7 @@ public abstract class RestClient implements Serializable {
     public static String printResponse(ResteasyWebTarget target, Response res, Class cls, IResponseMessage responseMessage) {
         StringBuilder sb = new StringBuilder();
         sb.append("------------\n");
-        sb.append("|Tried URL: ").append(target.getUriBuilder().toTemplate()).append("\n");
+        sb.append("|Tried URL: ").append(target.getUri().toASCIIString()).append("\n");
         if (res != null) {
             sb.append("|Server response status code: ").append(res.getStatus()).append("\n");
         } else {

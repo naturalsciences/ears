@@ -298,6 +298,22 @@ public class EventBean implements Serializable, EARSConcept {
         counter++;
     }
 
+        /**
+     * *
+     * Constructor for an event. Do not use when creating event from
+     * webservices, only for event creation module. Implementation based on URI.
+     *
+     * @param program Must be provided
+     * @param cruise Must be provided
+     * @param toolCategory Must be provided
+     * @param tools
+     * @param process Must be provided
+     * @param action Must be provided
+     * @param properties Optional. Only property keys, not their values. If left
+     * empty, property key and a value can be provided later with
+     * attachProperty()
+     * @param actor Optional
+     */
     public EventBean(ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, Set<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor, OffsetDateTime timeStamp) throws IllegalArgumentException {
         this(program, cruise, toolCategory, tools, process, action, properties, actor);
         this.timeStampDt = timeStamp;
@@ -393,6 +409,16 @@ public class EventBean implements Serializable, EARSConcept {
 
     public void setProperties(Set<Property> properties) {
         this.properties = properties;
+    }
+
+    public String getLabel() {
+        Set<String> values = getPropertyValues(Prop.LABEL);
+        return values.toArray(new String[1])[0];
+    }
+
+    public Object getProgramProperty() {
+        Set<String> values = getPropertyValues(Prop.PROGRAM);
+        return values.toArray(new String[1])[0];
     }
 
     @XmlElementWrapper(namespace = "http://www.eurofleets.eu/", name = "tool")
