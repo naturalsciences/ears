@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package be.naturalsciences.bmdc.ears.topcomponents;
+package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
 
 /**

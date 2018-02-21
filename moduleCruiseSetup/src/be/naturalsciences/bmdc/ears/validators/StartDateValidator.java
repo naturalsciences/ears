@@ -37,7 +37,7 @@ public final class StartDateValidator implements Validator<String> {
         Date otherDate = null;
         if (otherDateS != null && !otherDateS.equals("")) {
             try {
-                otherDate = StringUtils.ISO_DATETIME_FORMAT.parse(otherDateS);
+                otherDate = StringUtils.SDF_ISO_DATETIME.parse(otherDateS);
 
             } catch (ParseException ex) {
                 problems.add("Cannot parse the date " + otherDateS);

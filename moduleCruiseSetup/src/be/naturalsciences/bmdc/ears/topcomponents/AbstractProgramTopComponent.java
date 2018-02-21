@@ -5,6 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProjectTableModel;
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
 import be.naturalsciences.bmdc.ears.comparator.CountryComparator;
 import be.naturalsciences.bmdc.ears.entities.CountryBean;

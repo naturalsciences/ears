@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package be.naturalsciences.bmdc.ears.topcomponents;
+package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
 import be.naturalsciences.bmdc.ears.entities.EARSConcept;
-import static be.naturalsciences.bmdc.ears.topcomponents.ProjectTableModel.COLUMN_NAMES;
+import static be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProjectTableModel.COLUMN_NAMES;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -132,6 +132,10 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
 
     abstract public Object getValueAt(E entity, int columnIndex);
 
+    public Object getValueAt(int rowIndex, String columnName) {
+        return getValueAt(rowIndex, findColumn(columnName));
+    }
+
     public E getEntityAt(int row) {
         return entities.get(row);
     }
@@ -196,5 +200,5 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
             return new ArrayList<E>();
         }
     }
-    
+
 }

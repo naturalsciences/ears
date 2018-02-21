@@ -5,6 +5,8 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.SeaAreaTableModel;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ChiefScientistTableModel;
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
 import be.naturalsciences.bmdc.ears.comparator.CountryComparator;
 import be.naturalsciences.bmdc.ears.entities.CountryBean;
@@ -654,8 +656,8 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
             try {
                 //Date start = inputStartDate.getDate(); //doesn't provide the correct date!!
                 //Date end = inputEndDate.getDate(); //doesn't provide the correct date!!
-                Date start = StringUtils.ISO_DATETIME_FORMAT.parse(inputStartDate.getEditor().getText());
-                Date end = StringUtils.ISO_DATETIME_FORMAT.parse(inputEndDate.getEditor().getText());
+                Date start = StringUtils.SDF_ISO_DATETIME.parse(inputStartDate.getEditor().getText());
+                Date end = StringUtils.SDF_ISO_DATETIME.parse(inputEndDate.getEditor().getText());
 
                 if (start.equals(end)) { //00.00.00
 

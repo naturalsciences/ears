@@ -10,10 +10,12 @@ import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.NavBean;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
+import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
 import be.naturalsciences.bmdc.ears.entities.VesselBean;
 import be.naturalsciences.bmdc.ears.entities.WeatherBean;
 import be.naturalsciences.bmdc.ears.rest.RestClientNav;
 import be.naturalsciences.bmdc.ears.rest.RestClientThermosal;
+import be.naturalsciences.bmdc.ears.rest.RestClientUnderway;
 import be.naturalsciences.bmdc.ears.rest.RestClientWeather;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
@@ -25,6 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,27 +65,36 @@ public class ExportEventActionListener implements EventListener {
                 try {
                     restNav = new RestClientNav();
                 } catch (ConnectException ex) {
-                    Exceptions.printStackTrace(ex);
+                    Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), true);
                 } catch (EarsException ex) {
-                    Exceptions.printStackTrace(ex);
+                    Messaging.report("Problem with the navigation web service", ex, this.getClass(), true);;
                 }
 
                 RestClientWeather restWeather = null;
                 try {
                     restWeather = new RestClientWeather();
                 } catch (ConnectException ex) {
-                    Exceptions.printStackTrace(ex);
+                    Messaging.report("Can't connect to the weather web service", ex, this.getClass(), true);
                 } catch (EarsException ex) {
-                    Exceptions.printStackTrace(ex);
+                    Messaging.report("Problem with the weather web service", ex, this.getClass(), true);
                 }
 
                 RestClientThermosal restThermosal = null;
                 try {
                     restThermosal = new RestClientThermosal();
                 } catch (ConnectException ex) {
-                    Exceptions.printStackTrace(ex);
+                    Messaging.report("Can't connect to the thermosal web service", ex, this.getClass(), true);
                 } catch (EarsException ex) {
-                    Exceptions.printStackTrace(ex);
+                    Messaging.report("Problem with the thermosal web service", ex, this.getClass(), true);
+                }
+
+                RestClientUnderway restUnderway = null;
+                try {
+                    restUnderway = new RestClientUnderway();
+                } catch (ConnectException ex) {
+                    Messaging.report("Can't connect to the underway web service", ex, this.getClass(), true);
+                } catch (EarsException ex) {
+                    Messaging.report("Problem with the underway web service", ex, this.getClass(), true);
                 }
 
                 // eventClient.getAllEvents().stream().forEach(System.out::println);
@@ -136,7 +148,11 @@ public class ExportEventActionListener implements EventListener {
                             header.add(propertyName);
                         }
 
-                        header.addAll(Arrays.asList("Heading", "Course over Ground", "Speed over Ground", "Salinity","Conductivity","Sigma T","Wind speed", "Wind direction","Air temperature","Air pressure","Solar Radiation"));
+                        header.addAll(Arrays.asList("Heading", "Course over Ground", "Speed over Ground",
+                                "Salinity", "Conductivity", "Sigma T", "Wind speed", "Wind direction",
+                                "Air temperature", "Air pressure", "Solar Radiation", "Turbidity L",
+                                "Turbidity H", "OBS L", "OBS H", "Salinity", "Chlorophyll", "Blue Algae",
+                                "CDOM", "pH", "Fluorescence", "pCO2", "PAR"));
 
                         String[] entry = new String[header.size()];
                         entry = header.toArray(entry);
@@ -144,11 +160,14 @@ public class ExportEventActionListener implements EventListener {
                         csvWriter.writeNext(entry, false);
                         for (EventBean event : events) {
                             OffsetDateTime ts = event.getTimeStampDt();
-                            NavBean nav = restNav.getNearestNav(ts);
-                            WeatherBean wt = restWeather.getNearestWeather(ts);
-                            ThermosalBean th = restThermosal.getNearestThermosal(ts);
+
+                            NavBean nav = restNav != null ? restNav.getNearestNav(ts) : null;
+                            WeatherBean wt = restWeather != null ? restWeather.getNearestWeather(ts) : null;
+                            ThermosalBean th = restThermosal != null ? restThermosal.getNearestThermosal(ts) : null;
+                            UnderwayBean uw = restUnderway != null ? restUnderway.getNearestUnderway(ts) : null;
+
                             List<String> elements = new ArrayList(Arrays.asList(
-                                    event.getTimeStamp(),
+                                    event.getTimeStampDt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
                                     event.getActor(),
                                     event.getToolCategoryName(),
                                     event.getToolNames(),
@@ -158,7 +177,7 @@ public class ExportEventActionListener implements EventListener {
                                     (nav != null) ? nav.getLat() : "",
                                     (nav != null) ? nav.getLon() : "",
                                     (nav != null) ? nav.getDepth() : "",
-                                    (th != null) ? th.getSurfaceWaterTemperature().toString() : ""
+                                    (th != null && th.getSurfaceWaterTemperature() != null) ? th.getSurfaceWaterTemperature().toString() : ""
                             ));
 
                             for (String propertyUrl : properties.keySet()) {
@@ -168,20 +187,31 @@ public class ExportEventActionListener implements EventListener {
                                 } else {
                                     elements.add("");
                                 }
-                            }     
+                            }
                             elements.addAll(Arrays.asList((nav != null) ? nav.getHeading() : "",
                                     (nav != null) ? nav.getCog() : "",
                                     (nav != null) ? nav.getSog() : "",
-                                    (th != null) ? th.getSalinity().toString() : "",
-                                    (th != null) ? th.getConductivity().toString() : "",
-                                    (th != null) ? th.getSigmat().toString() : "",         
-                                    (wt != null) ? wt.getWindSpeed().toString() : "",
-                                    (wt != null) ? wt.getWindDirection().toString() : "",
-                                    (wt != null) ? wt.getAirTemperature().toString() : "",
-                                    (wt != null) ? wt.getAirPressure().toString() : "",
-                                    (wt != null) ? wt.getSolarRadiation().toString() : ""));
-                            
-                            
+                                    (th != null && th.getSalinity() != null) ? th.getSalinity().toString() : "",
+                                    (th != null && th.getConductivity() != null) ? th.getConductivity().toString() : "",
+                                    (th != null && th.getSigmat() != null) ? th.getSigmat().toString() : "",
+                                    (wt != null && wt.getWindSpeed() != null) ? wt.getWindSpeed().toString() : "",
+                                    (wt != null && wt.getWindDirection() != null) ? wt.getWindDirection().toString() : "",
+                                    (wt != null && wt.getAirTemperature() != null) ? wt.getAirTemperature().toString() : "",
+                                    (wt != null && wt.getAirPressure() != null) ? wt.getAirPressure().toString() : "",
+                                    (wt != null && wt.getSolarRadiation() != null) ? wt.getSolarRadiation().toString() : "",
+                                    (uw != null && uw.getTurbidity_l() != null) ? uw.getTurbidity_l().toString() : "",
+                                    (uw != null && uw.getTurbidity_h() != null) ? uw.getTurbidity_h().toString() : "",
+                                    (uw != null && uw.getObs_l() != null) ? uw.getObs_l().toString() : "",
+                                    (uw != null && uw.getObs_h() != null) ? uw.getObs_h().toString() : "",
+                                    (uw != null && uw.getSalinity() != null) ? uw.getSalinity().toString() : "",
+                                    (uw != null && uw.getChlorophyll() != null) ? uw.getChlorophyll().toString() : "",
+                                    (uw != null && uw.getBlue_algae() != null) ? uw.getBlue_algae().toString() : "",
+                                    (uw != null && uw.getCdom() != null) ? uw.getCdom().toString() : "",
+                                    (uw != null && uw.getPh() != null) ? uw.getPh().toString() : "",
+                                    (uw != null && uw.getFluorescence() != null) ? uw.getFluorescence().toString() : "",
+                                    (uw != null && uw.getPco2() != null) ? uw.getPco2().toString() : "",
+                                    (uw != null && uw.getPar() != null) ? uw.getPar().toString() : ""));
+
                             if (PRINT_PROPS_ONTO) {
                                 elements.add(event.getProperty());
                             }

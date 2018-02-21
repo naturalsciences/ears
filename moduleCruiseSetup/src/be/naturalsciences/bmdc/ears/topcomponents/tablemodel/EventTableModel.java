@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package be.naturalsciences.bmdc.ears.topcomponents;
+package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
@@ -143,10 +144,10 @@ public class EventTableModel extends EntityTableModel<EventBean> {
         switch (colName) {
             case DATE:
                 if (value != null && !value.equals(originalValue)) {
-                    OffsetDateTime originalDate = OffsetDateTime.parse(originalValue.toString() + "T" + this.getValueAt(rowIndex, 1) + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
+                    OffsetDateTime originalDate = OffsetDateTime.parse(originalValue.toString() + "T" + this.getValueAt(rowIndex, TIME) + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
                     OffsetDateTime oD = null;
                     try {
-                        oD = OffsetDateTime.parse(value.toString() + "T" + this.getValueAt(rowIndex, 1) + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
+                        oD = OffsetDateTime.parse(value.toString() + "T" + this.getValueAt(rowIndex, TIME) + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
                     } catch (java.time.format.DateTimeParseException ex) {
                         Messaging.report("Date format incorrect", ex, this.getClass(), true);
                     }
@@ -162,10 +163,10 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                 break;
             case TIME:
                 if (value != null && !value.equals(originalValue)) {
-                    OffsetDateTime originalDate = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + originalValue.toString() + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
+                    OffsetDateTime originalDate = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE) + "T" + originalValue.toString() + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
                     OffsetDateTime oT = null;
                     try {
-                        oT = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + value.toString() + ".000" + this.getValueAt(rowIndex, 2), DateTimeFormatter.ISO_DATE_TIME);
+                        oT = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE) + "T" + value.toString() + ".000" + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
                     } catch (java.time.format.DateTimeParseException ex) {
                         Messaging.report("Date format incorrect", ex, this.getClass(), true);
                     }
@@ -252,7 +253,7 @@ public class EventTableModel extends EntityTableModel<EventBean> {
             case DATE:
                 return event.getTimeStampDt().format(DateTimeFormatter.ISO_LOCAL_DATE);
             case TIME:
-                return event.getTimeStampDt().format(StringUtils.TIME_FORMAT_HOURS_MINS_SECS);
+                return event.getTimeStampDt().format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS);
             case TIMEZONE:
                 return event.getTimeStampDt().getOffset().toString();
             case TOOL_CATEGORY:
@@ -271,10 +272,10 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                 return event.getLabel();
             case DELETE:
                 java.net.URL imageURL = EventTableModel.class.getResource("/images/deleteImg.png");
-                Icon favicon = new ImageIcon(imageURL);
+                Icon deleteIcon = new ImageIcon(imageURL, "Delete event " + event.getId());
                 if (imageURL != null) {
                     // ImageIcon icon = new ImageIcon(favicon);
-                    return favicon;
+                    return deleteIcon;
                 }
 
                 return "";
@@ -300,4 +301,5 @@ public class EventTableModel extends EntityTableModel<EventBean> {
     public Object getValueAt(EventBean entity, int columnIndex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

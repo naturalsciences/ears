@@ -5,6 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
 import be.naturalsciences.bmdc.ears.comparator.ActorComparator;
 import be.naturalsciences.bmdc.ears.entities.Actor;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
@@ -53,10 +54,13 @@ import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -127,6 +131,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     //Set set = new HashSet();
 
     private final Action deleteEventAction;
+    private final Action editPropertyEventAction;
 
     private static RestClientEvent restClientEvent;
 
@@ -163,6 +168,20 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         //eventTable.setBackground(new Color(190, 240, 255));
         eventTable.setRowHeight(25);
         eventTable.setFont(DEFAULT_FONT);
+
+        editPropertyEventAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                JTable table = (JTable) e.getSource();
+
+                int modelRow = Integer.valueOf(e.getActionCommand());
+                EventBean event = getModel().getEntityAt(modelRow);
+                JFrame owner = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, table);
+                JDialog dialog = new EventPropertyDialog(owner, true, null, null, null, event);
+                dialog.setVisible(true);
+            }
+        };
         deleteEventAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -495,7 +514,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         String text = (String) comboFilterDateOfEvent.getSelectedItem();
         boolean isDate = true;
         try {
-            StringUtils.ISO_DATE_FORMAT.parse(text);
+            StringUtils.SDF_ISO_DATE.parse(text);
         } catch (ParseException ex) {
             isDate = false;
         }
@@ -748,7 +767,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             setColumnWidths(propertyColumn, 100, 100);
             setColumnWidths(deleteColumn, 60, 60);
 
-            eventTable.getTableHeader().setReorderingAllowed(false);
+            eventTable.getTableHeader().setReorderingAllowed(true);
 
             // This decides how many clicks are required to edit a cell in the table editors demo.
             // (Set this to 1 or 2 clicks, as desired.)
@@ -779,11 +798,12 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             actorColumn.setCellEditor(new ActorCellEditor(actors));
 
             //add delete button
-            ButtonColumn deleteButtonColumn = new ButtonColumn(eventTable, deleteEventAction, deleteColumnId);
+            ButtonColumn deleteButtonColumn = new ButtonColumn(eventTable, deleteEventAction, deleteColumnId,"Delete event");
 
+            ButtonColumn editPropertyButtonColumn = new ButtonColumn(eventTable, editPropertyEventAction, propertyColumnId,"Edit properties");
             //add property column
-            propertyColumn.setCellRenderer(eventPropertyCellRenderer);
-            propertyColumn.setCellEditor(new EventPropertyEditor(eventTable));
+           // propertyColumn.setCellRenderer(eventPropertyCellRenderer);
+           // propertyColumn.setCellEditor(new EventPropertyEditor(eventTable));
 
             eventTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
@@ -865,115 +885,4 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             }
         }
     }
-
-    /**
-     * zSetAllColumnEditorsAndRenderers,
-     *
-     * Note: This function is a bit complex, and it's not necessary to
-     * understand the source of this function to understand this demo. The most
-     * important sections of the demo are located in the constructor and the
-     * DemoTableModel class. The reader may wish to skip reading this function
-     * until the other parts of the demo are read.
-     *
-     * This sets the default editors and renderers for each column, by looking
-     * at the most common data types found in the columns. Before this function
-     * is called, any needed custom editors and renderers should already be
-     * added to the table instance for the matching data types. This can be done
-     * using the functions "table.setDefaultRenderer()" and
-     * "table.setDefaultEditor()".
-     *
-     * The values in the table columns will be examined to determine which
-     * editor should be used for each column. By default, the standard JTable
-     * class will set the default column editors and renders using only the data
-     * in the first row. In this case, the wrong editor can be assigned if the
-     * first row happens to contain a null value (or contains an unexpected
-     * value). In contrast, this function can examine any desired number of rows
-     * to find non-null values, until a chosen sample size is reached.
-     *
-     * By default, this function will read the first 30 starting rows to find
-     * non-null values. After the starting rows are read, this function will
-     * sample up to 70 of the remaining rows ("bulk" rows) in the table at
-     * regularly spaced intervals. The bulk rows will sampled from all the
-     * remaining rows in the table.
-     *
-     * Up to the first 21 non-null values ("maxFoundSamplesToExamine") that are
-     * encountered will determine which editor will be used for a particular
-     * column. The data type that is used will be whichever data type is most
-     * frequently encountered within those values. If no non-null values are
-     * found in the sampled rows, then the "generic editor" (the string editor)
-     * will be used for that column.
-     */
-    private void zSetAllColumnEditorsAndRenderers(JTable table) {
-        // These variables decide how many samples to look at in each column.
-        int maxStartRowsToRead = 30;
-        int maxBulkRowsToRead = 70;
-        int maxFoundSamplesToExamine = 21;
-        // Gather some variables that we will need..
-        TableModel model = table.getModel();
-        int columnCount = model.getColumnCount();
-        int rowCount = model.getRowCount();
-        // Do nothing if the table is empty.
-        if (columnCount < 1 || rowCount < 1) {
-            return;
-        }
-        // Calculate the increment for looping through the bulk rows.
-        int bulkRowIncrement = Math.max(1, (rowCount / maxBulkRowsToRead));
-        // Loop through all the columns.
-        columnLoop:
-        for (int columnIndex = 0; columnIndex < columnCount; ++columnIndex) {
-            TableColumn column = table.getColumnModel().getColumn(columnIndex);
-            ArrayList<Class> nonNullTypes = new ArrayList<Class>();
-            // Loop through all the rows that should be sampled.
-            rowLoop:
-            for (int rowIndex = 0; (rowIndex < rowCount);
-                    rowIndex += ((rowIndex < maxStartRowsToRead) ? 1 : bulkRowIncrement)) {
-                // Get the value in each row.
-                Object value = model.getValueAt(rowIndex, columnIndex);
-                if (value == null) {
-                    continue;
-                }
-                // Save any found non-null types.
-                nonNullTypes.add(value.getClass());
-                // If we have already found "maxFoundSamplesToExamine" types, then use those 
-                // samples to determine the column type.
-                if (nonNullTypes.size() >= maxFoundSamplesToExamine) {
-                    Class mostCommonType = InternalUtilities.getMostCommonElementInList(nonNullTypes);
-                    column.setCellRenderer(table.getDefaultRenderer(mostCommonType));
-                    column.setCellEditor(table.getDefaultEditor(mostCommonType));
-                    continue columnLoop;
-                }
-            } // End: rowLoop
-            // There are no more rows to examine.
-            // If we found any non-null types at all, then use those to choose the column type.
-            if (nonNullTypes.size() > 0) {
-                Class mostCommonType = InternalUtilities.getMostCommonElementInList(nonNullTypes);
-                column.setCellRenderer(table.getDefaultRenderer(mostCommonType));
-                column.setCellEditor(table.getDefaultEditor(mostCommonType));
-            } else {
-                // When no types are found in a column, we will use the generic editor.
-                column.setCellRenderer(table.getDefaultRenderer(Object.class));
-                column.setCellEditor(table.getDefaultEditor(Object.class));
-            }
-        }
-    }
-
-    /**
-     * *
-     * Update the events in the provided List<EventBean>. Set properties to
-     * correct, actual mandatoryness and multiplicity. Set toolcategories,
-     * tools, processes actions and properties to correct, actual names. This
-     * update is based on the base ontology, the vessel ontology and the program
-     * ontology.
-     *
-     * @param events
-     */
-    /* private void updateEvents(List<EventBean> events) {
-        IBaseOntology baseOntology = Utilities.actionsGlobalContext().lookup(IBaseOntology.class);
-        IVesselOntology vesselOntology = Utilities.actionsGlobalContext().lookup(IVesselOntology.class);
-        Map<String, AsConcept> founds = new THashMap<>();
-        for (EventBean event : events) {
-            event.getToolCategory();
-        }
-
-    }*/
 }

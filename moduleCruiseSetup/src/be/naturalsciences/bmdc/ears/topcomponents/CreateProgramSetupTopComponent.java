@@ -5,6 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProjectTableModel;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.infobar.InfoBar;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;

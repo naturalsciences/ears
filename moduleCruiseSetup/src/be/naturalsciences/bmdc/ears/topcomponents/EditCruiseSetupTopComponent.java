@@ -5,6 +5,8 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.SeaAreaTableModel;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ChiefScientistTableModel;
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.IHarbour;
@@ -1048,8 +1050,8 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
         cruiseIdentifierValue.setText(actualCruise.getRealId());
         cruiseNameValue.setEditable(false);
         cruiseNameValue.setText(actualCruise.getCruiseName());
-        inputStartDate.setFormats(StringUtils.ISO_DATETIME_FORMAT);
-        inputEndDate.setFormats(StringUtils.ISO_DATETIME_FORMAT);
+        inputStartDate.setFormats(StringUtils.SDF_ISO_DATETIME);
+        inputEndDate.setFormats(StringUtils.SDF_ISO_DATETIME);
         inputStartDate.setDate(actualCruise.getdStartDate());
         inputEndDate.setDate(actualCruise.getdEndDate());
 

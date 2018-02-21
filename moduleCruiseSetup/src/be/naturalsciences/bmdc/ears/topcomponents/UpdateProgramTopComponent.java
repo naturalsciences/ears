@@ -5,6 +5,8 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.FilterableTableModel;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;

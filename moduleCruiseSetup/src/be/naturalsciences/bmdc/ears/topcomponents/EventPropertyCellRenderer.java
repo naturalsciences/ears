@@ -5,6 +5,8 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.entities.EventBean;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
 import java.awt.Component;
 import javax.swing.JButton;
 import javax.swing.JTable;
@@ -33,11 +35,15 @@ public class EventPropertyCellRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
-        if (isActive()) {
-            setFont(CreateEventTopComponent.DEFAULT_FONT);
-            EventTableModel entityTableModelEvent = (EventTableModel) table.getModel();
-            //  if (entityTableModelEvent.getRowCount() > row) {
-            entityTableModelEvent.getRowCount();
+        setFont(CreateEventTopComponent.DEFAULT_FONT);
+        EventTableModel entityTableModelEvent = (EventTableModel) table.getModel();
+        //  if (entityTableModelEvent.getRowCount() > row) {
+        entityTableModelEvent.getRowCount();
+
+        EventBean event = entityTableModelEvent.getEntityAt(row);
+        return new JButton("" + event.getEventId());
+       // if (isActive()) {
+
             /*EventBean event = null;
             try {
                 event = entityTableModelEvent.getEntityAt(row);
@@ -60,7 +66,7 @@ public class EventPropertyCellRenderer extends DefaultTableCellRenderer {
                     }
                 }
             }*/
-            return new JButton("Edit");
+        //    return new JButton("Active: Edit event" + event.getEventId());
             /*if (propertyAdded) {
                 return new JButton("Edit"); //Mandated properties
             }
@@ -73,8 +79,8 @@ public class EventPropertyCellRenderer extends DefaultTableCellRenderer {
             // }
             //  return null;
 
-        } else {
-            return  new JButton("Edit");
-        }
+   /*    } else {
+            return new JButton("Inactive: Edit event" + event.getEventId());
+        }*/
     }
 }

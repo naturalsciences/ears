@@ -33,7 +33,7 @@ public class DateTimePicker extends JXDatePicker {
 
     public DateTimePicker() {
         super();
-        this.setFormats(StringUtils.ISO_DATETIME_FORMAT);
+        this.setFormats(StringUtils.SDF_ISO_DATETIME);
         getMonthView().setSelectionModel(new SingleDaySelectionModel());
     }
 

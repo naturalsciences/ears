@@ -18,6 +18,7 @@ import javax.swing.table.*;
 public class ButtonColumn extends AbstractCellEditor
         implements TableCellRenderer, TableCellEditor, ActionListener, MouseListener {
 
+    private String buttonText;
     private JTable table;
     private Action action;
     private int mnemonic;
@@ -37,11 +38,12 @@ public class ButtonColumn extends AbstractCellEditor
      * @param table the table containing the button renderer/editor
      * @param action the Action to be invoked when the button is invoked
      * @param column the column to which the button renderer/editor is added
+     * @param buttonText the text applied to the button
      */
-    public ButtonColumn(JTable table, Action action, int column) {
+    public ButtonColumn(JTable table, Action action, int column, String buttonText) {
         this.table = table;
         this.action = action;
-
+        this.buttonText = buttonText;
         renderButton = new JButton();
         editButton = new JButton();
         editButton.setFocusPainted(false);
@@ -92,28 +94,20 @@ public class ButtonColumn extends AbstractCellEditor
     @Override
     public Component getTableCellEditorComponent(
             JTable table, Object value, boolean isSelected, int row, int column) {
-
         if (value == null) {
-          
-
-            editButton.setText("");
-            editButton.setIcon(null);
+            throw new IllegalArgumentException("The provided Object value is null.");
         } else if (value instanceof Icon) {
-
-           
-            editButton.setText("");
             editButton.setIcon((Icon) value);
-
         } else {
-          
-            editButton.setText(value.toString());
+            if (buttonText != null) {
+                editButton.setText(buttonText);
+            } else {
+                editButton.setText(value.toString());
+            }
             editButton.setIcon(null);
         }
 
         this.editorValue = value;
-        table.getColumnModel().getColumn(8).setMaxWidth(60);// finalYS
-        table.getColumnModel().getColumn(8).setMinWidth(60);
-        table.getColumnModel().getColumn(8).setPreferredWidth(60);
         return editButton;
     }
 
@@ -125,6 +119,7 @@ public class ButtonColumn extends AbstractCellEditor
 //
 //  Implement TableCellRenderer interface
 //
+    @Override
     public Component getTableCellRendererComponent(
             JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (isSelected) {
@@ -143,13 +138,15 @@ public class ButtonColumn extends AbstractCellEditor
 
 //		renderButton.setText( (value == null) ? "" : value.toString() );
         if (value == null) {
-            renderButton.setText("");
-            renderButton.setIcon(null);
+            throw new IllegalArgumentException("The provided Object value is null.");
         } else if (value instanceof Icon) {
-            renderButton.setText("");
             renderButton.setIcon((Icon) value);
         } else {
-            renderButton.setText(value.toString());
+            if (buttonText != null) {
+                renderButton.setText(buttonText);
+            } else {
+                renderButton.setText(value.toString());
+            }
             renderButton.setIcon(null);
         }
 
@@ -159,7 +156,7 @@ public class ButtonColumn extends AbstractCellEditor
 //
 //  Implement ActionListener interface
 //
-	/*
+    /*
      *	The button has been pressed. Stop editing and invoke the custom Action
      */
     public void actionPerformed(ActionEvent e) {
@@ -167,7 +164,7 @@ public class ButtonColumn extends AbstractCellEditor
         int row = table.convertRowIndexToModel(table.getEditingRow());
         fireEditingStopped();
 
-		//  Invoke the Action
+        //  Invoke the Action
         ActionEvent event = new ActionEvent(
                 table,
                 ActionEvent.ACTION_PERFORMED,
@@ -178,7 +175,7 @@ public class ButtonColumn extends AbstractCellEditor
 //
 //  Implement MouseListener interface
 //
-	/*
+    /*
      *  When the mouse is pressed the editor is invoked. If you then then drag
      *  the mouse to another cell before releasing it, the editor is still
      *  active. Make sure editing is stopped when the mouse is released.

@@ -1,5 +1,6 @@
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
 import be.naturalsciences.bmdc.ears.entities.EventBean;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

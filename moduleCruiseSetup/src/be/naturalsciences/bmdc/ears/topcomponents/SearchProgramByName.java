@@ -5,6 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.FilterableTableModel;
 import be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent.ProgramTableModel;
 import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;

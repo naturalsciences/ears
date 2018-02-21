@@ -5,6 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
 import be.naturalsciences.bmdc.ears.entities.Actor;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

@@ -5,10 +5,13 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.CruiseTableModel;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.FilterableTableModel;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import static be.naturalsciences.bmdc.ears.entities.CruiseBean.DAY_FORMAT;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
+import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
 import be.naturalsciences.bmdc.ears.rest.RestClientCruise;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
@@ -16,15 +19,11 @@ import be.naturalsciences.bmdc.ontology.EarsException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.ConnectException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.DialogDisplayer;
@@ -111,7 +110,6 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
         o_refreshList = new javax.swing.JButton();
         o_edit = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
@@ -119,7 +117,6 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
         piTextField = new be.naturalsciences.bmdc.ears.topcomponents.SearchTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         o_cruiseJtable = new javax.swing.JTable();
 
@@ -168,7 +165,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(piTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cruiseNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -187,9 +184,6 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
                 .addGap(0, 34, Short.MAX_VALUE))
         );
 
-        jScrollPane3.setOpaque(false);
-        jScrollPane3.setPreferredSize(new java.awt.Dimension(454, 500));
-
         o_cruiseJtable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -201,30 +195,23 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
         o_cruiseJtable.setRowHeight(20);
         jScrollPane2.setViewportView(o_cruiseJtable);
 
-        jScrollPane3.setViewportView(jScrollPane2);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(o_refreshList, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(o_edit))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(o_refreshList, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(o_edit))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addComponent(o_refreshList)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(o_edit)
@@ -274,9 +261,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable o_cruiseJtable;
     private javax.swing.JButton o_edit;
     private javax.swing.JButton o_refreshList;
@@ -297,7 +282,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
          }*/
         //Create a table with a sorter.
         if (currentVesselResult.getCurrent() != null && restClientCruise != null) {
-            model = new CruiseTableModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));
+            model = new CruiseTableModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()), this);
         }
         if (model != null) {
             TableRowSorter<CruiseTableModel> sorter = new TableRowSorter<>(model);
@@ -398,13 +383,9 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
             model.refreshModel(restClientCruise.getCruiseByPlatform(currentVessel.getConcept()));
             o_cruiseJtable.repaint();
         }
+        GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
     }
 
-    /*private void filter(String in_filter) {
-     TableRowSorter<CruiseTableModel> tr = new TableRowSorter<>(model);
-     o_cruiseJtable.setRowSorter(tr);
-     tr.setRowFilter(RowFilter.regexFilter(in_filter));
-     }*/
     @Override
     public void resultChanged(LookupEvent le) {
         le.getSource();
@@ -415,133 +396,8 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
         }
     }
 
-    public class CruiseTableModel extends AbstractTableModel implements FilterableTableModel {
 
-        public final static String NAME = "Cruise name (code)";
-        public final static String START_DATE = "Start date";
-        public final static String END_DATE = "End date";
-        public final static String CHIEF_SCIENTIST = "Chief scientist";
-        private final String[] columnNames = {NAME,
-            START_DATE, END_DATE, CHIEF_SCIENTIST};
-        private List<CruiseBean> data;
-
-        public CruiseTableModel(Collection<CruiseBean> cruises) {
-            data = new ArrayList();
-            addCruiseList(cruises);
-        }
-
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        @Override
-        public int getRowCount() {
-            return data.size();
-        }
-
-        @Override
-        public String getColumnName(int col) {
-            return columnNames[col];
-        }
-
-        @Override
-        public int findColumn(String name) {
-            for (int i = 0; i < columnNames.length; i++) {
-                if (columnNames[i].equals(name)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        public List<Integer> getRowsByQueryAndColumn(String searchBy, String column) {
-            List<Integer> result = new ArrayList<>();
-            for (int i = 0; i < data.size(); i++) {
-                String name = (String) getValueAt(i, findColumn(column));
-                if (name.contains(searchBy)) {
-                    result.add(i);
-                }
-            }
-            return result;
-        }
-
-        @Override
-        public Object getValueAt(int row, int column) {
-            CruiseBean cruise = data.get(row);
-            switch ((getColumnName(column))) {
-                case NAME:
-                    return cruise.getCruiseName();
-                case START_DATE:
-                    return DAY_FORMAT.format(cruise.getdStartDate());
-                case END_DATE:
-                    return DAY_FORMAT.format(cruise.getdEndDate());
-                case CHIEF_SCIENTIST:
-                    return cruise.getNiceChiefScientistString();
-                default:
-                    return null;
-            }
-        }
-
-        /*
-         * JTable uses this method to determine the default renderer/
-         * editor for each cell.  If we didn't implement this method,
-         * then the last column would contain text ("true"/"false"),
-         * rather than a check box.
-         */
-        @Override
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
-        }
-
-        /*
-         * Don't need to implement this method unless your table's
-         * editable.
-         */
-        @Override
-        public boolean isCellEditable(int row, int col) {
-            return false;
-        }
-
-        /*
-         * Don't need to implement this method unless your table's
-         * data can change.
-         */
-        @Override
-        public void setValueAt(Object value, int row, int col) {
-            //dummy method. Nothing will be added to this table anyway
-        }
-
-        public CruiseBean getCruise(int row) {
-            return data.get(row);
-        }
-
-        public void addCruise(CruiseBean cruise) {
-
-            data.add(cruise);
-        }
-
-        public void addCruiseList(Collection<CruiseBean> cruises) {
-            for (CruiseBean cruise : cruises) {
-                addCruise(cruise);
-            }
-        }
-
-        public void removeCruiseFromVisualRepresentation(int row) {
-            data.remove(row);
-        }
-
-        public void clearAllCruises() {
-            data.retainAll(new ArrayList());
-        }
-
-        public void refreshModel(Collection<CruiseBean> cruises) {
-            model.clearAllCruises();
-            model.addCruiseList(cruises);
-        }
-    }
-
-    public static UpdateCruiseTopComponent getInstance() { //ys01
+    public static UpdateCruiseTopComponent getInstance() {
         return instance;
     }
 

@@ -5,7 +5,8 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
-import be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent.CruiseTableModel;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.FilterableTableModel;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.CruiseTableModel;
 import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
@@ -18,7 +19,7 @@ public class SearchCruiseByName extends SearchTextVisitor {
 
     public SearchCruiseByName(SearchTextField field, FilterableTableModel model, JTable table, TableRowSorter<CruiseTableModel> sorter) {
         super(field, model, table, sorter);
-        this.column = UpdateCruiseTopComponent.CruiseTableModel.NAME;
+        this.column = CruiseTableModel.NAME;
     }
 
 }

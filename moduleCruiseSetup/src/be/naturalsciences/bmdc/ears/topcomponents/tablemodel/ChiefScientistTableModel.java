@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package be.naturalsciences.bmdc.ears.topcomponents;
+package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
 import be.naturalsciences.bmdc.ears.entities.CountryBean;
@@ -129,7 +129,7 @@ public class ChiefScientistTableModel extends AbstractTableModel {
         int lastRow = this.getRowCount() - 1;
     }
 
-    void removeRow(int selectedRow) {
+    public void removeRow(int selectedRow) {
         data.remove(selectedRow);
         fireTableDataChanged();
     }
