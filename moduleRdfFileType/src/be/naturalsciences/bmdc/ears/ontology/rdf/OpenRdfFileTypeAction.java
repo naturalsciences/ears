@@ -18,6 +18,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 
@@ -56,7 +57,15 @@ public final class OpenRdfFileTypeAction implements ActionListener {
                 } catch (EarsException ex) {
                     failMsg = "The vessel tree is write-protected and cannot be edited when the url for the EARS web server is empty or invalid.";
                 }
-                if (client != null && !client.authenticate(currentUser.getConcept())) {
+                boolean authenticated = false;
+                try {
+                    if (client != null) {
+                        authenticated = client.authenticate(currentUser.getConcept());
+                    }
+                } catch (ConnectException ex) {
+                    failMsg = "The vessel tree is write-protected and cannot be edited when the EARS web server is unreachable.";
+                }
+                if (!authenticated) {
                     failMsg = "The vessel tree is write-protected. You did not provide the correct credentials in the Settings to edit it.";
                 }
 
