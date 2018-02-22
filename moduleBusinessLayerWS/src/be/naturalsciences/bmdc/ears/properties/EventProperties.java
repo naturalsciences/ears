@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public class EventProperties extends PropertyEditorSupport { //not in use now
 

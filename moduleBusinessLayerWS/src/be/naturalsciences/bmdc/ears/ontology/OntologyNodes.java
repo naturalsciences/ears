@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.semanticweb.owlapi.io.OWLOntologyCreationIOException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -457,18 +458,24 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
             try {
                 client = new RestClientOnt();
             } catch (ConnectException ex) {
-                throw new IllegalStateException("The vessel tree cannot be edited when the EARS web server is unreachable.");
+                throw new EarsException("The vessel tree cannot be edited when the EARS web server is unreachable.");
             } catch (EarsException ex) {
                 throw new IllegalStateException("The vessel tree cannot be edited when the url for the EARS web server is empty or invalid.");
             }
-            if (!client.authenticate(user)) {
+            boolean authenticated;
+            try {
+                authenticated = client.authenticate(user);
+            } catch (ConnectException ex) {
+                throw new EarsException("The vessel tree cannot be edited when the EARS web server is unreachable.");
+            }
+            if (!authenticated) {
                 throw new IllegalStateException("The vessel tree is write-protected. You did not provide the correct credentials in the Settings to edit it.");
             }
         } else if (this.model.getScope().equals(ScopeMap.Scope.PROGRAM.name())) {
             try {
                 client = new RestClientOnt();
             } catch (ConnectException ex) {
-                throw new IllegalStateException("The program tree cannot be edited when the EARS web server is unreachable.");
+                throw new EarsException("The program tree cannot be edited when the EARS web server is unreachable.");
             } catch (EarsException ex) {
                 throw new IllegalStateException("The vessel tree cannot be edited when the url for the EARS web server is empty or invalid.");
             }
@@ -523,7 +530,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                         properties.addAll(gev.getPropertyCollection());
                     }
                     for (Tool nestedTool : tool.getHostedCollection()) {
-                        nestedTool.getToolCategoryCollection().clear(); // remove any previous categories the nested tool belongs to. Otherwise the category is referenced to but the category entity itself does not exist.
+                        nestedTool.getToolCategoryCollection().retainAll(toolCategories); // remove any previous categories the nested tool belongs to, unless this category is included in the current ontology itself. Otherwise the category is referenced to but the category entity itself of the previous ontology the tool belonged to does not exist.
                         for (SpecificEventDefinition sev : nestedTool.getSpecificEventDefinitionCollection()) {
                             specificEventDefinitions.add(sev);
                             processes.add(sev.getProcess());

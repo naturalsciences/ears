@@ -9,7 +9,7 @@ import java.util.Objects;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public class Actor implements IActor, Comparable<Actor> {
 

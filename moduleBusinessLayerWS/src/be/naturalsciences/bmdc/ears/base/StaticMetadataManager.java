@@ -290,6 +290,14 @@ public class StaticMetadataManager<C extends EARSConcept> {
         return concepts;
     }
 
+    /***
+     * Retrieve a list of Class cls objects by the given SPARQL query.
+     * @param <C>
+     * @param sparqlQuery
+     * @param cls
+     * @return
+     * @throws IOException 
+     */
     private static <C extends EARSConcept> List<C> readConceptsFromSparql(String sparqlQuery, Class<C> cls) throws IOException {
 
         sparqlQuery = sparqlQuery.replace("\n", " ");

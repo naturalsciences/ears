@@ -61,7 +61,7 @@ public class RestClientOntTest {
     @Test
     public void testGetVesselOntology() throws ConnectException, EarsException, IOException {
         System.out.println("getVesselOntology");
-        RestClientOnt instance = new RestClientOnt(baseUrl);
+        RestClientOnt instance = new RestClientOnt();
         String result = instance.getVesselOntology();
         assertTrue(result.length() > 20);
 
@@ -76,7 +76,7 @@ public class RestClientOntTest {
         Path path = null;
         String username = "";
         String password = "";
-        RestClientOnt instance = new RestClientOnt(baseUrl);
+        RestClientOnt instance = new RestClientOnt();
         IResponseMessage expResult = null;
         IResponseMessage result = instance.uploadVesselOntology(path, username, password);
         assertEquals(expResult, result);
@@ -93,7 +93,7 @@ public class RestClientOntTest {
         File file = null;
         String username = "";
         String password = "";
-        RestClientOnt instance = new RestClientOnt(baseUrl);
+        RestClientOnt instance = new RestClientOnt();
         IResponseMessage expResult = null;
         IResponseMessage result = instance.uploadVesselOntology(file, username, password);
         assertEquals(expResult, result);
@@ -109,7 +109,7 @@ public class RestClientOntTest {
     public void testAuthenticate() throws ConnectException, EarsException {
         System.out.println("authenticate");
         User user = null;
-        RestClientOnt instance = new RestClientOnt(baseUrl);
+        RestClientOnt instance = new RestClientOnt();
         boolean expResult = false;
         boolean result = instance.authenticate(user);
         assertEquals(expResult, result);
@@ -123,7 +123,7 @@ public class RestClientOntTest {
     @Test
     public void testGetVesselOntologyDate() throws ConnectException, EarsException {
         System.out.println("getVesselOntologyDate");
-        RestClientOnt instance = new RestClientOnt(baseUrl);
+        RestClientOnt instance = new RestClientOnt();
         Date expResult = null;
         Date result = instance.getVesselOntologyDate();
         assertNotEquals(null, result);

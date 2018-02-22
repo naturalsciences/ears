@@ -10,7 +10,7 @@ import org.junit.Test;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public class TestPostCruiseByParams {
 @Ignore

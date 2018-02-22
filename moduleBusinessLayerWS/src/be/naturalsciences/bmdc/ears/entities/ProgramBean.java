@@ -7,7 +7,7 @@ package be.naturalsciences.bmdc.ears.entities;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 import java.io.Serializable;
 import java.util.ArrayList;

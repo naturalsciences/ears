@@ -55,24 +55,6 @@ public abstract class RestClient implements Serializable {
 
     protected boolean isHttps = false;
 
-    public RestClient(URL url) throws ConnectException, EarsException {
-        if (url == null) {
-            online = false;
-            throw new EarsException("The base url for the EARS web services is null. The application won't work correctly.");
-        }
-        this.baseURL = url;
-
-        if (baseURL.getProtocol().equals("https")) {
-            isHttps = true;
-        } else {
-            isHttps = false;
-        }
-        if (!WebserviceUtils.testWS(url, "ears2/getCruise")) {
-            online = false;
-            throw new ConnectException();
-        }
-    }
-
     public RestClient() throws ConnectException, EarsException {
         if (getBaseURL() == null) {
             online = false;
@@ -85,7 +67,7 @@ public abstract class RestClient implements Serializable {
         } else {
             isHttps = false;
         }
-        if (!WebserviceUtils.testWS("ears2/getCruise")) {
+        if (!WebserviceUtils.testWS(null)) {
             online = false;
             throw new ConnectException();
         }
@@ -146,9 +128,9 @@ public abstract class RestClient implements Serializable {
                     String responseAsString = response.readEntity(String.class);
 
                     if (responseAsString == null || responseAsString.isEmpty()) {
-                        responseMessage = new ExceptionMessage(new Date().toString(), "An exception occured while posting this entity: likely a DataIntegrityViolationException");
+                        responseMessage = new ExceptionMessage(new Date().toString(), Integer.toString(response.getStatus()), "An exception occured while posting this entity: likely a DataIntegrityViolationException");
                     } else {
-                        responseMessage = new ExceptionMessage(new Date().toString(), responseAsString);
+                        responseMessage = new ExceptionMessage(new Date().toString(), Integer.toString(response.getStatus()), responseAsString);
                     }
                 }
             }

@@ -71,7 +71,7 @@ public interface ToEventConvertible {
             if (currentProgram != null) {
                 boolean overrideAnonymous = Configs.getOverrideEventsAsAnonymous();
                 if (currentActor != null || overrideAnonymous) {
-                    Set<ITool> tools = new LinkedHashSet<>();
+                    LinkedHashSet<ITool> tools = new LinkedHashSet<>();
                     tools.add(cng.getTool());
                     if (cng.getHostedTool() != null) {
                         tools.add(cng.getHostedTool());

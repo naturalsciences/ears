@@ -12,7 +12,7 @@ import javax.swing.JFormattedTextField.AbstractFormatter;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public class DateLabelFormatter extends AbstractFormatter {
 

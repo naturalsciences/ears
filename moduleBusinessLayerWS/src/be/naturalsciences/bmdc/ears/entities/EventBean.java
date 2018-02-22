@@ -18,8 +18,10 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -125,6 +127,11 @@ public class EventBean implements Serializable, EARSConcept {
 
     private String actor;
 
+    /**
+     * *
+     * An ordered set of tools with the parent tools first, followed by the
+     * nested tools.
+     */
     private Set<String> toolSet; //tool
 
     private Set<EventBean> relatedEvents;
@@ -239,7 +246,7 @@ public class EventBean implements Serializable, EARSConcept {
      * attachProperty()
      * @param actor Optional
      */
-    public EventBean(ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, Set<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor) throws IllegalArgumentException {
+    public EventBean(ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, LinkedHashSet<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor) throws IllegalArgumentException {
         super();
         if (toolCategory == null) {
             throw new IllegalArgumentException("Null tool category provided");
@@ -266,7 +273,7 @@ public class EventBean implements Serializable, EARSConcept {
         this.actor = actor;
 
         // this.toolUris = new HashMap();
-        this.toolSet = new LinkedHashSet();
+        this.toolSet = new LinkedHashSet(); //cannot be larger than 2!
 
         for (ITool tool : tools) {
             this.addTool(tool);
@@ -298,7 +305,7 @@ public class EventBean implements Serializable, EARSConcept {
         counter++;
     }
 
-        /**
+    /**
      * *
      * Constructor for an event. Do not use when creating event from
      * webservices, only for event creation module. Implementation based on URI.
@@ -314,7 +321,7 @@ public class EventBean implements Serializable, EARSConcept {
      * attachProperty()
      * @param actor Optional
      */
-    public EventBean(ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, Set<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor, OffsetDateTime timeStamp) throws IllegalArgumentException {
+    public EventBean(ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, LinkedHashSet<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor, OffsetDateTime timeStamp) throws IllegalArgumentException {
         this(program, cruise, toolCategory, tools, process, action, properties, actor);
         this.timeStampDt = timeStamp;
         this.eventId = buildEventId();
@@ -342,30 +349,62 @@ public class EventBean implements Serializable, EARSConcept {
         this.id = id;
     }
 
+    /**
+     * *
+     * Return the string representation of the timeStamp. This String datetime
+     * must always be formatted in UTC as database stores it in UTC.
+     *
+     * @return
+     */
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timeStamp")
     public String getTimeStamp() {
         if (timeStampDt != null) {
-            return timeStampDt.format(StringUtils.FULL_ISO_DATETIME);
+            LocalDateTime toLocalDateTime = timeStampDt.atZoneSameInstant(ZoneId.of("Z")).toLocalDateTime();
+            return toLocalDateTime.format(StringUtils.DTF_ISO_DATETIME);
             // return timeStampDt.toInstant().toString();
         } else {
             return null;
         }
     }
 
+    /**
+     * *
+     * Set the string representation of the timeStamp. The given datetime String
+     * must be in UTC.
+     *
+     * @return
+     */
     public void setTimeStamp(String timeStamp) {
         if (timeStamp != null) {
-
+            if (!timeStamp.endsWith("Z")) {
+                timeStamp = timeStamp + "Z";
+            }
             //this.timeStampDt = OffsetDateTime.ofInstant(Instant.parse(timeStamp), ZoneId.of("UTC"));
-            this.timeStampDt = OffsetDateTime.parse(timeStamp);
+            this.timeStampDt = OffsetDateTime.parse(timeStamp).withOffsetSameInstant(ZoneOffset.ofHours(0));
+            int a = 5;
         } else {
             this.timeStampDt = null;
         }
     }
 
+    /**
+     * *
+     * Return the actual datetime of the event. This OffsetDateTime datetime
+     * always has an offset showing the difference to UTC.
+     *
+     * @return
+     */
     public OffsetDateTime getTimeStampDt() {
         return timeStampDt;
     }
 
+    /**
+     * *
+     * Set the actual datetime of the event. The given OffsetDateTime datetime
+     * always has an offset showing the difference to UTC.
+     *
+     * @return
+     */
     public void setTimeStampDt(OffsetDateTime timeStampDt) {
         this.timeStampDt = timeStampDt;
     }
@@ -432,15 +471,23 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     public Map<String, String> getToolUris() {
-        return deserializeTools(toolSet);
+        return deserializeTools(getToolSet());
     }
 
     public String getTools() {
-        return StringUtils.concatString(toolSet, TOOL_DELIM);//serializeTools(toolUris);
+        return StringUtils.concatString(getToolSet(), TOOL_DELIM);//serializeTools(toolUris);
     }
 
-    public static String serializeTools(Map<String, String> tools) {
-        Set<String> result = new THashSet<>();
+    /**
+     * *
+     * Turns a Map of with keys String urls and String names into a complete
+     * String. The order provided by the LinkedHashSet will be kept.
+     *
+     * @param tools
+     * @return
+     */
+    public static String serializeTools(LinkedHashMap<String, String> tools) {
+        Set<String> result = new LinkedHashSet<>();
         for (Map.Entry<String, String> entry : tools.entrySet()) {
             SingletonMap toolMap = new SingletonMap(entry);
             result.add(serializeConcept(toolMap));
@@ -467,7 +514,9 @@ public class EventBean implements Serializable, EARSConcept {
     /**
      * *
      * Convert a collection of json tool representations to a Map that maps the
-     * tool uri to the tool name
+     * tool uri to the tool name. The Collection must retain insertion order and
+     * be of type List or LinkedHashSet! The output keeps the order provided in
+     * the Collection.
      *
      * @param toolJson
      * @return
@@ -507,7 +556,11 @@ public class EventBean implements Serializable, EARSConcept {
         return true;
     }*/
     public void addTool(ITool tool) {
-        this.toolSet.add(serializeTool(AsConcept.getConceptUriString(tool), AsConcept.getConceptName(tool)));
+        if (this.getToolSet().size() < 2) {
+            this.getToolSet().add(serializeTool(AsConcept.getConceptUriString(tool), AsConcept.getConceptName(tool)));
+        } else {
+            throw new IllegalStateException("The toolSet may not contain more than 2 elements.");
+        }
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "subjectName")
@@ -928,4 +981,5 @@ public class EventBean implements Serializable, EARSConcept {
         sb.append(this.getTimeStamp());
         return sb.toString();
     }
+
 }

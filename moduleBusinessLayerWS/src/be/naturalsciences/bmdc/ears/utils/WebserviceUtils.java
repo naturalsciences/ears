@@ -16,15 +16,17 @@ import org.openide.util.Utilities;
  * @author BMDC
  */
 public class WebserviceUtils {
-    
+
     public static final int HTTP_REQUEST_TIMEOUT = 6000;
     public static final int HTTP_READ_TIMEOUT = 6000;
 
-    public static boolean testWS(URL baseUrl, String path) {
-        try {
-            baseUrl = new URL(baseUrl, path);
-        } catch (MalformedURLException ex) {
-            return false;
+    private static boolean testWS(URL baseUrl, String path) {
+        if (path != null) {
+            try {
+                baseUrl = new URL(baseUrl, path);
+            } catch (MalformedURLException ex) {
+                return false;
+            }
         }
         if (baseUrl != null && baseUrl.getProtocol() != null && baseUrl.getHost() != null && baseUrl.getPath() != null) {
             try {
@@ -44,6 +46,15 @@ public class WebserviceUtils {
         }
     }
 
+    /**
+     * *
+     * Test the given url given an url part, the path. The path is appended to
+     * the domain, which is provided via an application setting. If the path is null only the domain will be
+     * tested.
+     *
+     * @param path
+     * @return
+     */
     public static boolean testWS(String path) {
         CurrentURL baseUrl = Utilities.actionsGlobalContext().lookup(CurrentURL.class);
         if (baseUrl != null) {

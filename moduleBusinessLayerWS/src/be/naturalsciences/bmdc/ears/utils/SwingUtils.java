@@ -5,10 +5,15 @@
  */
 package be.naturalsciences.bmdc.ears.utils;
 
+import java.awt.Component;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
@@ -82,6 +87,32 @@ public class SwingUtils {
     public static void addToComboBox(JComboBox box, Object o) {
         if (!modelContains(box.getModel(), o)) {
             box.addItem(o);
+        }
+    }
+
+    /* public static void createDialog(JDialog dialog, Component parent) {
+        JOptionPane pane = new JOptionPane();
+        pane.add(dialog);
+        JDialog dialog = pane.createDialog(parent, title);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+    }*/
+    public static int createYNDialogAndGetResponse(Component parentComponent, String message, String title) {
+        JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        JDialog dialog = pane.createDialog(parentComponent, title);
+
+        /*Double cx = closeToThisComponent.getLocation().getX() - parentComponent.getLocation().getX();
+        Double cy = closeToThisComponent.getLocation().getY() - parentComponent.getLocation().getY();
+        dialog.setLocation(cx.intValue(), cy.intValue());*/
+        Point location = MouseInfo.getPointerInfo().getLocation();
+        dialog.setLocation(location);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+        if (pane.getValue() != null) {
+            return ((Integer) pane.getValue());
+        } else {
+            return JOptionPane.CANCEL_OPTION;
         }
     }
 }

@@ -95,111 +95,103 @@ public class RestClientOntology extends RestClient {
 
         return seaAreas;
     }*/
-    public Collection<HarbourBean> getAllHarbors() {
+    public Collection<HarbourBean> getAllHarbors() throws ConnectException {
 
         // Client Using RESTEasy API
         Collection<HarbourBean> harbors = null;
-        try {
+   
             //ResteasyClient client = new ResteasyClientBuilder().build();
             //ResteasyWebTarget target = client.target(getBaseURL().resolve("getHarbors"));
             Response response = getHarborsTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             // Read output in string format
             // System.out.println(response.readEntity(new GenericType<String>(){}) );
             harbors = (Collection<HarbourBean>) response.readEntity(new GenericType<Collection<HarbourBean>>() {
             });
             response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+      
 
         return harbors;
     }
 
-    public Collection<CollateCentreBean> getAllCollateCentres() {
+    public Collection<CollateCentreBean> getAllCollateCentres() throws ConnectException {
 
         // Client Using RESTEasy API
         Collection<CollateCentreBean> collateCentres = null;
-        try {
+       
             //ResteasyClient client = new ResteasyClientBuilder().build();
             //ResteasyWebTarget target = client.target(getBaseURL().resolve("getCollateCentres"));
             Response response = getCollateCentresTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             // Read output in string format
             collateCentres = (Collection<CollateCentreBean>) response.readEntity(new GenericType<Collection<CollateCentreBean>>() {
             });
             response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+       
 
         return collateCentres;
     }
 
-    public Collection<OrganisationBean> getAllOrganizations() {
+    public Collection<OrganisationBean> getAllOrganizations() throws ConnectException {
 
         // Client Using RESTEasy API
         Collection<OrganisationBean> organizations = null;
-        try {
+       
             //ResteasyClient client = new ResteasyClientBuilder().build();
             //ResteasyWebTarget target = client.target(getBaseURL().resolve("getChiefOrganisations"));
             Response response = getChiefOrganisationsTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             // Read output in string format
             organizations = (Collection<OrganisationBean>) response.readEntity(new GenericType<Collection<OrganisationBean>>() {
             });
             response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+    
 
         return organizations;
     }
 
-    public Collection<PlatformClassBean> getAllPlatforms() {
+    public Collection<PlatformClassBean> getAllPlatforms() throws ConnectException {
 
         // Client Using RESTEasy API
         Collection<PlatformClassBean> platforms = null;
-        try {
+        
             // ResteasyClient client = new ResteasyClientBuilder().build();
             //ResteasyWebTarget target = client.target(getBaseURL().resolve("getPlatforms"));;
             Response response = getPlatformsTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             // Read output in string format
             platforms = (Collection<PlatformClassBean>) response.readEntity(new GenericType<Collection<PlatformClassBean>>() {
             });
             response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+       
 
         return platforms;
     }
 
-    public Collection<ToolBean> getAllTools() {
+    public Collection<ToolBean> getAllTools() throws ConnectException {
 
         // Client Using RESTEasy API
         Collection<ToolBean> tools = null;
-        try {
+       
             // ResteasyClient client = new ResteasyClientBuilder().build();
             // ResteasyWebTarget target = client.target(getBaseURL().resolve("getTools"));
             Response response = getToolsTarget.request(MediaType.APPLICATION_XML).get();
 
             //Check Status
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             // Read output in string format
             //System.out.println(response.readEntity(new GenericType<String>(){}) );
@@ -232,32 +224,28 @@ public class RestClientOntology extends RestClient {
 
             // ---------------------------------
             response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+       
 
         return tools;
     }
 
-    public Collection<ActionBean> getAllActions() {
+    public Collection<ActionBean> getAllActions() throws ConnectException {
 
         // Client Using RESTEasy API
         Collection<ActionBean> actions = null;
-        try {
+       
             //ResteasyClient client = new ResteasyClientBuilder().build();
             // ResteasyWebTarget target = client.target(getBaseURL().resolve("getActions"));
             Response response = getActionsTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             // Read output in string format
             actions = (Collection<ActionBean>) response.readEntity(new GenericType<Collection<ActionBean>>() {
             });
             response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+      
 
         return actions;
 
@@ -273,49 +261,44 @@ public class RestClientOntology extends RestClient {
          */
     }
 
-    public Collection<PropertyBean> getPropertiesByAction(String action) {
+    public Collection<PropertyBean> getPropertiesByAction(String action) throws ConnectException {
 
         // Event Using RESTEasy API
         Collection<PropertyBean> properties = null;
-        try {
+        
             // ResteasyClient client = new ResteasyClientBuilder().build();
             // ResteasyWebTarget target = client.target(getBaseURL().resolve("getProperty"));
 
             Response response = getPropertyTarget.queryParam("action", action).request().get();
             // Check Status
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             properties = response.readEntity(new GenericType<Collection<PropertyBean>>() {
             });
             // System.out.println(event);
             response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+     
         return properties;
     }
 
-    public Collection<CategoryBean> getAllCategories() {
+    public Collection<CategoryBean> getAllCategories() throws ConnectException {
 
         // Client Using RESTEasy API
         Collection<CategoryBean> categories = null;
-        try {
+      
             //    ResteasyClient client = new ResteasyClientBuilder().build();
             //    ResteasyWebTarget target = client.target(getBaseURL().resolve("getCategoryList"));
             Response response = getCategoryListTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             // Read output in string format
             categories = (Collection<CategoryBean>) response.readEntity(new GenericType<Collection<CategoryBean>>() {
             });
             response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+    
 
         return categories;
 

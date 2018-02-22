@@ -18,6 +18,11 @@ public class ExceptionMessage implements Serializable, IResponseMessage {
 
     private String timestamp;
     private int status;
+    /**
+     * *
+     * A placeholder for a generic error code. E.g. http error codes, Oracle SQL
+     * error codes,...
+     */
     private String error;
     private String exception;
     private String message;
@@ -48,9 +53,23 @@ public class ExceptionMessage implements Serializable, IResponseMessage {
      */
     public ExceptionMessage(String timeStamp, Throwable exception) {
         this.timestamp = timeStamp;
-        this.message = message + "(" + exception.getMessage() + ")";
+        this.message = exception.getMessage();
         this.exception = exception.toString();
         this.error = "No http error code applicable";
+    }
+
+    public ExceptionMessage(String timeStamp, String errorCode, String message) {
+        this.timestamp = timeStamp;
+        this.message = message;
+        this.exception = exception.toString();
+        this.error = errorCode;
+    }
+
+    public ExceptionMessage(String timeStamp, String errorCode, Throwable exception) {
+        this.timestamp = timeStamp;
+        this.message = exception.getMessage();
+        this.exception = exception.toString();
+        this.error = errorCode;
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")

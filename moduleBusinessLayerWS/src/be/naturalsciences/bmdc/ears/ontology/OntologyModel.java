@@ -274,8 +274,8 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         String dateModified = staticStuff.get(IOntologyModel.DATEMODIFIED);
         String dateVersionInfo = staticStuff.get(IOntologyModel.VERSIONINFO);
         Map<SimpleDateFormat, String> dateMap = new HashMap<>();
-        dateMap.put(StringUtils.SIMPLE_DATE_FORMAT, dateVersionInfo);
-        dateMap.put(StringUtils.FULL_ISO_DATETIME_FORMAT, dateModified);
+        dateMap.put(StringUtils.SDF_SIMPLE_DATE, dateVersionInfo);
+        dateMap.put(StringUtils.SDF_FULL_ISO_DATETIME, dateModified);
         return StringUtils.returnMostSpecificDate(dateMap);
     }
 

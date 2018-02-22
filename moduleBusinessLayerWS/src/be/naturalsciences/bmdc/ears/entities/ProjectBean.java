@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 @XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "projects")
 public class ProjectBean implements Serializable, IProject, Comparable<ProjectBean> {

@@ -184,14 +184,18 @@ public class SpecificEventDefinition extends EventDefinition implements ISpecifi
     }
 
     public boolean equals(EventBean event) {
-
         if (event == null || event.getToolUris() == null) {
             return false;
         }
         List<String> toolUris = new ArrayList(event.getToolUris().keySet());
+        String toolUri = null;
+        if (toolUris.size() == 1) {
+            toolUri = toolUris.get(0);
+        } else if (toolUris.size() == 2) { 
+            toolUri = toolUris.get(1);
+        }
 
-        String toolUri = toolUris.get(0);
-        return this.getToolRef().getUri().toString().equals(toolUri)
+        return (this.getToolRef().getUri().toString().equals(toolUri))
                 && this.getProcess().getUri().toString().equals(event.getProcessUri())
                 && this.getAction().getUri().toString().equals(event.getActionUri());
     }

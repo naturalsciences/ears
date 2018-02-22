@@ -12,7 +12,7 @@ import java.util.Objects;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public class VesselBean implements IVessel, Comparable<VesselBean> {
 

@@ -11,6 +11,7 @@ import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -70,48 +71,54 @@ public class RestClientEvent extends RestClient {
      *
      * @return
      */
-    public Collection<EventBean> getAllEvents() {
+    public Collection<EventBean> getAllEvents() throws ConnectException {
 
         Collection<EventBean> events = new ArrayList();
         if (online) {
-            ResteasyWebTarget target = null;
             Response response;
             try {
                 response = getTarget.request(MediaType.APPLICATION_XML).get();
                 if (response.getStatus() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
                 }
                 events = (Collection<EventBean>) response.readEntity(new GenericType<Collection<EventBean>>() {
                 });
                 response.close();
-            } catch (Exception e) {
-                e.getCause().getStackTrace();
-                response = target.request(MediaType.APPLICATION_XML).get();
+            } catch (ConnectException e) {
+                throw e;
+            } catch (ProcessingException e) {
+                response = getTarget.request(MediaType.APPLICATION_XML).get();
                 IResponseMessage responseMessage;
                 try {
                     responseMessage = response.readEntity(ExceptionMessage.class);
                 } catch (ProcessingException e2) {
                     responseMessage = new ExceptionMessage(new Date().toString(), e2);
                 }
-                printResponse(target, response, this.getClass(), responseMessage);
+                printResponse(getTarget, response, this.getClass(), responseMessage);
             }
         }
         return events;
     }
 
-    public EventBean getEvent(String eventId) {
+    public EventBean getEvent(String eventId) throws ConnectException {
         EventBean event = null;
+        Response response = null;
         if (online) {
             try {
-                Response response = getTarget.queryParam("id", eventId).request().get();
+                response = getTarget.queryParam("id", eventId).request().get();
                 if (response.getStatus() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
                 }
                 event = response.readEntity(EventBean.class);
 
                 response.close();
+            } catch (ConnectException e) {
+                throw e;
             } catch (ProcessingException e) {
-                Response response = getTarget.request(MediaType.APPLICATION_XML).get();
+                if (response != null && response.getLength() == -1) { //empty content because web service is not propertly set up
+                    return null;
+                }
+                response = getTarget.request(MediaType.APPLICATION_XML).get();
                 IResponseMessage responseMessage = null;
                 try {
                     responseMessage = response.readEntity(ExceptionMessage.class);
@@ -119,13 +126,13 @@ public class RestClientEvent extends RestClient {
                     responseMessage = new ExceptionMessage(new Date().toString(), e2);
                 }
                 printResponse(getTarget, response, this.getClass(), responseMessage);
-
+                response.close();
             }
         }
         return event;
     }
 
-    public EventBean getLatestEventOf(List<String> eventIds) {
+    public EventBean getLatestEventOf(List<String> eventIds) throws ConnectException {
         EventBean latest = null;
         if (online) {
             for (String eid : eventIds) {
@@ -138,7 +145,7 @@ public class RestClientEvent extends RestClient {
         return latest;
     }
 
-    public EventBean getEarliestEventOf(List<String> eventIds) {
+    public EventBean getEarliestEventOf(List<String> eventIds) throws ConnectException {
         EventBean latest = null;
         if (online) {
             for (String eid : eventIds) {
@@ -151,12 +158,6 @@ public class RestClientEvent extends RestClient {
         return latest;
     }
 
-    // Not implemented in ears2 WS - Why?
-    public Collection<EventBean> getEventByProgram() {
-
-        return null;
-    }
-
     /**
      * *
      * A web method to retrieve the events of one cruise. Is not implemented at
@@ -166,7 +167,7 @@ public class RestClientEvent extends RestClient {
      * @param cruiseId
      * @return
      */
-    public Collection<EventBean> getEventByCruise(CruiseBean cruise) {
+    public Collection<EventBean> getEventByCruise(CruiseBean cruise) throws ConnectException {
 
         OffsetDateTime startDate = OffsetDateTime.ofInstant(cruise.getdStartDate().toInstant(), ZoneId.of("UTC"));
         OffsetDateTime endDate = OffsetDateTime.ofInstant(cruise.getdEndDate().toInstant(), ZoneId.of("UTC"));
@@ -174,26 +175,28 @@ public class RestClientEvent extends RestClient {
         return getEventByDates(startDate, endDate);
     }
 
-    public EventBean getEventByDate(String date) {
+    public EventBean getEventByDate(String date) throws EarsException, ConnectException {
         EventBean event = null;
         if (online) {
+
+            //ResteasyWebTarget target = client.target(getBaseURL().resolve("getEvent"));
+            //prepare Date time for parameter
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date dateParsed;
             try {
-                //ResteasyWebTarget target = client.target(getBaseURL().resolve("getEvent"));
-                //prepare Date time for parameter
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                Date dateParsed = sdf.parse(date);
-                Response response = getTarget.queryParam("date", sdf.format(dateParsed)).request().get();
-                // Check Status
-                if (response.getStatus() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : "
-                            + response.getStatus());
-                }
-                event = response.readEntity(EventBean.class);
-                //System.out.println(event);
-                response.close();
-            } catch (Exception e) {
-                System.out.println("Error : " + e.getMessage());
+                dateParsed = sdf.parse(date);
+            } catch (ParseException ex) {
+                throw new EarsException("Can't parse date.", ex);
             }
+            Response response = getTarget.queryParam("date", sdf.format(dateParsed)).request().get();
+            // Check Status
+            if (response.getStatus() != 200) {
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            }
+            event = response.readEntity(EventBean.class);
+            //System.out.println(event);
+            response.close();
+
         }
         return event;
     }
@@ -206,7 +209,7 @@ public class RestClientEvent extends RestClient {
      * @param toDate
      * @return
      */
-    public Collection<EventBean> getEventByDates(OffsetDateTime fromDate, OffsetDateTime toDate) {
+    public Collection<EventBean> getEventByDates(OffsetDateTime fromDate, OffsetDateTime toDate) throws ConnectException {
         Collection< EventBean> r = new ArrayList();
         if (online) {
             Collection< EventBean> events = getAllEvents();
@@ -224,8 +227,14 @@ public class RestClientEvent extends RestClient {
     }
 
     public IResponseMessage postEvent(EventBean event) {
+        EventBean testEvent;
+        try {
+            testEvent = getEvent(event.getEventId());
+        } catch (ConnectException ex) {
+            return new ExceptionMessage(new Date().toString(), "Could not create this event because the web service is not available.");
+        }
         if (online) {
-            if (getEvent(event.getEventId()) == null) { //if this event has not been created before!
+            if (testEvent == null) { //if this event has not been created before!
                 ResteasyWebTarget target = postTarget.queryParam("id", event.getEventId())
                         .queryParam("date", event.getTimeStamp())
                         .queryParam("actor", event.getActor())

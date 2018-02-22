@@ -10,7 +10,7 @@ import org.junit.runners.Suite;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 
 

@@ -85,22 +85,28 @@ public class RestClientCruise extends RestClient {
         }*/
     }
 
-    public Collection<CruiseBean> getAllCruises() {
+    public Collection<CruiseBean> getAllCruises() throws ConnectException {
         return getCruises(getTarget);
     }
 
-    private CruiseBean getCruise(ResteasyWebTarget target) {
+    private CruiseBean getCruise(ResteasyWebTarget target) throws ConnectException {
         CruiseBean cruise = null;
+        Response response = null;
         if (online) {
             try {
-                Response response = target.request().get();
+                response = target.request().get();
                 if (response.getStatus() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
                 }
                 cruise = response.readEntity(CruiseBean.class);
                 response.close();
+            } catch (ConnectException e) {
+                throw e;
             } catch (ProcessingException e) {
-                Response response = target.request(MediaType.APPLICATION_XML).get();
+                if (response != null && response.getLength() == -1) { //empty content because web service is not propertly set up
+                    return null;
+                }
+                response = target.request(MediaType.APPLICATION_XML).get();
                 IResponseMessage responseMessage = null;
                 try {
                     responseMessage = response.readEntity(ExceptionMessage.class);
@@ -108,25 +114,25 @@ public class RestClientCruise extends RestClient {
                     responseMessage = new ExceptionMessage(new Date().toString(), e2);
                 }
                 printResponse(target, response, this.getClass(), responseMessage);
-            } catch (RuntimeException e) {
-                Messaging.report("There was a problem connecting to the web services" + e.getMessage(), e, this.getClass(), true);
             }
         }
         return cruise;
     }
 
-    private Collection<CruiseBean> getCruises(ResteasyWebTarget target) {
+    private Collection<CruiseBean> getCruises(ResteasyWebTarget target) throws ConnectException {
         Collection<CruiseBean> cruises = new ArrayList();
 
         if (online) {
             try {
                 Response response = target.request().get();
                 if (response.getStatus() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
                 }
                 cruises = (Collection<CruiseBean>) response.readEntity(new GenericType<Collection<CruiseBean>>() {
                 });
                 response.close();
+            } catch (ConnectException e) {
+                throw e;
             } catch (ProcessingException e) {
                 try {
                     Response response = target.request().get();
@@ -141,14 +147,13 @@ public class RestClientCruise extends RestClient {
                 } catch (RuntimeException e2) {
                     Messaging.report("There was a problem connecting to the web services" + e.getMessage(), e, this.getClass(), true);
                 }
-            } catch (RuntimeException e) {
-                Messaging.report("There was a problem connecting to the web services" + e.getMessage(), e, this.getClass(), true);
+
             }
         }
         return cruises;
     }
 
-    public CruiseBean getCruise(String cruiseId, String platformCode) {
+    public CruiseBean getCruise(String cruiseId, String platformCode) throws ConnectException {
         ResteasyWebTarget target = getTarget.queryParam("id", cruiseId);
         target = target.queryParam("platformCode", platformCode);
         CruiseBean cruise = getCruise(target);
@@ -159,12 +164,12 @@ public class RestClientCruise extends RestClient {
         }
     }
 
-    public CruiseBean getCruise(String cruiseId) {
+    public CruiseBean getCruise(String cruiseId) throws ConnectException {
         ResteasyWebTarget target = getTarget.queryParam("id", cruiseId);
         return getCruise(target);
     }
 
-    public Collection<CruiseBean> getCruiseByPlatformCode(String platformCode) {
+    public Collection<CruiseBean> getCruiseByPlatformCode(String platformCode) throws ConnectException {
         ResteasyWebTarget target = getTarget.queryParam("platformCode", platformCode);
         List<CruiseBean> cruises = new ArrayList(getCruises(target));
         for (int i = 0; i < cruises.size(); i++) {
@@ -175,7 +180,7 @@ public class RestClientCruise extends RestClient {
         return cruises;
     }
 
-    public Collection<CruiseBean> getCruiseByPlatform(VesselBean vessel) {
+    public Collection<CruiseBean> getCruiseByPlatform(VesselBean vessel) throws ConnectException {
         if (vessel != null) {
             return getCruiseByPlatformCode(vessel.getCode());
         } else {
@@ -283,16 +288,13 @@ public class RestClientCruise extends RestClient {
     public IResponseMessage removeCruise(String realId) {
         if (online) {
             ResteasyClient client = new ResteasyClientBuilder().build();
-            ResteasyWebTarget target;//= removeTarget;//client.target(getBaseURL().resolve("removeCruise"));
-            Response response = removeTarget.queryParam("id", realId)
-                    //.queryParam("SeaAreas", pCruise.getSeaAreas().toString())
-                    .request().get();
-
+            ResteasyWebTarget target = removeTarget.queryParam("id", realId);
+            //Response response = removeTarget.queryParam("id", realId).request().get();
             // Read output in string format
-            MessageBean res = new MessageBean(realId, response.getStatus(), "Cruise Removed");
-
+            //MessageBean res = new MessageBean(realId, response.getStatus(), "Cruise Removed");
+            return performGetWhichIsActuallyAPost(target, CruiseBean.class);
             //response.close();
-            return res;
+            // return res;
         }
         return new ExceptionMessage(new Date().toString(), "Could not remove this cruise because the web service is not available.");
     }
@@ -346,7 +348,7 @@ public class RestClientCruise extends RestClient {
 
     }
 
-    public CruiseBean getCruiseByDate(OffsetDateTime timeStamp, VesselBean vessel) {
+    public CruiseBean getCruiseByDate(OffsetDateTime timeStamp, VesselBean vessel) throws ConnectException {
         if (online) {
             Collection< CruiseBean> cruises = getAllCruises();
             if (cruises != null) {
@@ -362,7 +364,7 @@ public class RestClientCruise extends RestClient {
         return null;
     }
 
-    public List<CruiseBean> getCruisesBetweenDates(String platformCode, OffsetDateTime start, OffsetDateTime stop) {
+    public List<CruiseBean> getCruisesBetweenDates(String platformCode, OffsetDateTime start, OffsetDateTime stop) throws ConnectException {
         List< CruiseBean> r = new ArrayList();
         if (online) {
             Collection< CruiseBean> cruises = getCruiseByPlatformCode(platformCode);
@@ -380,7 +382,7 @@ public class RestClientCruise extends RestClient {
         return r;
     }
 
-    public List<CruiseBean> getConcurrentCruises(CruiseBean test) {
+    public List<CruiseBean> getConcurrentCruises(CruiseBean test) throws ConnectException {
         List<CruiseBean> result = getCruisesBetweenDates(test.getPlatformCode(), DateUtilities.getOffsetDateTime(test.getdStartDate()), DateUtilities.getOffsetDateTime(test.getdEndDate()));
         List r = new ArrayList();
         for (CruiseBean cruise : result) {
@@ -391,7 +393,7 @@ public class RestClientCruise extends RestClient {
         return r;
     }
 
-    public boolean cruiseIsConcurrent(CruiseBean test) {
+    public boolean cruiseIsConcurrent(CruiseBean test) throws ConnectException {
         return !getConcurrentCruises(test).isEmpty();
     }
 

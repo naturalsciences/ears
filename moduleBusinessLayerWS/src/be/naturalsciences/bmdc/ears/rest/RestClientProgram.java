@@ -62,37 +62,41 @@ public class RestClientProgram extends RestClient {
             postTarget = client.target(uri.resolve("ears2/insertProgram"));;
         }
     }
-    public Collection<ProgramBean> getAllPrograms() {
+
+    public Collection<ProgramBean> getAllPrograms() throws ConnectException {
         Collection<ProgramBean> programs = new ArrayList();
         if (online) {
-            try {
-                Response response = getTarget.request(MediaType.APPLICATION_XML).get();
-                if (response.getStatus() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
-                }
-                programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {
-                });
-                response.close();
 
-            } catch (Exception e) {
-                Messaging.report("There was a problem connecting to the web services" + e.getMessage(), e, this.getClass(), true);
+            Response response = getTarget.request(MediaType.APPLICATION_XML).get();
+            if (response.getStatus() != 200) {
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
+            programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {
+            });
+            response.close();
+
         }
         return programs;
     }
 
-    private ProgramBean getProgram(ResteasyWebTarget target) {
+    private ProgramBean getProgram(ResteasyWebTarget target) throws ConnectException {
         ProgramBean program = null;//new ProgramBean();
+        Response response = null;
         if (online) {
             try {
-                Response response = target.request().get();
+                response = target.request().get();
                 if (response.getStatus() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
                 }
                 program = response.readEntity(ProgramBean.class);
                 response.close();
+            } catch (ConnectException e) {
+                throw e;
             } catch (ProcessingException e) {
-                Response response = target.request(MediaType.APPLICATION_XML).get();
+                if (response != null && response.getLength() == -1) { //empty content because web service is not propertly set up
+                    return null;
+                }
+                response = target.request(MediaType.APPLICATION_XML).get();
                 IResponseMessage responseMessage = null;
                 try {
                     responseMessage = response.readEntity(ExceptionMessage.class);
@@ -100,19 +104,17 @@ public class RestClientProgram extends RestClient {
                     responseMessage = new ExceptionMessage(new Date().toString(), e2);
                 }
                 printResponse(target, response, this.getClass(), responseMessage);
-            } catch (Exception e) {
-                Messaging.report("There was a problem connecting to the web services" + e.getMessage(), e, this.getClass(), true);
             }
         }
         return program;
     }
 
-    public ProgramBean getProgram(String programId) {
+    public ProgramBean getProgram(String programId) throws ConnectException {
         ResteasyWebTarget target = getTarget.queryParam("id", programId);
         return getProgram(target);
     }
 
-    public ProgramBean getProgram(String programId, String cruiseId) {
+    public ProgramBean getProgram(String programId, String cruiseId) throws ConnectException {
         ResteasyWebTarget target = getTarget.queryParam("id", programId);
         target = target.queryParam("cruiseId", cruiseId);
         ProgramBean result = getProgram(target);
@@ -123,7 +125,7 @@ public class RestClientProgram extends RestClient {
         }
     }
 
-    public Collection<ProgramBean> getProgramByCruise(CruiseBean cruise) {
+    public Collection<ProgramBean> getProgramByCruise(CruiseBean cruise) throws ConnectException {
         if (cruise != null) {
             return getProgramByCruiseId(cruise.getRealId());
         } else {
@@ -131,7 +133,7 @@ public class RestClientProgram extends RestClient {
         }
     }
 
-    public Collection<ProgramBean> getProgramByCruise(Collection<CruiseBean> cruises) {
+    public Collection<ProgramBean> getProgramByCruise(Collection<CruiseBean> cruises) throws ConnectException {
         Collection<ProgramBean> result = new ArrayList();
         if (online) {
             for (CruiseBean cruise : cruises) {
@@ -141,28 +143,26 @@ public class RestClientProgram extends RestClient {
         return result;
     }
 
-    public Collection<ProgramBean> getProgramByCruiseId(String cruiseId) {
+    public Collection<ProgramBean> getProgramByCruiseId(String cruiseId) throws ConnectException {
 
         Collection<ProgramBean> programs = new ArrayList();
         if (online) {
-            try {
-                ResteasyClient client = new ResteasyClientBuilder().build();
 
-                //ResteasyWebTarget target = client.target(getBaseURL().resolve("getProgram"));
-                Response response = getTarget.queryParam("cruiseId", cruiseId).request().get();
-                //Check Status
-                if (response.getStatus() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
-                }
-                // Read output in string format
-                programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {
+            ResteasyClient client = new ResteasyClientBuilder().build();
 
-                });
-
-                response.close();
-            } catch (RuntimeException e) {
-                Messaging.report("There was a problem connecting to the web services" + e.getMessage(), e, this.getClass(), true);
+            //ResteasyWebTarget target = client.target(getBaseURL().resolve("getProgram"));
+            Response response = getTarget.queryParam("cruiseId", cruiseId).request().get();
+            //Check Status
+            if (response.getStatus() != 200) {
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
+            // Read output in string format
+            programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {
+
+            });
+
+            response.close();
+
         }
         return programs;
     }
@@ -202,7 +202,8 @@ public class RestClientProgram extends RestClient {
 
                 try {
                     if (getProgram(pProgram.getProgramId(), pProgram.getCruiseId()) == null) { //if this program has not been created before for this cruise!
-                        return performGetWhichIsActuallyAPost(target, CruiseBean.class);
+                        return performGetWhichIsActuallyAPost(target, CruiseBean.class
+                        );
                     } else {
                         return new ExceptionMessage(new Date().toString(), "Could not create this program because a program with the same programId already exists for this cruise");
                     }

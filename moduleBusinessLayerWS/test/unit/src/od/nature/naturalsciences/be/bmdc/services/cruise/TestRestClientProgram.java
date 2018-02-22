@@ -16,7 +16,7 @@ import org.junit.Test;
 
 /**
  *
- * @author yvan http://www.slf4j.org/codes.html
+ * @author Yvan Stojanov http://www.slf4j.org/codes.html
  * http://stackoverflow.com/questions/7685510/log4j-warning-while-initializing
  *
  *

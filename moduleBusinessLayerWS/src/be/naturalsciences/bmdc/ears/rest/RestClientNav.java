@@ -2,6 +2,7 @@ package be.naturalsciences.bmdc.ears.rest;//ys
 
 import be.naturalsciences.bmdc.ears.entities.NavBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
+import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import java.net.ConnectException;
 import java.net.URI;
@@ -25,17 +26,21 @@ public class RestClientNav extends RestClient {
     protected ResteasyClient client;// = new ResteasyClientBuilder().build();
 
     protected ResteasyWebTarget getLastNavXmlTarget;
-    
+
     protected ResteasyWebTarget getNearestNavTarget;
 
     public RestClientNav() throws ConnectException, EarsException {
         super();
+        if (!WebserviceUtils.testWS("ears2Nav/getLastNavXml")) {
+            online = false;
+            throw new ConnectException();
+        }
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
             try {
                 engine = new ApacheHttpClient4Engine(createAllTrustingClient());
             } catch (GeneralSecurityException ex) {
-                Exceptions.printStackTrace(ex);
+                throw new EarsException("Security problem when connecting.", ex);
             }
             client = new ResteasyClientBuilder().httpEngine(engine).build();
         } else {
@@ -46,7 +51,7 @@ public class RestClientNav extends RestClient {
             uri = baseURL.toURI();
             // uri = getBaseURL().toURI();
         } catch (URISyntaxException ex) {
-            throw new EarsException("The base url for the web services is invalid. The navigation won't work correctly.", ex);
+            throw new EarsException("The base url for the web services is invalid. The navigation web service won't work correctly.", ex);
         }
         if (uri != null) {
             getLastNavXmlTarget = client.target(uri.resolve("ears2Nav/getLastNavXml"));
@@ -57,120 +62,53 @@ public class RestClientNav extends RestClient {
         }*/
     }
 
-    public NavBean getLastNavXml() {
+    public NavBean getLastNavXml() throws ConnectException {
 
         // Nav Using RESTEasy API
         NavBean nav = new NavBean();
-        try {
-            //ResteasyClient client = new ResteasyClientBuilder().build();
-            //ResteasyWebTarget target = client.target(getBaseURL().resolve("getLastNavXml"));
 
-            Response response = getLastNavXmlTarget.request().get();
-            // Check Status
-            if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatus());
-            }
-            nav = response.readEntity(NavBean.class);
-
-            response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+        //ResteasyClient client = new ResteasyClientBuilder().build();
+        //ResteasyWebTarget target = client.target(getBaseURL().resolve("getLastNavXml"));
+        Response response = getLastNavXmlTarget.request().get();
+        // Check Status
+        if (response.getStatus() != 200) {
+            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
         }
+        nav = response.readEntity(NavBean.class);
+
+        response.close();
+
         return nav;
     }
 
-    public NavBean getNearestNav(OffsetDateTime time) {
+    public NavBean getNearestNav(OffsetDateTime time) throws ConnectException {
         NavBean nav = null;
-        try {
-            Response response = getNearestNavTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
-            if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatus());
-            }
-            nav = response.readEntity(NavBean.class);
 
-            response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+        Response response = getNearestNavTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
+        if (response.getStatus() != 200) {
+            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
         }
-        return nav;
-    }
+        nav = response.readEntity(NavBean.class);
 
-    public NavBean getNearestNavXml(String date) {
-
-        // Nav Using RESTEasy API
-        NavBean nav = new NavBean();
-        try {
-            //ResteasyClient client = new ResteasyClientBuilder().build();
-
-            //ResteasyWebTarget target = client.target(getBaseURL().resolve("getLastNavXml"));
-            Response response = getLastNavXmlTarget.queryParam("date", date)
-                    .request().get();
-            // Check Status
-            if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatus());
-            }
-            nav = response.readEntity(NavBean.class);
-
-            response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
-        return nav;
-    }
-
-    public NavBean getNavByDateXml(String pDate) {
-
-        // Nav Using RESTEasy API
-        NavBean nav = new NavBean();
-        try {
-            //ResteasyClient client = new ResteasyClientBuilder().build();
-
-            //ResteasyWebTarget target = client.target(getBaseURL().resolve("getLastNavXml"));
-            //prepare Date time for parameter
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            Date dateParsed = sdf.parse(pDate);
-            Response response = getLastNavXmlTarget.queryParam("date", sdf.format(dateParsed)).request().get();
-            // Check Status
-            if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatus());
-            }
-            nav = response.readEntity(NavBean.class);
-
-            response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-        }
+        response.close();
 
         return nav;
     }
 
-    public Collection<NavBean> getNavByDatesXml(String fromDate, String toDate) {
-
-        // Nav Using RESTEasy API
+    public Collection<NavBean> getNavByDatesXml(String fromDate, String toDate) throws ConnectException {
         Collection<NavBean> navs = null;
-        try {
-            //ResteasyClient client = new ResteasyClientBuilder().build();
 
-            //ResteasyWebTarget target = client.target(getBaseURL().resolve("getLastNavXml"));
-            Response response = getLastNavXmlTarget.queryParam("initDate", fromDate)
-                    .queryParam("endDate", toDate)
-                    .request().get();
-            // Check Status
-            if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatus());
-            }
-            navs = response.readEntity(new GenericType<Collection<NavBean>>() {
-            });
-            //System.out.println(navs);
-            response.close();
-        } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+        Response response = getLastNavXmlTarget.queryParam("initDate", fromDate)
+                .queryParam("endDate", toDate)
+                .request().get();
+        // Check Status
+        if (response.getStatus() != 200) {
+            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
         }
+        navs = response.readEntity(new GenericType<Collection<NavBean>>() {
+        });
+        response.close();
+
         return navs;
     }
 

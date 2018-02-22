@@ -18,6 +18,13 @@ import java.util.Map;
  */
 public class ReflectionUtils {
 
+    /***
+     * For the given Class, retrieve all methods annotated with the SetterField annotation. 
+     * Returns a Map with as key the SetterField name of the setter and as value a reference to the method itself. 
+     * This method can be used to bind the key of a json key-value pair to the appropriate setter and add the json value as an argument to the setter.
+     * @param type
+     * @return 
+     */
     public static Map<String, Method> getSettersAndFields(final Class<?> type) {
         final Map<String, Method> setters = new THashMap<>();
         Class<?> klass = type;

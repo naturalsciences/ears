@@ -10,6 +10,7 @@ import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.MessageBean;
 import be.naturalsciences.bmdc.ears.entities.User;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
+import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
@@ -52,12 +53,11 @@ public class RestClientOnt extends RestClient {
     protected ResteasyWebTarget uploadProgramOntologyTarget;
     protected ResteasyWebTarget authenticateTarget;
 
-    public RestClientOnt(URL baseUrl) throws ConnectException, EarsException {
-        super(baseUrl);
-        init();
-    }
-
-    private void init() throws EarsException {
+    private void init() throws EarsException, ConnectException {
+        if (!WebserviceUtils.testWS("ears2Ont/ontology/vessel/date")) {
+            online = false;
+            throw new ConnectException();
+        }
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
             try {
@@ -199,13 +199,13 @@ public class RestClientOnt extends RestClient {
         }
     }
 
-    public boolean authenticate(User user) {
+    public boolean authenticate(User user) throws ConnectException {
         if (online) {
             authenticateTarget.register(new BasicAuthentication(user.getUsername(), user.getPassword()));
             Response response = authenticateTarget.request(MediaType.TEXT_PLAIN).get();
 
             if (response.getStatus() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
             }
             String result = response.readEntity(String.class);
             response.close();
@@ -224,7 +224,7 @@ public class RestClientOnt extends RestClient {
             }
             String result = response.readEntity(String.class);
             response.close();
-            Date parse = StringUtils.parse(result, new SimpleDateFormat[]{StringUtils.FULL_ISO_DATETIME_FORMAT, StringUtils.SIMPLE_DATE_FORMAT});
+            Date parse = StringUtils.parse(result, new SimpleDateFormat[]{StringUtils.SDF_FULL_ISO_DATETIME, StringUtils.SDF_SIMPLE_DATE});
             return parse;
 
         } else {
@@ -240,7 +240,7 @@ public class RestClientOnt extends RestClient {
             }
             String result = response.readEntity(String.class);
             response.close();
-            Date parse = StringUtils.parse(result, new SimpleDateFormat[]{StringUtils.FULL_ISO_DATETIME_FORMAT, StringUtils.SIMPLE_DATE_FORMAT});
+            Date parse = StringUtils.parse(result, new SimpleDateFormat[]{StringUtils.SDF_FULL_ISO_DATETIME, StringUtils.SDF_SIMPLE_DATE});
             return parse;
 
         } else {

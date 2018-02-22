@@ -129,20 +129,6 @@ public class RestClientEventTest {
 
      assertTrue(hasEvents && hasAmon);
      }*/
-    /**
-     * Test of getEventByProgram method, of class RestClientEvent.
-     */
-    @Test
-    @Ignore
-    public void testGetEventByProgram() throws ConnectException, EarsException {
-        System.out.println("getEventByProgram");
-        RestClientEvent instance = new RestClientEvent();
-        Collection<EventBean> expResult = null;
-        Collection<EventBean> result = instance.getEventByProgram();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of getEventByCruise method, of class RestClientEvent.
