@@ -20,4 +20,6 @@ old_ontologies
 *.zip
 *.tar.gz
 *.rar
+*.exe
+*.tgz
 hs_err_pid*
