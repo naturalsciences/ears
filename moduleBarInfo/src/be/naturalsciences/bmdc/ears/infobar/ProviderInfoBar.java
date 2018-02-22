@@ -11,7 +11,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 //the implementation must be published to be found by the status bar
 @ServiceProvider(service = StatusLineElementProvider.class)

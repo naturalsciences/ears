@@ -10,12 +10,18 @@ import be.naturalsciences.bmdc.ears.utils.Message;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.text.DateFormat;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
@@ -36,7 +42,7 @@ import org.openide.windows.InputOutput;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public final class InfoBar implements LookupListener {
 
@@ -94,7 +100,7 @@ public final class InfoBar implements LookupListener {
     private static final InputOutput messages = IOProvider.getDefault().getIO("Messages", true);
     private static final InputOutput exceptions = IOProvider.getDefault().getIO("Exceptions", true);
 
-    private static final DateFormat format = DateFormat.getTimeInstance(DateFormat.MEDIUM);
+    private static final DateFormat format = DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.getDefault());
     private JPanel panel = new JPanel();
     private final JLabel connectionLabel;
     private JLabel timeLabel;
@@ -136,7 +142,9 @@ public final class InfoBar implements LookupListener {
         }
         messageResult.addLookupListener(this);
         Timer t = new Timer(1000, (ActionEvent event) -> {
-            timeLabel.setText(" " + format.format(new Date()) + " ");
+            LocalTime localTimeInUtc = LocalTime.now(Clock.systemUTC());
+            LocalTime localTime = LocalTime.now(Clock.systemDefaultZone());
+            timeLabel.setText("UTC:"+ DateTimeFormatter.ISO_TIME.format(localTimeInUtc) + " Local:"  + DateTimeFormatter.ISO_TIME.format(localTime) + " ");
         });
 
         t.start();
