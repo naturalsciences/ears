@@ -19,7 +19,7 @@ import javax.swing.table.TableRowSorter;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTableModel {
 
@@ -66,14 +66,14 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
 
     public Set<E> getEntitiesSet() {
         //this.entities.removeAll(Collections.singleton(null));
-        Iterator<E> iter = this.entities.iterator();
+        Iterator<E> iter = getEntities().iterator();
         while (iter.hasNext()) {
             E e = iter.next();
             if (e == null || !e.isLegal()) {
                 iter.remove();
             }
         }
-        return new TreeSet<>(this.entities);//ordered and unique
+        return new TreeSet<>(getEntities());//ordered and unique
     }
 
     abstract public String[] getColumns();
@@ -137,7 +137,7 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
     }
 
     public E getEntityAt(int row) {
-        return entities.get(row);
+        return getEntities().get(row);
     }
 
     public void setEntityAt(E entity, int row) {

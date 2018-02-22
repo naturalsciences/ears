@@ -13,7 +13,7 @@ import javax.swing.table.*;
 
 /**
  *
- * @author yvan
+ * @author Rob Camick, Yvan Stojanov
  */
 public class ButtonColumn extends AbstractCellEditor
         implements TableCellRenderer, TableCellEditor, ActionListener, MouseListener {
@@ -45,7 +45,9 @@ public class ButtonColumn extends AbstractCellEditor
         this.action = action;
         this.buttonText = buttonText;
         renderButton = new JButton();
+        renderButton.setVisible(true);
         editButton = new JButton();
+        editButton.setVisible(true);
         editButton.setFocusPainted(false);
         editButton.addActionListener(this);
         originalBorder = editButton.getBorder();
@@ -116,9 +118,6 @@ public class ButtonColumn extends AbstractCellEditor
         return editorValue;
     }
 
-//
-//  Implement TableCellRenderer interface
-//
     @Override
     public Component getTableCellRendererComponent(
             JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -136,7 +135,6 @@ public class ButtonColumn extends AbstractCellEditor
             renderButton.setBorder(originalBorder);
         }
 
-//		renderButton.setText( (value == null) ? "" : value.toString() );
         if (value == null) {
             throw new IllegalArgumentException("The provided Object value is null.");
         } else if (value instanceof Icon) {
@@ -153,28 +151,19 @@ public class ButtonColumn extends AbstractCellEditor
         return renderButton;
     }
 
-//
-//  Implement ActionListener interface
-//
     /*
      *	The button has been pressed. Stop editing and invoke the custom Action
      */
     public void actionPerformed(ActionEvent e) {
-
+        
         int row = table.convertRowIndexToModel(table.getEditingRow());
         fireEditingStopped();
 
-        //  Invoke the Action
-        ActionEvent event = new ActionEvent(
-                table,
-                ActionEvent.ACTION_PERFORMED,
-                "" + row);
+        //  Invoke the Action and pass the button and the row
+        ActionEvent event = new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED, "" + row); 
         action.actionPerformed(event);
     }
 
-//
-//  Implement MouseListener interface
-//
     /*
      *  When the mouse is pressed the editor is invoked. If you then then drag
      *  the mouse to another cell before releasing it, the editor is still

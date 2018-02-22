@@ -19,7 +19,7 @@ import javax.swing.table.TableCellEditor;
 /**
  * country
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public class ActorCellEditor extends AbstractCellEditor
         implements TableCellEditor, ActionListener {
@@ -75,7 +75,6 @@ public class ActorCellEditor extends AbstractCellEditor
         this.actualActor = (String) comboCountry.getSelectedItem();
         int actorColumn = ((EventTableModel) this.jTableEvent.getModel()).findColumn(EventTableModel.ACTOR);
         this.jTableEvent.setValueAt(this.actualActor, this.numRows, actorColumn);
-
     }
 
 }

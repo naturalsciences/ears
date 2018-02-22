@@ -51,6 +51,47 @@ public class ExportEventActionListener implements EventListener {
     public static final String EXPORT_FILE_NAME = "EARS_export_events.csv";
 
     public boolean PRINT_PROPS_ONTO = false;
+    
+        public NavBean getNavigation(RestClientNav rest, OffsetDateTime ts) {
+        try {
+            NavBean bean = rest != null ? rest.getNearestNav(ts) : null;
+            return bean;
+        } catch (ConnectException ex) {
+            Messaging.report("Could not connect to the web service for navigation to get the data. Info not added.", ex, this.getClass(), true);
+        }
+        return null;
+    }
+
+    public WeatherBean getWeather(RestClientWeather rest, OffsetDateTime ts) {
+        try {
+            WeatherBean bean = rest != null ? rest.getNearestWeather(ts) : null;
+            return bean;
+        } catch (ConnectException ex) {
+            Messaging.report("Could not connect to the web service for weather to get the data. Info not added.", ex, this.getClass(), true);
+        }
+        return null;
+    }
+
+    public ThermosalBean getThermosal(RestClientThermosal rest, OffsetDateTime ts) {
+        try {
+            ThermosalBean bean = rest != null ? rest.getNearestThermosal(ts) : null;
+            return bean;
+        } catch (ConnectException ex) {
+            Messaging.report("Could not connect to the web service for thermosal to get the data. Info not added.", ex, this.getClass(), true);
+        }
+        return null;
+    }
+
+    public UnderwayBean getUnderway(RestClientUnderway rest, OffsetDateTime ts) {
+        try {
+            UnderwayBean bean = rest != null ? rest.getNearestUnderway(ts) : null;
+            return bean;
+        } catch (ConnectException ex) {
+            Messaging.report("Could not connect to the web service for underway to get the data. Info not added.", ex, this.getClass(), true);
+        }
+        return null;
+    }
+
 
     public void actionPerformed(ExportEventAction e) {
 
@@ -161,10 +202,10 @@ public class ExportEventActionListener implements EventListener {
                         for (EventBean event : events) {
                             OffsetDateTime ts = event.getTimeStampDt();
 
-                            NavBean nav = restNav != null ? restNav.getNearestNav(ts) : null;
-                            WeatherBean wt = restWeather != null ? restWeather.getNearestWeather(ts) : null;
-                            ThermosalBean th = restThermosal != null ? restThermosal.getNearestThermosal(ts) : null;
-                            UnderwayBean uw = restUnderway != null ? restUnderway.getNearestUnderway(ts) : null;
+                            NavBean nav = getNavigation(restNav, ts);
+                            WeatherBean wt = getWeather(restWeather, ts);
+                            ThermosalBean th = getThermosal(restThermosal, ts);
+                            UnderwayBean uw = getUnderway(restUnderway, ts);
 
                             List<String> elements = new ArrayList(Arrays.asList(
                                     event.getTimeStampDt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),

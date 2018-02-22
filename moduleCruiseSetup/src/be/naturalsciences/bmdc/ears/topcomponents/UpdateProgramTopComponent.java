@@ -305,6 +305,7 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
             JSeparator sep = new JSeparator();
 
             JMenuItem deleteItem = new JMenuItem("Delete");
+
             editItem.addActionListener(new ActionListener() {
 
                 @Override
@@ -317,21 +318,19 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
-                    NotifyDescriptor.Confirmation confirm = new NotifyDescriptor.Confirmation("Do you want to delete this program? This operation cannot be undone.",
-                            "Delete program",
-                            NotifyDescriptor.YES_NO_OPTION);
+                    NotifyDescriptor.Confirmation confirm = new NotifyDescriptor.Confirmation("Do you want to delete this program? Unfortunately this is not possible as the functionality is not provided in the EARS web services", "Delete program", NotifyDescriptor.YES_NO_OPTION);
 
                     Object result = DialogDisplayer.getDefault().notify(confirm);
                     if (result != NotifyDescriptor.YES_OPTION) {
                         return;
                     }
                     //JOptionPane.showMessageDialog(UpdateCruiseTopComponent.this, "Right-click performed on table and choose DELETE");
-                    ProgramBean program = model.getEntityAt(o_Program.getSelectedRow());
+                    /*ProgramBean program = model.getEntityAt(o_Program.getSelectedRow());
                     TopComponent tc = findTopComponent(program);
                     if (tc != null) {
                         tc.close();
                     }
-                    // removeProgram(program); //remove from ws
+                    removeProgram(program); //remove from ws*/
                 }
             });
             popupMenu.add(editItem);
@@ -393,7 +392,9 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
 
     private void editProgram() {
         if (o_Program.getSelectedRowCount() == 1) {
-            ProgramBean currentlyEditedProgram = model.getEntityAt(o_Program.getSelectedRow());
+            int row = o_Program.convertRowIndexToModel(o_Program.getSelectedRow());
+
+            ProgramBean currentlyEditedProgram = model.getEntityAt(row);
 
             TopComponent tc = findTopComponent(currentlyEditedProgram);
             if (tc == null) {

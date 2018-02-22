@@ -45,6 +45,7 @@ import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.validation.api.Problem;
 import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
 import org.netbeans.validation.api.ui.ValidationGroup;
+import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
@@ -94,7 +95,11 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
         currentCruiseResult = new SingletonResult(CurrentCruise.class, this);
 
         if (getCurrentVessel() != null && cruiseClient != null) {
-            cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
+            try {
+                cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
+            } catch (ConnectException ex) {
+                Messaging.report("Note that the webservices are offline. The program can't be saved or edited.", ex, this.getClass(), true);
+            }
         }
 
     }
@@ -213,7 +218,11 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
         }
 
         if (getCurrentVessel() != null && cruiseClient != null) {
-            cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
+            try {
+                cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
+            } catch (ConnectException ex) {
+                Messaging.report("Note that the webservices are offline. The program can't be saved or edited.", ex, this.getClass(), true);
+            }
         }
 
         /* if (cruises.size() == 1) {
@@ -322,7 +331,11 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
     public void resultChanged(LookupEvent le) {
         if (currentVesselResult.matches(le)) {
             if (getCurrentVessel() != null && cruiseClient != null) {
-                cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
+                try {
+                    cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
+                } catch (ConnectException ex) {
+                    Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+                }
             }
             populateCruiseCombobox();
         }

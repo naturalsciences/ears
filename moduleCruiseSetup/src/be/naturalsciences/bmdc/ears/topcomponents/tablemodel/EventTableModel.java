@@ -28,17 +28,13 @@ import javax.swing.JTable;
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov, Thomas Vandenberghe
  * @param <E>
  */
 public class EventTableModel extends EntityTableModel<EventBean> {
 
-    private List<EventBean> entities = new ArrayList<>();
     private RestClientEvent restClientEvent;
 
-    public List<EventBean> getEntities() {
-        return entities;
-    }
     JOptionPane optionPane = new JOptionPane();
 
     public static final String DATE = "Date";
@@ -55,7 +51,6 @@ public class EventTableModel extends EntityTableModel<EventBean> {
     public static final String PROPERTIES = "Properties";
 
     public static final String[] COLUMN_NAMES = {DATE, TIME, TIMEZONE, TOOL_CATEGORY, TOOL, PROCESS, ACTION, ACTOR, PROGRAM, LABEL, DELETE, PROPERTIES};
-    //private final String[] columnNames = {"Date", "Time", "TZ", "tool category", "tool", "process", "action", "actor", "Delete", "Properties"};//7 colonnes
 
     public EventTableModel(JTable table, List<EventBean> entities) {
         super(table, entities);
@@ -66,7 +61,6 @@ public class EventTableModel extends EntityTableModel<EventBean> {
         } catch (EarsException ex) {
             Messaging.report(ex.getMessage(), ex, this.getClass(), true);
         }
-        this.entities.addAll(entities);
     }
 
     public Set<String> getAllDates() {
@@ -211,15 +205,16 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                 }
                 break;
         }
-
-        //  set(event, rowIndex);
-        //fireTableCellUpdated(rowIndex, columnIndex);
     }
 
     public void removeRow(int rowsToDelete) {
-        restClientEvent.removeEvent(entities.get(rowsToDelete).getEventId().trim());
-        entities.remove(rowsToDelete);
-        fireTableDataChanged();
+        IResponseMessage response = restClientEvent.removeEvent(entities.get(rowsToDelete).getEventId().trim());
+        if (!response.isBad()) {
+            entities.remove(rowsToDelete);
+            fireTableDataChanged();
+        } else {
+            Messaging.report("Event wasn't deleted from the web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
+        }
 
     }
 
@@ -229,7 +224,6 @@ public class EventTableModel extends EntityTableModel<EventBean> {
         IResponseMessage response = restClientEvent.postEvent(e);
         if (!response.isBad()) {
             entities.add(e);
-            table.scrollRectToVisible(table.getCellRect(entities.size() - 1, 0, true));
         } else {
             Messaging.report("Event wasn't saved to web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
         }
@@ -238,12 +232,6 @@ public class EventTableModel extends EntityTableModel<EventBean> {
 
     }
 
-    /*
-                case DATE:
-                return event.getTimeStampDt().atZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE);
-            case TIME:
-                return event.getTimeStampDt().atZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_TIME);
-     */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         EventBean event = entities.get(rowIndex);

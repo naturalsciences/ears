@@ -8,11 +8,10 @@ package be.naturalsciences.bmdc.ears.topcomponents;
 import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
-//actor pas possible pour le moment car pas reference dans la classe event comme sous ensemn
 
 /**
  *
- * @author yvan
+ * @author Yvan Stojanov
  */
 public class ActorCellRenderer
         extends DefaultTableCellRenderer {
@@ -29,11 +28,6 @@ public class ActorCellRenderer
 
         setFont(CreateEventTopComponent.DEFAULT_FONT);
 
-        /* if (isSelected) {
-            setBackground(table.getSelectionBackground());
-        } else {
-            setBackground(table.getBackground());
-        }*/
         setBackground(table.getBackground());
         return this;
     }

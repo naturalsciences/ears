@@ -27,6 +27,7 @@ import be.naturalsciences.bmdc.ears.ontology.entities.SpecificEventDefinition;
 import be.naturalsciences.bmdc.ears.properties.Configs;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
+import be.naturalsciences.bmdc.ears.utils.SwingUtils;
 import be.naturalsciences.bmdc.ears.utils.TableColumnAdjuster;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
@@ -34,6 +35,8 @@ import com.github.lgooddatepicker.tableeditors.DateTableEditor;
 import com.github.lgooddatepicker.tableeditors.TimeTableEditor;
 import com.github.lgooddatepicker.zinternaltools.InternalUtilities;
 import gnu.trove.map.hash.THashMap;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -54,6 +57,7 @@ import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -111,6 +115,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
     private final InstanceContent content = new InstanceContent();
     public final static Font DEFAULT_FONT = new Font("Sans Serif", Font.BOLD, 12);
+    public final static int DEFAULT_ROW_HEIGHT = 25;
 
     private TableColumn actorColumn;
     private TableColumn propertyColumn;
@@ -121,14 +126,9 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private SingletonResult<CurrentCruise, ICruise> currentCruiseResult;
     private SingletonResult<CurrentProgram, IProgram> currentProgramResult;
 
-    ExportEventActionListener exportEventActionListener;
+    private ExportEventActionListener exportEventActionListener;
 
-    EventPropertyCellRenderer eventPropertyCellRenderer;
-
-    TableRowSorter<TableModel> eventTableSorter;
-    //private List<String> eventDateForFilter = new ArrayList();
-    //private ArrayList distinctList;
-    //Set set = new HashSet();
+    private TableRowSorter<TableModel> eventTableSorter;
 
     private final Action deleteEventAction;
     private final Action editPropertyEventAction;
@@ -165,55 +165,42 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
         exportEventActionListener = new ExportEventActionListener();
 
-        //eventTable.setBackground(new Color(190, 240, 255));
-        eventTable.setRowHeight(25);
+        eventTable.setRowHeight(DEFAULT_ROW_HEIGHT);
         eventTable.setFont(DEFAULT_FONT);
+        eventTable.setFillsViewportHeight(true);
 
         editPropertyEventAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                JTable table = (JTable) e.getSource();
-
                 int modelRow = Integer.valueOf(e.getActionCommand());
                 EventBean event = getModel().getEntityAt(modelRow);
-                JFrame owner = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, table);
-                JDialog dialog = new EventPropertyDialog(owner, true, null, null, null, event);
+                JDialog dialog = new EventPropertyDialog(eventTable, null, null, event);
                 dialog.setVisible(true);
             }
         };
         deleteEventAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JTable table = (JTable) e.getSource();
-
                 int modelRow = Integer.valueOf(e.getActionCommand());
-
-                JOptionPane optionPane = new JOptionPane();
-                int rep = JOptionPane.showConfirmDialog(
-                        optionPane.getParent(), "Delete this event ?"
-                        + "\n",
-                        "Do you really want to delete this event " + "[" + modelRow + "]",
-                        JOptionPane.OK_CANCEL_OPTION);
+                int rep = SwingUtils.createYNDialogAndGetResponse(eventTable, "Delete this event?", "Delete event " + (modelRow + 1));
                 if (rep == 0) {
-                    ((EventTableModel) table.getModel()).removeRow(modelRow);
+                    ((EventTableModel) eventTable.getModel()).removeRow(modelRow);
                 }
 
             }
         };
 
-        eventTable.getParent().addComponentListener(new ComponentAdapter() {
+        /*eventTable.getParent().addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(final ComponentEvent e) {
-                if (eventTable.getParent().getWidth() > 400/*> eventTable.getPreferredSize().width*/) { //actual width smaller than wished width
+                if (eventTable.getParent().getWidth() > 400) { //actual width smaller than wished width 
                     eventTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
                 } else {
                     eventTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 }
             }
-        });
+        });*//*> eventTable.getPreferredSize().width*/
 
-        eventPropertyCellRenderer = new EventPropertyCellRenderer(false);
         columnWidths = new THashMap();
     }
 
@@ -664,51 +651,62 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private void updateEventModel() {
         if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
             CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
-            List<EventBean> events = (List<EventBean>) restClientEvent.getEventByCruise(currentCruise);
-            Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
-            for (EventBean event : events) {
-                if (event.getProperties() != null) {
-                    for (EventBean.Property property : event.getProperties()) {
-                        try {
-                            Set<Property> properties = Individuals.getConcepts(allIndividuals, new URI(property.code), true, Property.class);
-                            for (Property earsProperty : properties) {
-                                property.isMandatory = earsProperty.isMandatory();
-                                property.isMultiple = earsProperty.isMultiple();
-                                property.valueClass = earsProperty.getValueClass();
-                            }
-                        } catch (URISyntaxException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                    }
-                }
-                for (Individuals individuals : allIndividuals) {
-                    if (individuals.getModel() instanceof ProgramOntology) {
-
-                        for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
-                            if (sev.equals(event)) {
-                                for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
-
-                                    event.attachProperty(property, null);
-                                }
-                            }
-                        }
-                    }
-                    if (individuals.getModel() instanceof VesselOntology) {
-
-                        for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
-                            if (sev.equals(event)) {
-                                for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
-
-                                    event.attachProperty(property, null);
-                                }
-                            }
-                        }
-                    }
-                }
+            List<EventBean> events = null;
+            try {
+                events = (List<EventBean>) restClientEvent.getEventByCruise(currentCruise);
+            } catch (ConnectException ex) {
+                Messaging.report("Note that the webservices are offline. The event list can't be retrieved.", ex, this.getClass(), true);
             }
+            if (events != null) {
+                Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
+                for (EventBean event : events) {
+                    if (event.getProperties() != null) {
+                        for (EventBean.Property property : event.getProperties()) {
+                            try {
+                                Set<Property> properties = Individuals.getConcepts(allIndividuals, new URI(property.code), true, Property.class);
+                                for (Property earsProperty : properties) {
+                                    property.isMandatory = earsProperty.isMandatory();
+                                    property.isMultiple = earsProperty.isMultiple();
+                                    property.valueClass = earsProperty.getValueClass();
+                                }
+                            } catch (URISyntaxException ex) {
+                                Exceptions.printStackTrace(ex);
+                            }
+                        }
+                    }
+                    for (Individuals individuals : allIndividuals) {
+                        if (individuals.getModel() instanceof ProgramOntology) {
 
-            model = new EventTableModel(eventTable, events);
-            eventTable.setModel(model);
+                            for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
+                                if (sev.equals(event)) {
+                                    for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
+
+                                        event.attachProperty(property, null);
+                                    }
+                                }
+                            }
+                        }
+                        if (individuals.getModel() instanceof VesselOntology) {
+
+                            for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
+                                if (sev.equals(event)) {
+                                    for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
+
+                                        event.attachProperty(property, null);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                model = new EventTableModel(eventTable, events);
+                eventTable.setModel(model);
+
+                int newHeight = DEFAULT_ROW_HEIGHT * events.size();
+                Dimension dim = new Dimension(eventTable.getWidth(), newHeight);
+                eventTable.setPreferredSize(dim);
+            }
         }
     }
 
@@ -755,7 +753,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             TableColumn deleteColumn = tableColumnModel.getColumn(deleteColumnId);
 
             setColumnWidths(dateColumn, 80, 80);
-            setColumnWidths(timeColumn, 80, 50);
+            setColumnWidths(timeColumn, 80, 70);
             setColumnWidths(timeZoneColumn, 80, 50);
             setColumnWidths(toolCategoryColumn, 1000, 80);
             setColumnWidths(toolColumn, 1000, 80);
@@ -790,20 +788,14 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             timeEdit.clickCountToEdit = clickCountToEdit;
             eventTable.setDefaultEditor(LocalTime.class, timeEdit);
 
-            // Explicitly set the default editor instance (data type) for each column, by looking at 
-            // the most common data type found in each column.
-            //   zSetAllColumnEditorsAndRenderers(eventTable);
             //add actor column
             actorColumn.setCellRenderer(new ActorCellRenderer());
             actorColumn.setCellEditor(new ActorCellEditor(actors));
 
             //add delete button
-            ButtonColumn deleteButtonColumn = new ButtonColumn(eventTable, deleteEventAction, deleteColumnId,"Delete event");
-
-            ButtonColumn editPropertyButtonColumn = new ButtonColumn(eventTable, editPropertyEventAction, propertyColumnId,"Edit properties");
-            //add property column
-           // propertyColumn.setCellRenderer(eventPropertyCellRenderer);
-           // propertyColumn.setCellEditor(new EventPropertyEditor(eventTable));
+            ButtonColumn deleteButtonColumn = new ButtonColumn(eventTable, deleteEventAction, deleteColumnId, "Delete event");
+            //add properties button
+            ButtonColumn editPropertyButtonColumn = new ButtonColumn(eventTable, editPropertyEventAction, propertyColumnId, "Edit properties");
 
             eventTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
@@ -822,14 +814,12 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
     @Override
     public void componentActivated() {
-        eventPropertyCellRenderer.setActive(true);
         // TODO add custom code on component closing
 
     }
 
     @Override
     public void componentDeactivated() {
-        eventPropertyCellRenderer.setActive(false);
         // TODO add custom code on component closing
 
     }
@@ -875,6 +865,12 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                 previousEvent = c1;
                 EventBean currentEvent = (EventBean) c1;
                 this.getModel().addEntity(currentEvent);
+                if (eventTable.getHeight() < eventTable.getModel().getRowCount() * DEFAULT_ROW_HEIGHT) {
+                    int newHeight = eventTable.getHeight() + DEFAULT_ROW_HEIGHT;
+                    Dimension dim = new Dimension(eventTable.getWidth(), newHeight);
+                    eventTable.setPreferredSize(dim);
+                }
+                eventTable.scrollRectToVisible(eventTable.getCellRect(eventTable.getModel().getRowCount()+1, 0, true));
             }
         }
 
