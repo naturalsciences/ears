@@ -214,27 +214,10 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
             out = new OutputStreamWriter(fos, "UTF-8");
 
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, "An exception occured.", ex);
         } catch (IOException ex) {
-            Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, "An exception occured.", ex);
         }
-        /*finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }*/
-        //previous crashes the application.
         return fos;
     }
 
@@ -612,7 +595,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
         return findLastFileByNameInSet(findByWildcardMultiple(dir, wildCard), extension);
     }
 
-    public static File downloadFromUrl(URL website, File targetDir, String fileName) {
+    public static File downloadFromUrl(URL website, File targetDir, String fileName) throws IOException {
         if (website == null) {
             throw new IllegalArgumentException("Provided website URL is null.");
         }
@@ -635,8 +618,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
             IOUtils.closeQuietly(outStream);
             return targetFile;
         } catch (IOException ex) {
-            Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            throw ex;
         }
     }
 

@@ -17,8 +17,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -88,37 +86,19 @@ public class EARSOntologyRetriever {
             currentOntologyFile = new URL(currentOntologyFileDirectory, OntologyConstants.BASE_ONTOLOGY_FILENAME);
             latestOntologyFileDirectory = new URL(keys.get("latestOntologyFileDirectory"));
             try {
-                latestOntologyDate = StringUtils.ISO_DATE_FORMAT.parse(keys.get("latestOntologyDate"));
+                latestOntologyDate = StringUtils.SDF_ISO_DATE.parse(keys.get("latestOntologyDate"));
             } catch (ParseException ex) {
-                Logger.getLogger(EARSOntologyRetriever.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(EARSOntologyRetriever.class.getName()).log(Level.SEVERE, "An exception occured.", ex);
                 throw new EARSOntologyRetrievalException("The date given in the on-shore ontology server at http://ontologies.ef-ears.eu/sparql could not be processed.", ex);
             }
 
             try {
-                latestOntologyAxiomDate = StringUtils.ISO_DATE_FORMAT.parse(keys.get("latestOntologyAxiomDate"));
+                latestOntologyAxiomDate = StringUtils.SDF_ISO_DATE.parse(keys.get("latestOntologyAxiomDate"));
             } catch (ParseException ex) {
-                Logger.getLogger(EARSOntologyRetriever.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(EARSOntologyRetriever.class.getName()).log(Level.SEVERE, "An exception occured.", ex);
                 throw new EARSOntologyRetrievalException("The date given in the on-shore ontology server at http://ontologies.ef-ears.eu/sparql could not be processed.", ex);
             }
-
             latestOntologyAxiomUrl = new URL(keys.get("latestOntologyAxiomUrl"));
-
-            /* try {
-                latestOntologyDate = retrieveLatestOntologyDate();
-                } catch (EARSOntologyRetrievalException ex) {
-                latestOntologyDate = null;
-                Logger.getLogger(EARSOntologyRetriever.class.getName()).log(Level.SEVERE, null, ex);
-                
-                }
-                latestOntologyAxiomFileName = retrieveLatestOntologyAxiomFileName();
-                if (latestOntologyAxiomFileName != null) {
-                String date = latestOntologyAxiomFileName.replaceAll(OntologyConstants.ONTOLOGY_AXIOM_FILENAME_BASE, "").replaceAll("-", "").replaceAll(".xml", "");
-                try {
-                latestOntologyAxiomDate = OntologyConstants.YYYYMMDD_FM.parse(date);
-                } catch (ParseException ex) {
-                latestOntologyAxiomDate = null;
-                }
-                }*/
         } else {
             throw new ConnectException("Cannot connect to the EARS Ontology server.");
         }
@@ -132,7 +112,7 @@ public class EARSOntologyRetriever {
             }
             return false;
         } catch (IOException ex) {
-            Logger.getLogger(EARSOntologyRetriever.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EARSOntologyRetriever.class.getName()).log(Level.SEVERE, "An exception occured.", ex);
             return false;
         }
     }
@@ -178,27 +158,26 @@ public class EARSOntologyRetriever {
      * @param targetDir
      * @return
      */
-    public File downloadLatestOntology(File targetDir) {
+    public File downloadLatestOntology(File targetDir) throws IOException {
         if (currentOntologyFile != null && compressedCurrentOntologyFile != null) {
             String fileName = FilenameUtils.getName(currentOntologyFile.getPath());
             String compressedFileName = FilenameUtils.getName(compressedCurrentOntologyFile.getPath());
-            File downloadedCompressedOntologyFile = FileUtils.downloadFromUrl(compressedCurrentOntologyFile, targetDir, compressedFileName);
-            File downloadedOntologyFile = null;
-            if (downloadedCompressedOntologyFile != null) {
-                try {
+            try {
+                File downloadedCompressedOntologyFile = FileUtils.downloadFromUrl(compressedCurrentOntologyFile, targetDir, compressedFileName);
+                if (downloadedCompressedOntologyFile != null) {
+                    File downloadedOntologyFile = null;
                     downloadedOntologyFile = FileUtils.decompress7zFile(downloadedCompressedOntologyFile, targetDir);
                     if (downloadedOntologyFile != null) {
                         return downloadedOntologyFile;
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(EARSOntologyRetriever.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
-            return FileUtils.downloadFromUrl(compressedCurrentOntologyFile, targetDir, fileName);
 
-        } else {
-            return null;
+            } catch (IOException ex) {
+                return FileUtils.downloadFromUrl(currentOntologyFile, targetDir, fileName);
+            }
+
         }
+        return null;
     }
 
     /**
@@ -208,7 +187,7 @@ public class EARSOntologyRetriever {
      * @param targetDir
      * @return
      */
-    public File downloadLatestOntologyAxiom(File targetDir) {
+    public File downloadLatestOntologyAxiom(File targetDir) throws IOException {
         if (latestOntologyAxiomUrl != null) {
             String fileName = FilenameUtils.getName(latestOntologyAxiomUrl.getPath());
             return FileUtils.downloadFromUrl(latestOntologyAxiomUrl, targetDir, fileName);

@@ -22,19 +22,26 @@ import java.util.Map;
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
     
-    public static final  SimpleDateFormat ISO_DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final  SimpleDateFormat SDF_ISO_DATETIME = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+    public static final SimpleDateFormat SDF_SIMPLE_DATE = new SimpleDateFormat("yyyyMMdd");
 
-    public static final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat SDF_ISO_DATE = new SimpleDateFormat("yyyy-MM-dd");
 
-    public static final SimpleDateFormat FULL_ISO_DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    public static final SimpleDateFormat SDF_FULL_ISO_DATETIME = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
-    public static final DateTimeFormatter TIME_FORMAT_HOURS_MINS = DateTimeFormatter.ofPattern("HH:mm", Locale.FRANCE);
+    public static final DateTimeFormatter DTF_TIME_FORMAT_HOURS_MINS = DateTimeFormatter.ofPattern("HH:mm", Locale.FRANCE);
     
-    public static final DateTimeFormatter TIME_FORMAT_HOURS_MINS_SECS = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.FRANCE);
+    public static final DateTimeFormatter DTF_TIME_FORMAT_HOURS_MINS_SECS = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.FRANCE);
+    
+    public static final DateTimeFormatter DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE = DateTimeFormatter.ofPattern("HH:mm:ssX", Locale.FRANCE);
 
-    public static final DateTimeFormatter FULL_ISO_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.FRANCE);
+    public static final DateTimeFormatter DTF_FULL_ISO_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.FRANCE);
+    
+    public static final DateTimeFormatter DTF_ISO_DATETIME_ZONE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+    
+    public static final DateTimeFormatter DTF_ISO_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+   
 
     public static String concatString(Collection<String> strings, String separator) {
         StringBuilder sb = new StringBuilder();
@@ -88,7 +95,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     public static Date returnMostSpecificDate(Map<SimpleDateFormat, String> dates) {
-        SimpleDateFormat mostSpecificFormat = StringUtils.SIMPLE_DATE_FORMAT;//new ArrayList<SimpleDateFormat>(dates.keySet()).get(0);
+        SimpleDateFormat mostSpecificFormat = StringUtils.SDF_SIMPLE_DATE;//new ArrayList<SimpleDateFormat>(dates.keySet()).get(0);
         for (Map.Entry<SimpleDateFormat, String> entry : dates.entrySet()) {
             String dateString = entry.getValue();
             SimpleDateFormat format = entry.getKey();

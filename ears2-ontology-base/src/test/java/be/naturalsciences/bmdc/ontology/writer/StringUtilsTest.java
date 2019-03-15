@@ -90,43 +90,43 @@ public class StringUtilsTest {
         System.out.println("returnMostSpecificDate");
         Map<SimpleDateFormat, String> dates = new HashMap();
 
-        dates.put(StringUtils.SIMPLE_DATE_FORMAT, "20170530");//yyyyMMdd
-        dates.put(StringUtils.FULL_ISO_DATETIME_FORMAT, "2017-05-30T13:54:02.866Z");//yyyy-MM-dd'T'HH:mm:ss.SSSX
+        dates.put(StringUtils.SDF_SIMPLE_DATE, "20170530");//yyyyMMdd
+        dates.put(StringUtils.SDF_FULL_ISO_DATETIME, "2017-05-30T13:54:02.866Z");//yyyy-MM-dd'T'HH:mm:ss.SSSX
 
         //  Date expResult = date2;
         Date result = StringUtils.returnMostSpecificDate(dates);
         Date expResult = null;
         try {
-            expResult = StringUtils.FULL_ISO_DATETIME_FORMAT.parse("2017-05-30T13:54:02.866Z");
+            expResult = StringUtils.SDF_FULL_ISO_DATETIME.parse("2017-05-30T13:54:02.866Z");
         } catch (ParseException ex) {
             fail("Couldn't parse");
         }
         assertEquals(expResult, result);
 
-        dates.put(StringUtils.SIMPLE_DATE_FORMAT, "20170530");//yyyyMMdd
-        dates.put(StringUtils.FULL_ISO_DATETIME_FORMAT, null);//yyyy-MM-dd'T'HH:mm:ss.SSSX
+        dates.put(StringUtils.SDF_SIMPLE_DATE, "20170530");//yyyyMMdd
+        dates.put(StringUtils.SDF_FULL_ISO_DATETIME, null);//yyyy-MM-dd'T'HH:mm:ss.SSSX
 
         result = StringUtils.returnMostSpecificDate(dates);
         try {
-            expResult = StringUtils.SIMPLE_DATE_FORMAT.parse("20170530");
+            expResult = StringUtils.SDF_SIMPLE_DATE.parse("20170530");
         } catch (ParseException ex) {
             fail("Couldn't parse");
         }
         assertEquals(expResult, result);
 
-        dates.put(StringUtils.SIMPLE_DATE_FORMAT, null);//yyyyMMdd
-        dates.put(StringUtils.FULL_ISO_DATETIME_FORMAT, "2017-05-30T13:54:02.866Z");//yyyy-MM-dd'T'HH:mm:ss.SSSX
+        dates.put(StringUtils.SDF_SIMPLE_DATE, null);//yyyyMMdd
+        dates.put(StringUtils.SDF_FULL_ISO_DATETIME, "2017-05-30T13:54:02.866Z");//yyyy-MM-dd'T'HH:mm:ss.SSSX
 
         result = StringUtils.returnMostSpecificDate(dates);
         try {
-            expResult = StringUtils.FULL_ISO_DATETIME_FORMAT.parse("2017-05-30T13:54:02.866Z");
+            expResult = StringUtils.SDF_FULL_ISO_DATETIME.parse("2017-05-30T13:54:02.866Z");
         } catch (ParseException ex) {
             fail("Couldn't parse");
         }
         assertEquals(expResult, result);
 
-        dates.put(StringUtils.SIMPLE_DATE_FORMAT, null);//yyyyMMdd
-        dates.put(StringUtils.FULL_ISO_DATETIME_FORMAT, null);//yyyy-MM-dd'T'HH:mm:ss.SSSX
+        dates.put(StringUtils.SDF_SIMPLE_DATE, null);//yyyyMMdd
+        dates.put(StringUtils.SDF_FULL_ISO_DATETIME, null);//yyyy-MM-dd'T'HH:mm:ss.SSSX
 
         //  Date expResult = date2;
         result = StringUtils.returnMostSpecificDate(dates);

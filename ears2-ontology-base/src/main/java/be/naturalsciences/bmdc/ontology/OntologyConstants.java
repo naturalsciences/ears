@@ -69,7 +69,7 @@ public class OntologyConstants {
                 SERVER_ONTOLOGY_AXIOM_URL = Paths.get(axFile.getCanonicalPath()).toUri().toURL();
             }
         } catch (IOException ex) {
-            Logger.getLogger(OntologyConstants.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OntologyConstants.class.getName()).log(Level.SEVERE, "An exception occured.", ex);
         }
     }
 
