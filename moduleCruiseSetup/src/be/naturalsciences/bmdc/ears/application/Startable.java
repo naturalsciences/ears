@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Set;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
+import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 
@@ -160,7 +161,11 @@ public class Startable implements Runnable, LookupListener {
 
         Thread thr1 = new Thread() {
             public void run() {
-                OntologySynchronizer.synchronizeLatestOntologyAxiom();
+                try {
+                    OntologySynchronizer.synchronizeLatestOntologyAxiom();
+                } catch (IOException ex) {
+                    Messaging.report("The latest ontology axiom file could not be synchronized.", ex, Startable.class, true);
+                }
                 OntologySynchronizer.synchronizeBaseOntology();
                 //OntologyFileBrowser.open(OntologyFileBrowser.getBaseNode()); //ontology object and its individuals are now in global lookup
             }
