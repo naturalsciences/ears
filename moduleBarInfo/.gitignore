@@ -14,8 +14,8 @@ old_ontologies
 *.log
 *.ctxt
 .mtj.tmp/
-*.jar
-*.war
+#*.jar
+#*.war
 *.ear
 *.zip
 *.tar.gz

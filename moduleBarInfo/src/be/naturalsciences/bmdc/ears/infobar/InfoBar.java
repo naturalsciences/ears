@@ -6,15 +6,22 @@
 package be.naturalsciences.bmdc.ears.infobar;
 
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
+import be.naturalsciences.bmdc.ears.rest.RestClientNav;
 import be.naturalsciences.bmdc.ears.utils.Message;
+import be.naturalsciences.bmdc.ears.utils.Messaging;
+import be.naturalsciences.bmdc.ontology.EarsException;
+import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.net.ConnectException;
 import java.text.DateFormat;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.openide.awt.NotificationDisplayer;
+import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -100,16 +108,20 @@ public final class InfoBar implements LookupListener {
     private static final InputOutput messages = IOProvider.getDefault().getIO("Messages", true);
     private static final InputOutput exceptions = IOProvider.getDefault().getIO("Exceptions", true);
 
-    private static final DateFormat format = DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.getDefault());
     private JPanel panel = new JPanel();
-    private final JLabel connectionLabel;
+    // private final JLabel connectionLabel;
     private JLabel timeLabel;
+    private JLabel centralTimeLabel;
 
     private static ConnectionState latestConnectionState;
 
     private static final InfoBar instance = new InfoBar();
 
     private final CircularFifoQueue<Message> queue;
+
+    RestClientNav restNav;
+
+    private static final String SEPARATOR = " | ";
 
     /**
      *
@@ -135,6 +147,14 @@ public final class InfoBar implements LookupListener {
         queue = new CircularFifoQueue<>(3);
         messageResult = Utilities.actionsGlobalContext().lookupResult(Message.class);
 
+        try {
+            restNav = new RestClientNav();
+        } catch (ConnectException ex) {
+            Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), true);
+        } catch (EarsException ex) {
+            Messaging.report("Problem with the navigation web service", ex, this.getClass(), true);;
+        }
+
         if (messageResult.allInstances().size() > 0) {
             for (Message message : messageResult.allInstances()) {
                 bubble(message);
@@ -142,17 +162,32 @@ public final class InfoBar implements LookupListener {
         }
         messageResult.addLookupListener(this);
         Timer t = new Timer(1000, (ActionEvent event) -> {
-            LocalTime localTimeInUtc = LocalTime.now(Clock.systemUTC());
-            LocalTime localTime = LocalTime.now(Clock.systemDefaultZone());
-            timeLabel.setText("UTC:"+ DateTimeFormatter.ISO_TIME.format(localTimeInUtc) + " Local:"  + DateTimeFormatter.ISO_TIME.format(localTime) + " ");
+            OffsetTime localTimeInUtc = OffsetTime.now(Clock.systemUTC());
+            OffsetTime localTime = OffsetTime.now(Clock.systemDefaultZone());
+            timeLabel.setText("Computer UTC: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTimeInUtc) + SEPARATOR + "Computer local: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTime) + " ");
+        });
+
+        Timer t2 = new Timer(10000, (ActionEvent event) -> {
+            try {
+                if (restNav != null && restNav.getLastNavXml() != null && restNav.getLastNavXml().getTimeStamp() != null) {
+                    String lastCentralTime = restNav.getLastNavXml().getTimeStamp().replace(" ", "T");
+                    LocalDateTime localDate = LocalDateTime.parse(lastCentralTime);
+                    centralTimeLabel.setText("Latest (~10s) server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
+                }
+            } catch (ConnectException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         });
 
         t.start();
+        t2.start();
 
-        JLabel separator = new JLabel("|");
-        this.timeLabel = new JLabel(format.format(new Date()));
-        this.connectionLabel = new JLabel(imgNoConnection);
-
+        JLabel separator = new JLabel(SEPARATOR);
+        this.timeLabel = new JLabel();
+        this.centralTimeLabel = new JLabel();
+        // this.connectionLabel = new JLabel(imgNoConnection);
+        panel.add(separator);
+        panel.add(this.centralTimeLabel);
         panel.add(separator);
         panel.add(this.timeLabel);
 
@@ -206,7 +241,7 @@ public final class InfoBar implements LookupListener {
      *
      * @param state
      */
-    public void setLatestConnectionState(ConnectionState state) {
+    /* public void setLatestConnectionState(ConnectionState state) {
         latestConnectionState = state;
         // propertyChangeSupport ...
         Icon icon;
@@ -226,8 +261,7 @@ public final class InfoBar implements LookupListener {
         }
         this.connectionLabel.setIcon(icon);
         this.connectionLabel.setText(NbBundle.getMessage(InfoBar.class, getConnectionStateName(latestConnectionState)));
-    }
-
+    }*/
     private void bubble(Message message) {
         GlobalActionContextProxy.getInstance().removeAll(Message.class);
         if (message.getEx() != null) {
