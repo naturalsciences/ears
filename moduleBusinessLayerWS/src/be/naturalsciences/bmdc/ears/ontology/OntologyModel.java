@@ -627,7 +627,7 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         } catch (EarsException ex) {
             Messaging.report("The EARS web services url is wrongly configured. Could not download the latest version of the tree (" + name + ").", ex, ProgramOntology.class, true);
         } catch (IOException ex) {
-            Messaging.report("There was a problem with the downloaded tree (" + name + "). It has not been written to disk.", ex, ProgramOntology.class, true);
+            Messaging.report("There was a problem with the downloaded tree (" + name + "). It wasn't found on the server or couldn't be written to disk.", ex, ProgramOntology.class, true);
         }
         return null;
     }

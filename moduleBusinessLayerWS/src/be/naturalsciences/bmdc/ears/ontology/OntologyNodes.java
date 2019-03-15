@@ -515,14 +515,14 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                     Messaging.report("A problem occured during saving the tree at " + destPath + " for the tool" + tool.getUri(), e, this.getClass(), false);
                 }
                 if (tool.isHostingTool()) {
-                    for (SpecificEventDefinition sev : specificEventDefinitions) {
+                    for (SpecificEventDefinition sev : tool.getSpecificEventDefinitionCollection()) {
                         specificEventDefinitions.add(sev);
                         processes.add(sev.getProcess());
                         actions.add(sev.getAction());
                         processActions.add(sev.getProcessAction());
                         properties.addAll(sev.getPropertyCollection());
                     }
-                    for (GenericEventDefinition gev : genericEventDefinitions) {
+                    for (GenericEventDefinition gev : tool.getGenericEventDefinitionCollection()) {
                         genericEventDefinitions.add(gev);
                         processes.add(gev.getProcess());
                         actions.add(gev.getAction());

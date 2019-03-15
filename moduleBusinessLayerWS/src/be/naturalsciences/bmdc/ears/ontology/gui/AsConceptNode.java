@@ -426,8 +426,8 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
             return new Action[]{
                 SystemAction.get(DeleteNodeAction.class),
                 SystemAction.get(ExpandNodeAction.class),
-                //  SystemAction.get(CollapseNodeAction.class),
-                SystemAction.get(CreateChildNodeAction.class),
+                //SystemAction.get(CollapseNodeAction.class),
+                //SystemAction.get(CreateChildNodeAction.class), //After discussion during ODIP 2 in October 2017 in Galway it was decided to disallow creating new terms.
                 SystemAction.get(CreateEventAction.class)};
         } else {
             return new Action[]{

@@ -106,7 +106,7 @@ public class ClassChildren extends Children.Keys {
                     uniqueName = copiedConcept.getTermRef().getOrigUrn();
                 } else {
                     uniqueName = "PROBLEM-CASE";
-                    Messaging.report("There was a problem with concept " + copiedConcept.getUri().toASCIIString() + " of one of the trees: it has no name. If it was the base tree, please contact the EARS governance team.", Message.State.BAD, ClassChildren.class, true);
+                    Messaging.report("There was a problem with concept " + copiedConcept.getUri().toASCIIString() + " of one of the trees: it has no or multiple names. If it was the base tree, please contact the EARS governance team.", Message.State.BAD, ClassChildren.class, true);
                 }
 
                 childNode.setName(uniqueName);

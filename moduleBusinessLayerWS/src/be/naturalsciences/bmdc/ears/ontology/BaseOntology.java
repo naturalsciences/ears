@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Date;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -41,20 +42,24 @@ public class BaseOntology extends OntologyModel implements IBaseOntology {
     }
 
     public static File downloadLatestBaseOntologyVersion() {
+        File downloadedFile = null;
         if (Constants.EARS_ONTOLOGY_RETRIEVER != null) {
-            File downloadedFile = Constants.EARS_ONTOLOGY_RETRIEVER.downloadLatestOntology(new File(Constants.ONTO_DIR));
-            if (downloadedFile == null) {
-                Messaging.report("There was a problem with the downloaded vessel tree.", Message.State.BAD, BaseOntology.class, true);
+            try {
+                downloadedFile = Constants.EARS_ONTOLOGY_RETRIEVER.downloadLatestOntology(new File(Constants.ONTO_DIR));
+                if (downloadedFile == null) {
+                    Messaging.report("There was a problem with getting the base tree. It wasn't found on the server or couldn't be written to disk.", Message.State.BAD, BaseOntology.class, true);
+                }
+            } catch (IOException ex) {
+                Messaging.report("There was a problem with getting the base tree. It wasn't found on the server or couldn't be written to disk.", ex, BaseOntology.class, true);
             }
-            return downloadedFile;
         } else {
-            Messaging.report("The BASE tree is outdated, but downloading a replacement tree failed.", Message.State.BAD, BaseOntology.class, false);
+            Messaging.report("There was a problem with getting the base tree. No valid EARSOntologRetriever instance available.", Message.State.BAD, BaseOntology.class, true);
         }
-        return null;
+        return downloadedFile;
     }
 
     @Override
-     public File downloadLatestVersion(String name) {
+    public File downloadLatestVersion(String name) {
         return downloadLatestBaseOntologyVersion();
     }
 

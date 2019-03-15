@@ -16,6 +16,7 @@ import be.naturalsciences.bmdc.ontology.IOntologyModel;
 import gnu.trove.set.hash.THashSet;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Collection;
 import java.util.Date;
@@ -29,7 +30,7 @@ import org.openide.util.Exceptions;
  */
 public class OntologySynchronizer {
 
-    public static void synchronizeLatestOntologyAxiom() {
+    public static void synchronizeLatestOntologyAxiom() throws IOException {
         if (Constants.EARS_ONTOLOGY_RETRIEVER != null) { //if I am online
             File f = new File(Constants.LATEST_ONLINE_ONTOLOGY_AXIOM_LOCATION);
             if (!f.exists() && !f.isDirectory()) {

@@ -61,7 +61,6 @@ public class ExceptionMessage implements Serializable, IResponseMessage {
     public ExceptionMessage(String timeStamp, String errorCode, String message) {
         this.timestamp = timeStamp;
         this.message = message;
-        this.exception = exception.toString();
         this.error = errorCode;
     }
 
