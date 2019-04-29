@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
->Log Session: Monday, April 29, 2019 2:26:42 PM CEST
+>Log Session: Monday, April 29, 2019 2:45:19 PM CEST
 >System Info: 
   Product Version         = 1.0.5
   Operating System        = Windows 10 version 10.0 running on amd64
@@ -91,20 +91,12 @@ INFO [org.netbeans.core.startup.NbEvents]: Turning on modules:
 INFO [be.naturalsciences.bmdc.ontology.writer.FileUtils]: Website http://ontologies.ef-ears.eu/ontology.json returns status code:200.
 WARNING [org.openide.filesystems.Ordering]: Not all children in Services/MIMEResolver/ marked with the position attribute: [be-naturalsciences-bmdc-ears-ontology-rdf-RdfFileTypeDataObject-Extension.xml], but some are: [org-openide-loaders-DataLoaderPool$InstanceLoaderSystem-Extension.xml, org-netbeans-core-startup-layers-SystemFileSystem-Extension.xml]
 WARNING [null]: Last record repeated again.
-SLF4J: The following set of substitute loggers may have been accessed
-SLF4J: during the initialization phase. Logging calls during this
-SLF4J: phase were not honored. However, subsequent logging calls to these
-SLF4J: loggers will work as normally expected.
-SLF4J: See also http://www.slf4j.org/codes.html#substituteLogger
-SLF4J: org.apache.http.conn.ssl.StrictHostnameVerifier
-SLF4J: org.apache.http.conn.ssl.BrowserCompatHostnameVerifier
-SLF4J: org.apache.http.conn.ssl.AllowAllHostnameVerifier
 [Thread-2] WARN org.apache.jena.riot.RDFLanguages - java-jsonld classes not on the classpath - JSON-LD input-output not available.
 [Thread-2] WARN org.apache.jena.riot.RDFLanguages - Minimum jarfiles are jsonld-java, jackson-core, jackson-annotations
 [Thread-2] WARN org.apache.jena.riot.RDFLanguages - If using a Jena distribution, put all jars in the lib/ directory on the classpath
 WARNING [org.openide.filesystems.Ordering]: Not all children in Toolbars/ marked with the position attribute: [Operations], but some are: [Memory, Standard.xml]
 INFO [org.netbeans.ui.metrics.laf]: USG_LOOK_AND_FEEL
-INFO [org.netbeans.core.windows.persistence]: [PersistenceManager.getTopComponentForID] Problem when deserializing TopComponent for tcID:'OntologyTreeViewer_1'. Reason: java.lang.NoSuchMethodException: be.naturalsciences.bmdc.ears.ontology.treeviewer.OntologyTreeViewer.<init>()
+INFO [org.netbeans.core.windows.persistence]: [PersistenceManager.getTopComponentForID] Problem when deserializing TopComponent for tcID:'OntologyTreeViewer_2'. Reason: java.lang.NoSuchMethodException: be.naturalsciences.bmdc.ears.ontology.treeviewer.OntologyTreeViewer.<init>()
 
 msg
 msg
@@ -183,9 +175,9 @@ Content:
         7373656C7400164F70656E20616E642062726F777365206120747265657078
     </serialdata>
 </settings>
-ALL [null]: Source: MultiFileObject@8a4c120[Windows2Local/Components/OntologyTreeViewer_1.settings]
+ALL [null]: Source: MultiFileObject@61723d04[Windows2Local/Components/OntologyTreeViewer_2.settings]
 ALL [null]: Cannot read class: be.naturalsciences.bmdc.ears.ontology.treeviewer.OntologyTreeViewer
-WARNING [org.netbeans.ProxyClassLoader]: Will not load class org.jdesktop.swingx.painter.BusyPainter arbitrarily from one of ModuleCL@6a08d033[be.naturalsciences.bmdc.ears.moduleCruiseSetup] and ModuleCL@330c504[be.naturalsciences.bmdc.ears.moduleOptions] starting from SystemClassLoader[65 modules]; see http://wiki.netbeans.org/DevFaqModuleCCE
+WARNING [org.netbeans.ProxyClassLoader]: Will not load class org.jdesktop.swingx.painter.BusyPainter arbitrarily from one of ModuleCL@4732a1ac[be.naturalsciences.bmdc.ears.moduleCruiseSetup] and ModuleCL@66bd20aa[be.naturalsciences.bmdc.ears.moduleOptions] starting from SystemClassLoader[65 modules]; see http://wiki.netbeans.org/DevFaqModuleCCE
 INFO [be.naturalsciences.bmdc.ears.application.Startable]: Vessel: Belgica
 INFO [be.naturalsciences.bmdc.ears.toolbar.GeneralToolBarAction]: Current program: BMM E/A-PR(E) (Patrick Roose / Els Monteyne)
 INFO [be.naturalsciences.bmdc.ears.toolbar.GeneralToolBarAction]: Current cruise: 2004/00a (2004/01/05-2004/01/05)
@@ -206,24 +198,9 @@ Input arguments:
 Compiler: HotSpot 64-Bit Tiered Compilers
 Heap memory usage: initial 256,0MB maximum 3625,0MB
 Non heap memory usage: initial 2,4MB maximum -1b
-Garbage collector: PS Scavenge (Collections=13 Total time spent=0s)
-Garbage collector: PS MarkSweep (Collections=2 Total time spent=0s)
-Classes: loaded=8930 total loaded=8930 unloaded 0
+Garbage collector: PS Scavenge (Collections=14 Total time spent=0s)
+Garbage collector: PS MarkSweep (Collections=3 Total time spent=0s)
+Classes: loaded=8945 total loaded=8945 unloaded 0
 INFO [org.netbeans.core.ui.warmup.DiagnosticTask]: Total memory 17.104.125.952
 INFO [null]: Total physical memory 17.104.125.952
 WARNING [org.openide.filesystems.Ordering]: Not all children in Menu/Window/ marked with the position attribute: [Cruise & program setup, Trees, org-openide-actions-PropertiesAction.shadow], but some are: [be-naturalsciences-bmdc-ears-topcomponents-CreateEventTopComponent.shadow, org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow, org-netbeans-core-io-ui-IOWindowAction.shadow, Separator3.instance, org-netbeans-core-windows-actions-ResetWindowsAction.shadow, Separator4.instance, CloseWindowAction.shadow, CloseAllDocumentsAction.shadow, CloseAllButThisAction.shadow]
-------------
-|Tried URL: https://ears.bmdc.be/ears2/insertEvent?id=142709098&date=2019-04-29T12%3A27%3A09&subject=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ctg_26%22%3A%22research%2Bvessel%22%7D&tool=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ves_1792%22%3A%22Belgica%22%7D&categoryName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pro_20%22%3A%22Cruise%22%7D&actionName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23act_2%22%3A%22End%22%7D&actionProperty=%5B%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_22%22%2C%22name%22%3A%22program%22%2C%22value%22%3A%22BMM%2BE%2FA-PR%28E%29%22%7D%5D
-|Server response status code: 200
-|Response message: Event inserted: identifier 142709098
-------------
-------------
-|Tried URL: https://ears.bmdc.be/ears2/modifyEvent?eventId=142709098&timeStamp=2019-04-29T12%3A27%3A09&actor=&subject=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ctg_26%22%3A%22research%2Bvessel%22%7D&tool=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ves_1792%22%3A%22Belgica%22%7D&categoryName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pro_20%22%3A%22Cruise%22%7D&actionName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23act_2%22%3A%22End%22%7D&actionProperty=%5B%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_4%22%2C%22name%22%3A%22label%22%2C%22value%22%3A%22cvc%22%7D%2C%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_22%22%2C%22name%22%3A%22program%22%2C%22value%22%3A%22BMM%2BE%2FA-PR%28E%29%22%7D%5D
-|Server response status code: 200
-|Response message: Event modified: identifier 142709098
-------------
-------------
-|Tried URL: https://ears.bmdc.be/ears2/removeEvent?id=142709098
-|Server response status code: 200
-|Response message: Event deleted: identifier 0
-------------

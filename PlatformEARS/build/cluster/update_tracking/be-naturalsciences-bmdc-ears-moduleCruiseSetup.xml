@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleCruiseSetup">
-    <module_version install_time="1556540801837" last="true" origin="installer" specification_version="1.0">
+    <module_version install_time="1556541918915" last="true" origin="installer" specification_version="1.0">
         <file crc="44306613" name="config/Modules/be-naturalsciences-bmdc-ears-moduleCruiseSetup.xml"/>
         <file crc="647561094" name="modules/be-naturalsciences-bmdc-ears-moduleCruiseSetup.jar"/>
         <file crc="755353581" name="modules/ext/LGoodDatePicker-8.3.0.jar"/>

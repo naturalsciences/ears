@@ -5,7 +5,7 @@
         <attr name="WinSys-TCRef-Order" stringvalue="CreateProgramSetupTopComponent/EditProgramSetupTopComponent/CreateCruiseSetupTopComponent/CreateEventTopComponent/EditCruiseSetupTopComponent"/>
     </fileobject>
     <fileobject name="explorer">
-        <attr name="WinSys-TCRef-Order" stringvalue="OntologyFileBrowser/favorites/OntologyTreeViewer/ConceptListTopComponentTopComponent/OntologyTreeViewer_2"/>
+        <attr name="WinSys-TCRef-Order" stringvalue="OntologyFileBrowser/favorites/OntologyTreeViewer/ConceptListTopComponentTopComponent"/>
     </fileobject>
     <fileobject name="output">
         <attr name="WinSys-TCRef-Order" stringvalue="output"/>

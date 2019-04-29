@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleOptions">
-    <module_version install_time="1556540801955" last="true" origin="installer" specification_version="1.0">
+    <module_version install_time="1556541919042" last="true" origin="installer" specification_version="1.0">
         <file crc="1442705278" name="config/Modules/be-naturalsciences-bmdc-ears-moduleOptions.xml"/>
         <file crc="4189383442" name="modules/be-naturalsciences-bmdc-ears-moduleOptions.jar"/>
         <file crc="1795493813" name="modules/ext/ValidationAPI.jar"/>

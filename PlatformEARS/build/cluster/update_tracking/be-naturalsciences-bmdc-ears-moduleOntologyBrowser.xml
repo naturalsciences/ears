@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleOntologyBrowser">
-    <module_version install_time="1556540801682" last="true" origin="installer" specification_version="1.0">
+    <module_version install_time="1556541918781" last="true" origin="installer" specification_version="1.0">
         <file crc="3579801248" name="config/Modules/be-naturalsciences-bmdc-ears-moduleOntologyBrowser.xml"/>
         <file crc="1757079573" name="modules/be-naturalsciences-bmdc-ears-moduleOntologyBrowser.jar"/>
     </module_version>

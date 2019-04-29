@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
->Log Session: Tuesday, April 23, 2019 2:40:41 PM CEST
+>Log Session: Friday, April 26, 2019 11:34:45 AM CEST
 >System Info: 
   Product Version         = 1.0.5
   Operating System        = Windows 10 version 10.0 running on amd64
@@ -91,12 +91,12 @@ INFO [org.netbeans.core.startup.NbEvents]: Turning on modules:
 INFO [be.naturalsciences.bmdc.ontology.writer.FileUtils]: Website http://ontologies.ef-ears.eu/ontology.json returns status code:200.
 WARNING [org.openide.filesystems.Ordering]: Not all children in Services/MIMEResolver/ marked with the position attribute: [be-naturalsciences-bmdc-ears-ontology-rdf-RdfFileTypeDataObject-Extension.xml], but some are: [org-openide-loaders-DataLoaderPool$InstanceLoaderSystem-Extension.xml, org-netbeans-core-startup-layers-SystemFileSystem-Extension.xml]
 WARNING [null]: Last record repeated again.
-[Thread-3] WARN org.apache.jena.riot.RDFLanguages - java-jsonld classes not on the classpath - JSON-LD input-output not available.
-[Thread-3] WARN org.apache.jena.riot.RDFLanguages - Minimum jarfiles are jsonld-java, jackson-core, jackson-annotations
-[Thread-3] WARN org.apache.jena.riot.RDFLanguages - If using a Jena distribution, put all jars in the lib/ directory on the classpath
+[Thread-2] WARN org.apache.jena.riot.RDFLanguages - java-jsonld classes not on the classpath - JSON-LD input-output not available.
+[Thread-2] WARN org.apache.jena.riot.RDFLanguages - Minimum jarfiles are jsonld-java, jackson-core, jackson-annotations
+[Thread-2] WARN org.apache.jena.riot.RDFLanguages - If using a Jena distribution, put all jars in the lib/ directory on the classpath
 WARNING [org.openide.filesystems.Ordering]: Not all children in Toolbars/ marked with the position attribute: [Operations], but some are: [Memory, Standard.xml]
 INFO [org.netbeans.ui.metrics.laf]: USG_LOOK_AND_FEEL
-WARNING [org.netbeans.ProxyClassLoader]: Will not load class org.jdesktop.swingx.painter.BusyPainter arbitrarily from one of ModuleCL@6a08d033[be.naturalsciences.bmdc.ears.moduleCruiseSetup] and ModuleCL@330c504[be.naturalsciences.bmdc.ears.moduleOptions] starting from SystemClassLoader[65 modules]; see http://wiki.netbeans.org/DevFaqModuleCCE
+WARNING [org.netbeans.ProxyClassLoader]: Will not load class org.jdesktop.swingx.painter.BusyPainter arbitrarily from one of ModuleCL@446cb9f5[be.naturalsciences.bmdc.ears.moduleCruiseSetup] and ModuleCL@43bca6b1[be.naturalsciences.bmdc.ears.moduleOptions] starting from SystemClassLoader[65 modules]; see http://wiki.netbeans.org/DevFaqModuleCCE
 INFO [be.naturalsciences.bmdc.ears.application.Startable]: Vessel: Belgica
 INFO [be.naturalsciences.bmdc.ears.toolbar.GeneralToolBarAction]: Current program: BMM E/A-PR(E) (Patrick Roose / Els Monteyne)
 INFO [be.naturalsciences.bmdc.ears.toolbar.GeneralToolBarAction]: Current cruise: 2004/00a (2004/01/05-2004/01/05)
@@ -119,7 +119,27 @@ Heap memory usage: initial 256,0MB maximum 3625,0MB
 Non heap memory usage: initial 2,4MB maximum -1b
 Garbage collector: PS Scavenge (Collections=11 Total time spent=0s)
 Garbage collector: PS MarkSweep (Collections=2 Total time spent=0s)
-Classes: loaded=8570 total loaded=8571 unloaded 1
+Classes: loaded=8591 total loaded=8591 unloaded 0
 INFO [org.netbeans.core.ui.warmup.DiagnosticTask]: Total memory 17.104.125.952
 INFO [null]: Total physical memory 17.104.125.952
 WARNING [org.openide.filesystems.Ordering]: Not all children in Menu/Window/ marked with the position attribute: [Cruise & program setup, Trees, org-openide-actions-PropertiesAction.shadow], but some are: [be-naturalsciences-bmdc-ears-topcomponents-CreateEventTopComponent.shadow, org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow, org-netbeans-core-io-ui-IOWindowAction.shadow, Separator3.instance, org-netbeans-core-windows-actions-ResetWindowsAction.shadow, Separator4.instance, CloseWindowAction.shadow, CloseAllDocumentsAction.shadow, CloseAllButThisAction.shadow]
+------------
+|Tried URL: https://ears.bmdc.be/ears2/insertEvent?id=113519076&date=2019-04-26T09%3A35%3A19&subject=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ctg_26%22%3A%22research%2Bvessel%22%7D&tool=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ves_1792%22%3A%22Belgica%22%7D&categoryName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pro_3%22%3A%22Station%22%7D&actionName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23act_2%22%3A%22End%22%7D&actionProperty=%5B%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_22%22%2C%22name%22%3A%22program%22%2C%22value%22%3A%22BMM%2BE%2FA-PR%28E%29%22%7D%5D
+|Server response status code: 200
+|Response message: Event inserted: identifier 113519076
+------------
+------------
+|Tried URL: https://ears.bmdc.be/ears2/modifyEvent?eventId=113519076&timeStamp=2019-04-26T09%3A35%3A19&actor=&subject=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ctg_26%22%3A%22research%2Bvessel%22%7D&tool=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ves_1792%22%3A%22Belgica%22%7D&categoryName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pro_3%22%3A%22Station%22%7D&actionName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23act_2%22%3A%22End%22%7D&actionProperty=%5B%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_4%22%2C%22name%22%3A%22label%22%2C%22value%22%3A%22dd%22%7D%2C%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_22%22%2C%22name%22%3A%22program%22%2C%22value%22%3A%22BMM%2BE%2FA-PR%28E%29%22%7D%5D
+|Server response status code: 200
+|Response message: Event modified: identifier 113519076
+------------
+------------
+|Tried URL: https://ears.bmdc.be/ears2/insertEvent?id=113526447&date=2019-04-26T09%3A35%3A26&subject=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ctg_26%22%3A%22research%2Bvessel%22%7D&tool=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ves_1792%22%3A%22Belgica%22%7D&categoryName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pro_3%22%3A%22Station%22%7D&actionName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23act_1%22%3A%22Start%22%7D&actionProperty=%5B%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_22%22%2C%22name%22%3A%22program%22%2C%22value%22%3A%22BMM%2BE%2FA-PR%28E%29%22%7D%5D
+|Server response status code: 200
+|Response message: Event inserted: identifier 113526447
+------------
+------------
+|Tried URL: https://ears.bmdc.be/ears2/modifyEvent?eventId=113519076&timeStamp=2019-04-26T09%3A35%3A19&actor=&subject=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ctg_26%22%3A%22research%2Bvessel%22%7D&tool=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23ves_1792%22%3A%22Belgica%22%7D&categoryName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pro_3%22%3A%22Station%22%7D&actionName=%7B%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23act_2%22%3A%22End%22%7D&actionProperty=%5B%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_4%22%2C%22name%22%3A%22label%22%2C%22value%22%3A%22dddd%22%7D%2C%7B%22code%22%3A%22http%3A%2F%2Fontologies.ef-ears.eu%2Fears2%2F1%23pry_22%22%2C%22name%22%3A%22program%22%2C%22value%22%3A%22BMM%2BE%2FA-PR%28E%29%22%7D%5D
+|Server response status code: 200
+|Response message: Event modified: identifier 113519076
+------------
