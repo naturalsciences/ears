@@ -45,7 +45,7 @@ public class ScopeNode extends AbstractNode implements DirectoryChangeListener {
     private Set<OntologyNode> goodList = new THashSet();
     private Set<OntologyNode> badList = new THashSet();
 
-    private final static RdfFileTypeLoader loader = new RdfFileTypeLoader();
+    private final static RdfFileTypeLoader LOADER = new RdfFileTypeLoader();
 
     private List<String> scopes;
     private File fileOrFolder;
@@ -142,7 +142,7 @@ public class ScopeNode extends AbstractNode implements DirectoryChangeListener {
             FileObject fO = FileUtil.toFileObject(file);
             MultiDataObject mdo = null;
             try {
-                mdo = loader.createMultiObject(fO);
+                mdo = LOADER.createMultiObject(fO);
             } catch (Exception ex) {
                 Messaging.report("The tree of the file " + file.getAbsolutePath() + " is corrupt and wasn't put in the list", ex, this.getClass(), true);
                 mdo = null;

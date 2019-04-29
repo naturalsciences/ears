@@ -36,7 +36,7 @@ import static org.openide.util.actions.CookieAction.MODE_EXACTLY_ONE;
  @ActionReference(path = "Projects/Actions")
  })*/
 @ActionRegistration(
-        displayName = "#CTL_RefreshNodeAction")
+        displayName = "#CTL_RefreshNodeAction",lazy = false)
 
 @Messages("CTL_RefreshNodeAction=Refresh")
 

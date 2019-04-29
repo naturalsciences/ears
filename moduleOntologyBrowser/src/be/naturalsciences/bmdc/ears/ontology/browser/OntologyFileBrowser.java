@@ -10,11 +10,9 @@ import be.naturalsciences.bmdc.ears.properties.Constants;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.NotificationThread;
 import be.naturalsciences.bmdc.ears.utils.TaskListener;
-import be.naturalsciences.bmdc.ontology.IOntologyModel;
 import be.naturalsciences.bmdc.ontology.writer.ScopeMap;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.util.Set;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.awt.ActionID;
@@ -57,6 +55,7 @@ public final class OntologyFileBrowser extends TopComponent implements ExplorerM
     public class OntologyRetriever extends NotificationThread {
 
         ProgressHandle progr;
+   
         ScopeNode node;
 
         public OntologyRetriever(ProgressHandle progr, ScopeNode node) {
@@ -67,14 +66,17 @@ public final class OntologyFileBrowser extends TopComponent implements ExplorerM
         @Override
         public void doWork() {
             progr.start();
+           
             try {
                 progr.progress("Starting to build " + node.getScope() + " nodes.");
                 node.populateNode();
+                System.out.println("YS -----------be.naturalsciences.bmdc.ears.ontology.browser.OntologyFileBrowser.OntologyRetriever.doWork()");
                 //node.refresh();
             } catch (OutOfMemoryError ex) {
                 Messaging.report("OutOfMemoryException while opening the " + node.getScope() + " node(s).", ex, this.getClass(), true);
             } finally {
                 progr.finish();
+                
             }
 
         }
@@ -126,7 +128,7 @@ public final class OntologyFileBrowser extends TopComponent implements ExplorerM
     RequestProcessor processor = new RequestProcessor("Ontology_retrieval", 3);
 
     public void startOntologyRetrieval(String progressDescription, ScopeNode node) {
-        ProgressHandle progr = ProgressHandleFactory.createHandle(progressDescription);
+        ProgressHandle progr = ProgressHandleFactory.createSystemHandle(progressDescription);//YS createHandle(progressDescription);
         OntologyFileBrowser.OntologyRetriever tsk = new OntologyFileBrowser.OntologyRetriever(progr, node);
         tsk.addListener(this);
         processor.post(tsk);

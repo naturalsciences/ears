@@ -111,10 +111,15 @@ class EventPropertyDialog extends JDialog implements LookupListener {
         getRootPane().setDefaultButton(okButton);
         okButton.getAccessibleContext().setAccessibleDescription(okString);
         okButton.setActionCommand("OK");
+     
         okButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-                CreateEventTopComponent.getRestClientEvent().modifyEvent(event);
+                
+               CreateEventTopComponent.getRestClientEvent().modifyEvent(event);
+            getParent().repaint(); //YS
+              
             }
         });
         if (okListener != null) {

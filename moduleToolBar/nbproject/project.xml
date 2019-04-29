@@ -65,7 +65,6 @@
             </module-dependencies>
             <public-packages>
                 <package>be.naturalsciences.bmdc.ears.toolbar</package>
-                <package>be.naturalsciences.bmdc.ears.toolbar.util</package>
             </public-packages>
         </data>
     </configuration>

@@ -29,8 +29,9 @@ public class CruiseTableModel extends AbstractTableModel implements FilterableTa
 
     public CruiseTableModel(Collection<CruiseBean> cruises, final UpdateCruiseTopComponent outer) {
         this.outer = outer;
-        data = new ArrayList();
+        data = new ArrayList<>();
         addCruiseList(cruises);
+        
     }
 
     @Override
@@ -71,6 +72,8 @@ public class CruiseTableModel extends AbstractTableModel implements FilterableTa
 
     @Override
     public Object getValueAt(int row, int column) {
+    //    System.out.println("YS7--be.naturalsciences.bmdc.ears.topcomponents.tablemodel.CruiseTableModel.getValueAt()"+ data.size());
+    
         CruiseBean cruise = data.get(row);
         switch (getColumnName(column)) {
             case NAME:

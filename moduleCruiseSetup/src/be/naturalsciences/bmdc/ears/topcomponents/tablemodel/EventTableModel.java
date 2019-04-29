@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
-import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
@@ -17,7 +16,6 @@ import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -132,6 +130,7 @@ public class EventTableModel extends EntityTableModel<EventBean> {
      */
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        System.out.println("YS be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel.setValueAt()");
         Object originalValue = getValueAt(rowIndex, columnIndex);
         EventBean event = getEntities().get(rowIndex);
         String colName = getColumnName(columnIndex);
@@ -204,14 +203,23 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                     }
                 }
                 break;
+                
+                
+                     case PROPERTIES:
+                          System.out.println("YS-- CASE PROPERTIES " +event.getLabel() + event.getProperty());
+                break;
+              
+                
         }
     }
 
+    @Override
     public void removeRow(int rowsToDelete) {
         IResponseMessage response = restClientEvent.removeEvent(entities.get(rowsToDelete).getEventId().trim());
         if (!response.isBad()) {
             entities.remove(rowsToDelete);
             fireTableDataChanged();
+            
         } else {
             Messaging.report("Event wasn't deleted from the web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
         }
@@ -220,15 +228,20 @@ public class EventTableModel extends EntityTableModel<EventBean> {
 
     @Override
     public void addEntity(EventBean e) {
+       
         e.setEventId(LocalDateTime.ofInstant(e.getTimeStampDt().toInstant(), e.getTimeStampDt().getOffset()).toLocalTime().toString().replace(".", "").replace(":", "").subSequence(0, 9).toString());
         IResponseMessage response = restClientEvent.postEvent(e);
         if (!response.isBad()) {
+           
             entities.add(e);
+             fireTableRowsInserted(entities.size() - 1, entities.size() - 1);
+           fireTableDataChanged();
+            System.out.println("YS-- be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel.addEntity()");
         } else {
             Messaging.report("Event wasn't saved to web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
         }
 
-        fireTableDataChanged();
+      
 
     }
 
@@ -257,7 +270,14 @@ public class EventTableModel extends EntityTableModel<EventBean> {
             case PROGRAM:
                 return event.getProgramProperty();
             case LABEL:
-                return event.getLabel();
+                     if (event.hasProperties()) {
+                         return event.getLabel();
+                  //  return event.getProperties();//YS
+                    // return StringUtils.concatString(event.getPropertyMap().toString(), ";");
+                    //return event.getPropertyMap();
+                } else {
+                    return "";
+                }
             case DELETE:
                 java.net.URL imageURL = EventTableModel.class.getResource("/images/deleteImg.png");
                 Icon deleteIcon = new ImageIcon(imageURL, "Delete event " + event.getId());

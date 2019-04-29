@@ -410,13 +410,23 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
     @Override
     public void resultChanged(LookupEvent le) {
         le.getSource();
+        /*YS replace by 
         if (currentVesselResult.getCurrent() != null && restClientCruise != null) {
-            try {
+         try {
                 model.refreshModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));
             } catch (ConnectException ex) {
                 Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
             }
             model.fireTableDataChanged();
+            o_cruiseJtable.repaint();
+        }
+*/
+               if (currentVesselResult.getCurrent() != null) {
+            try {
+                model.refreshModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));
+            } catch (ConnectException ex) {
+                Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+            }
             o_cruiseJtable.repaint();
         }
     }

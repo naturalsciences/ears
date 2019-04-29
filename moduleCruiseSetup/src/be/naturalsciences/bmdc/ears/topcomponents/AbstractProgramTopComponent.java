@@ -406,7 +406,14 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
     public ProgramBean createProgramFromInput() {
         ProgramBean program = new ProgramBean();
 
-        program.setCruiseId(((CruiseBean) cruiseComboBox.getSelectedItem()).getRealId());
+        
+        try {
+            System.out.println("YS"+cruiseClient.getAllCruises().size());
+        } catch (ConnectException ex) {
+            System.out.println("YS"+ex);
+        }
+        
+        program.setCruiseId(((CruiseBean) cruiseComboBox.getSelectedItem()).getRealId()); //YS error if no cruise predefini
         program.setProgramId(o_programId_Attribut.getText());
         program.setOriginatorCode(o_collateCentreResult.getText());
         program.setDescription(o_description.getText());

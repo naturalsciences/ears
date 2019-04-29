@@ -35,12 +35,9 @@ import com.github.lgooddatepicker.tableeditors.DateTableEditor;
 import com.github.lgooddatepicker.tableeditors.TimeTableEditor;
 import com.github.lgooddatepicker.zinternaltools.InternalUtilities;
 import gnu.trove.map.hash.THashMap;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.net.ConnectException;
 import java.net.URI;
@@ -57,14 +54,12 @@ import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JTable;
 import javax.swing.RowFilter;
-import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -73,7 +68,6 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -82,6 +76,7 @@ import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
+
 
 /**
  * Top component which displays something.
@@ -169,15 +164,23 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         eventTable.setFont(DEFAULT_FONT);
         eventTable.setFillsViewportHeight(true);
 
-        editPropertyEventAction = new AbstractAction() {
+        editPropertyEventAction = new AbstractAction()  {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int modelRow = Integer.valueOf(e.getActionCommand());
                 EventBean event = getModel().getEntityAt(modelRow);
                 JDialog dialog = new EventPropertyDialog(eventTable, null, null, event);
+               
+               
                 dialog.setVisible(true);
             }
         };
+        
+        
+        
+        
+        
+        
         deleteEventAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -250,6 +253,11 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         eventTable.setMaximumSize(new java.awt.Dimension(32767, 32767));
         eventTable.setMinimumSize(new java.awt.Dimension(20, 20));
         eventTable.setPreferredSize(new java.awt.Dimension(1535, 1135));
+        eventTable.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                eventTableFocusGained(evt);
+            }
+        });
         o_ScrollPaneForEventTable.setViewportView(eventTable);
 
         jToolBar1.setFloatable(false);
@@ -567,6 +575,11 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         // TODO add your handling code here:
     }//GEN-LAST:event_labelCheckboxActionPerformed
 
+    private void eventTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eventTableFocusGained
+        // TODO add your handling code here:
+        System.out.println("moduleCruiseSetup be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent.eventTableFocusGained()");
+    }//GEN-LAST:event_eventTableFocusGained
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox actorCheckBox;
     private javax.swing.JComboBox comboFilterDateOfEvent;
@@ -668,9 +681,11 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                                     property.isMandatory = earsProperty.isMandatory();
                                     property.isMultiple = earsProperty.isMultiple();
                                     property.valueClass = earsProperty.getValueClass();
+                                    System.out.println("YS --be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent.updateEventModel()");
                                 }
                             } catch (URISyntaxException ex) {
-                                Exceptions.printStackTrace(ex);
+                                 Messaging.report("URISyntaxException", ex, this.getClass(), true);
+                               //YS Exceptions.printStackTrace(ex);
                             }
                         }
                     }
@@ -797,12 +812,15 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             //add properties button
             ButtonColumn editPropertyButtonColumn = new ButtonColumn(eventTable, editPropertyEventAction, propertyColumnId, "Edit properties");
 
+    
             eventTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+            
+          
 
             //sorting
-            eventTable.setAutoCreateRowSorter(true);
-            eventTableSorter = new TableRowSorter<>(this.getModel());
-            eventTable.setRowSorter(eventTableSorter);
+           eventTable.setAutoCreateRowSorter(true);
+           eventTableSorter = new TableRowSorter<>(this.getModel());
+           eventTable.setRowSorter(eventTableSorter);
         }
     }
 

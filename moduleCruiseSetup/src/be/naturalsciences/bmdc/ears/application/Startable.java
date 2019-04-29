@@ -22,7 +22,6 @@ import be.naturalsciences.bmdc.ears.entities.VesselBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
 import be.naturalsciences.bmdc.ears.ontology.OntologySynchronizer;
-import be.naturalsciences.bmdc.ears.ontology.browser.OntologyFileBrowser;
 import be.naturalsciences.bmdc.ears.properties.Configs;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
@@ -40,7 +39,6 @@ import java.util.Collection;
 import java.util.Set;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
-import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 
@@ -188,12 +186,13 @@ public class Startable implements Runnable, LookupListener {
             }
         };
         thr3.start();
-        vesselMetadataManager = new StaticMetadataManager(VesselBean.class);
-        seaAreaMetadataManager = new StaticMetadataManager(SeaAreaBean.class);
-        harbourMetadataManager = new StaticMetadataManager(HarbourBean.class);
-        organisationMetadataManager = new StaticMetadataManager(OrganisationBean.class);
-        projectMetadataManager = new StaticMetadataManager(ProjectBean.class);
-        countryMetadataManager = new StaticMetadataManager(CountryBean.class);
+        vesselMetadataManager =  new StaticMetadataManager<>(VesselBean.class);
+//                new StaticMetadataManager<>(VesselBean.class);
+        seaAreaMetadataManager = new StaticMetadataManager<>(SeaAreaBean.class);
+        harbourMetadataManager = new StaticMetadataManager<>(HarbourBean.class);
+        organisationMetadataManager = new StaticMetadataManager<>(OrganisationBean.class);
+        projectMetadataManager = new StaticMetadataManager<>(ProjectBean.class);
+        countryMetadataManager = new StaticMetadataManager<>(CountryBean.class);
 
         retrieveMetadataFiles();
 

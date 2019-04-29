@@ -416,7 +416,11 @@ public class EventBean implements Serializable, EARSConcept {
 
     public void setActor(String actor) {
         this.actor = actor;
+        
     }
+    
+    
+   
 
     /**
      * *
@@ -429,7 +433,13 @@ public class EventBean implements Serializable, EARSConcept {
     public String getProperty() {
         Set<Property> propResults = new TreeSet<>(new EventPropertyComparator());
         for (Property property : getProperties()) {
+        //    System.out.println("YS1" + property.value +property.code+"  " +property.name);
             if (property.value != null && !property.value.equals("")) {
+              /*  if ("label".equals(property.name)) {
+                       System.out.println("YS4" + property.value );
+                    setLabel(property.value);
+                }
+                */
                 propResults.add(property);
             }
 
@@ -451,9 +461,30 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     public String getLabel() {
-        Set<String> values = getPropertyValues(Prop.LABEL);
+       
+      
+    /*   String value ="";
+        for (Property property : getProperties()) {
+            
+            if (property.value != null && !property.value.equals("") && "label".equals(property.name)) {
+               
+                  value=  property.value;
+                }
+        */    
+
+       
+       Set<String> values = getPropertyValues(Prop.LABEL);
+   
         return values.toArray(new String[1])[0];
+   
+        }
+    
+   /*  public String setLabel(String label) {
+       
+         
+        return label;
     }
+    */
 
     public Object getProgramProperty() {
         Set<String> values = getPropertyValues(Prop.PROGRAM);
@@ -813,8 +844,10 @@ public class EventBean implements Serializable, EARSConcept {
         String url = PROPERTY_URLS.get(prop);
         Set<String> r = new THashSet<>();
         for (Property property : getProperties()) {
-
+          
+            
             if (property.code.equals(url)) {
+              //    System.out.println("YS2" + property.value +property.code+"  " +property.name); 
                 r.add(property.value);
             }
 

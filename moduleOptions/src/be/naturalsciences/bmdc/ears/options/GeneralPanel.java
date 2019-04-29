@@ -246,7 +246,7 @@ final class GeneralPanel extends javax.swing.JPanel {
 
     private void restUrlTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restUrlTextFieldActionPerformed
         // TODO add your handling code here:
-        
+      
     }//GEN-LAST:event_restUrlTextFieldActionPerformed
 
     private void userNameTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_userNameTextFieldFocusLost

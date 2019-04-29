@@ -50,6 +50,7 @@ import org.openide.util.Exceptions;
 /**
  *
  * @author thomas
+ * @param <C>
  */
 public class StaticMetadataManager<C extends EARSConcept> {
 

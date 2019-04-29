@@ -1,0 +1,10 @@
+D:\YS_ApacheNetbeans100\platform=1545016896000
+cluster.D:/YS_NetBeansProjects/ears/PlatformEARS/build/cluster=1556271285248
+cluster.D:/YS_ApacheNetbeans100/harness=1545016908000
+cluster.D:/YS_ApacheNetbeans100/platform=1545016896000
+user=1556271285248
+crc=7
+locale=fr_BE
+branding=earsapp
+java.version=1.8.0_172
+java.vm.version=25.172-b11
