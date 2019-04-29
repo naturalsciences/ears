@@ -11,6 +11,6 @@
   </constraints>
   <bounds x="192" y="228" width="614" height="520" />
   <frame state="0"/>
-    <active-tc  id="OntologyTreeViewer_1" />
+    <active-tc  id="OntologyTreeViewer_2" />
     <empty-behavior permanent="true"/>
 </mode>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleBusinessLayerWS">
-    <module_version install_time="1556271283986" last="true" origin="installer" specification_version="1.0">
+    <module_version install_time="1556540801250" last="true" origin="installer" specification_version="1.0">
         <file crc="3760442317" name="config/Modules/be-naturalsciences-bmdc-ears-moduleBusinessLayerWS.xml"/>
         <file crc="1617310256" name="modules/be-naturalsciences-bmdc-ears-moduleBusinessLayerWS.jar"/>
         <file crc="498810239" name="modules/ext/FastInfoset-1.2.12.jar"/>

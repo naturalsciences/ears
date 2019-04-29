@@ -1,4 +1,4 @@
-#Fri Apr 26 11:35:20 CEST 2019
+#Mon Apr 29 14:27:17 CEST 2019
 org.netbeans.core.startup.OpenIDE-Module-Deprecated=\u0000
 org.netbeans.modules.settings.AutoUpdate-Show-In-Client=false
 org.netbeans.core.startup.OpenIDE-Module-Layer=org/netbeans/core/startup/layer.xml
@@ -27,8 +27,8 @@ org.netbeans.modules.keyring.OpenIDE-Module-Hide-Classpath-Packages=\u0000
 org.netbeans.libs.asm.OpenIDE-Module-Deprecated=\u0000
 org.netbeans.libs.felix.OpenIDE-Module-Layer=\u0000
 org.netbeans.core.OpenIDE-Module-Layer=org/netbeans/core/resources/mf-layer.xml
-org.netbeans.api.io.AutoUpdate-Show-In-Client=false
 org.netbeans.insane.AutoUpdate-Show-In-Client=false
+org.netbeans.api.io.AutoUpdate-Show-In-Client=false
 org.netbeans.modules.sendopts.OpenIDE-Module-Install=\u0000
 org.openide.nodes.OpenIDE-Module-Install=\u0000
 org.netbeans.swing.plaf.OpenIDE-Module-Layer=\u0000

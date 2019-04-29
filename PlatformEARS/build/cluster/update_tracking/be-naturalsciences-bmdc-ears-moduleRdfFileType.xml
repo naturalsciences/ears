@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleRdfFileType">
-    <module_version install_time="1556271284330" last="true" origin="installer" specification_version="1.0">
+    <module_version install_time="1556540801571" last="true" origin="installer" specification_version="1.0">
         <file crc="767546124" name="config/Modules/be-naturalsciences-bmdc-ears-moduleRdfFileType.xml"/>
         <file crc="2302367969" name="modules/be-naturalsciences-bmdc-ears-moduleRdfFileType.jar"/>
     </module_version>

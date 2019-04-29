@@ -44,7 +44,7 @@
     <active-mode name="editor"/>
     <toolbar configuration="Standard" preferred-icon-size="24"/>
     <tc-list>
-  <tc-id id="OntologyTreeViewer_1"/>
+  <tc-id id="OntologyTreeViewer_2"/>
   <tc-id id="OntologyFileBrowser"/>
     </tc-list>
 </windowmanager>

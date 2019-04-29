@@ -27,3 +27,9 @@
 
 
 #YS
+build/
+branding/
+branding.jnlp
+build.xml
+master.jnlp
+nbproject/

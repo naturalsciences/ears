@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.commonLibraries">
-    <module_version install_time="1556271283751" last="true" origin="installer" specification_version="1.0">
+    <module_version install_time="1556540801073" last="true" origin="installer" specification_version="1.0">
         <file crc="2739095930" name="config/Modules/be-naturalsciences-bmdc-ears-commonLibraries.xml"/>
         <file crc="1568283965" name="modules/be-naturalsciences-bmdc-ears-commonLibraries.jar"/>
         <file crc="2433523241" name="modules/ext/xerces-2.8.0.jar"/>
