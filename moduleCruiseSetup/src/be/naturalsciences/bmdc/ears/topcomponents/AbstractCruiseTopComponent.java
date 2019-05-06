@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -499,8 +500,11 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         }).map((harbour) -> harbour.getCountryObject()).map((c) -> {
             SwingUtils.addToComboBox(startingHarborListPrincipalModel, c);
             return c;
-        }).forEachOrdered((c) -> {
-            SwingUtils.addToComboBox(arrivalHarborListPrincipalModel, c);
+        }).forEachOrdered(new Consumer<CountryBean>() {
+            @Override
+            public void accept(CountryBean c) {
+                SwingUtils.addToComboBox(arrivalHarborListPrincipalModel, c);
+            }
         });
 
         chiefScientistModel = (ChiefScientistTableModel) chiefScientistTable.getModel();
