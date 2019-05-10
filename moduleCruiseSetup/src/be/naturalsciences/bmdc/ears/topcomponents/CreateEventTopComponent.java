@@ -253,11 +253,6 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         eventTable.setMaximumSize(new java.awt.Dimension(32767, 32767));
         eventTable.setMinimumSize(new java.awt.Dimension(20, 20));
         eventTable.setPreferredSize(new java.awt.Dimension(1535, 1135));
-        eventTable.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                eventTableFocusGained(evt);
-            }
-        });
         o_ScrollPaneForEventTable.setViewportView(eventTable);
 
         jToolBar1.setFloatable(false);
@@ -575,11 +570,6 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         // TODO add your handling code here:
     }//GEN-LAST:event_labelCheckboxActionPerformed
 
-    private void eventTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eventTableFocusGained
-        // TODO add your handling code here:
-        System.out.println("moduleCruiseSetup be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent.eventTableFocusGained()");
-    }//GEN-LAST:event_eventTableFocusGained
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox actorCheckBox;
     private javax.swing.JComboBox comboFilterDateOfEvent;
@@ -663,7 +653,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
     private void updateEventModel() {
         if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
-            CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
+             CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
             List<EventBean> events = null;
             try {
                 events = (List<EventBean>) restClientEvent.getEventByCruise(currentCruise);
@@ -681,7 +671,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                                     property.isMandatory = earsProperty.isMandatory();
                                     property.isMultiple = earsProperty.isMultiple();
                                     property.valueClass = earsProperty.getValueClass();
-                                    System.out.println("YS --be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent.updateEventModel()");
+                                
                                 }
                             } catch (URISyntaxException ex) {
                                  Messaging.report("URISyntaxException", ex, this.getClass(), true);
@@ -723,11 +713,14 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                 eventTable.setPreferredSize(dim);
             }
         }
+     
     }
 
     @Override
     public void componentOpened() {
         mainActorCombobox.removeAllItems();
+     
+        
         Set<Actor> actors = new TreeSet<>(new ActorComparator());
         if (!Configs.getOverrideEventsAsAnonymous()) {
             actors.addAll(actorResult.allInstances());
@@ -735,8 +728,9 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                 mainActorCombobox.addItem(actor);
             }
         }
-
-        if (restClientEvent != null) {
+ 
+        if (restClientEvent != null && currentCruiseResult.getCurrent() != null ) {
+         
             updateEventModel();
 
             TableColumnModel tableColumnModel = eventTable.getColumnModel();
@@ -822,6 +816,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
            eventTableSorter = new TableRowSorter<>(this.getModel());
            eventTable.setRowSorter(eventTableSorter);
         }
+      
     }
 
     @Override
@@ -895,7 +890,8 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         if (currentCruiseResult.matches(ev)) {
             if (restClientEvent != null) {
                 //updateEventModel();
-                componentOpened();
+               
+             componentOpened();
             }
         }
     }
