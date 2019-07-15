@@ -2,6 +2,7 @@ nbproject/private/
 build/
 nbbuild/
 dist/
+dist-bup/
 nbdist/
 .nb-gradle/
 EARS_SERVER/
@@ -15,10 +16,11 @@ old_ontologies
 *.log
 *.ctxt
 .mtj.tmp/
-*.jar
-*.war
+#*.jar
+#*.war
 *.ear
 *.zip
 *.tar.gz
 *.rar
 hs_err_pid*
+/SpringExercise/target/

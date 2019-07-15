@@ -25,6 +25,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -67,8 +68,12 @@ public class TestRestClientCruise extends TestCase {
 
         assertEquals(1, 1);
 
-        //BasicConfigurator.configure();
-        collectionsCruise = clientCruise.getAllCruises();
+        try {
+            //BasicConfigurator.configure();
+            collectionsCruise = clientCruise.getAllCruises();
+        } catch (ConnectException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         for (CruiseBean iCruiseBean : collectionsCruise) {
             cruiseBean.setCruiseName(iCruiseBean.getCruiseName());
             assertEquals(iCruiseBean.getCruiseName(), cruiseBean.getCruiseName());
