@@ -9,7 +9,7 @@ old_ontologies
 *.rdf
 *.sh
 *.sql
-*.txt
+#*.txt
 *.class
 *.log
 *.ctxt

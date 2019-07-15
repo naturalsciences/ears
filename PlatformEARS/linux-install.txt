@@ -1,0 +1,15 @@
+To install EARS2 on LInux, follow these steps:
+
+In platformears/bin/platformears:
+    1)change #!/bin/sh to #!/bin/bash
+    2)change the localisation of the configuration file (lines 22-24) to:
+
+if [ -f "`dirname $progdir`/etc/$APPNAME".conf ] ; then
+    sed -i 's/\r//' "`dirname $progdir`/etc/$APPNAME".conf #replaces dos line endings
+    . "`dirname $progdir`/etc/$APPNAME".conf 
+fi
+
+In platformears/etc/platformears.conf
+    3) change the location of your java jdk or jre installation:
+
+jdkhome="/usr/lib/jvm/jdk1.8.0_60" 
