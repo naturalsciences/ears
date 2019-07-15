@@ -1,5 +1,5 @@
-nbproject/private/
-build/
+#nbproject/private/
+#build/
 nbbuild/
 dist/
 dist-bup/

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleOntologyConceptList">
+    <module_version install_time="1553864663896" last="true" origin="installer" specification_version="1.0">
+        <file crc="1486226129" name="config/Modules/be-naturalsciences-bmdc-ears-moduleOntologyConceptList.xml"/>
+        <file crc="2070383283" name="modules/be-naturalsciences-bmdc-ears-moduleOntologyConceptList.jar"/>
+    </module_version>
+</module>

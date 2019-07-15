@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleBarInfo">
+    <module_version install_time="1553864658751" last="true" origin="installer" specification_version="1.0">
+        <file crc="1366465564" name="config/Modules/be-naturalsciences-bmdc-ears-moduleBarInfo.xml"/>
+        <file crc="3252924391" name="modules/be-naturalsciences-bmdc-ears-moduleBarInfo.jar"/>
+    </module_version>
+</module>

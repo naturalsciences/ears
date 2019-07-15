@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleToolBar">
+    <module_version install_time="1553864664400" last="true" origin="installer" specification_version="1.0">
+        <file crc="1114472866" name="config/Modules/be-naturalsciences-bmdc-ears-moduleToolBar.xml"/>
+        <file crc="2930757222" name="modules/be-naturalsciences-bmdc-ears-moduleToolBar.jar"/>
+    </module_version>
+</module>

@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN"
+                            "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Menu">
+        <folder name="Window">
+            <folder name="Cruise &amp; program setup">
+                <file name="be-naturalsciences-bmdc-ears-topcomponents-CreateCruiseSetupTopComponent.shadow">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent-->
+                    <attr name="originalFile" stringvalue="Actions/Window/be-naturalsciences-bmdc-ears-topcomponents-CreateCruiseSetupTopComponent.instance"/>
+                    <attr intvalue="1" name="position"/>
+                </file>
+                <file name="be-naturalsciences-bmdc-ears-topcomponents-CreateProgramSetupTopComponent.shadow">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent-->
+                    <attr name="originalFile" stringvalue="Actions/Window/be-naturalsciences-bmdc-ears-topcomponents-CreateProgramSetupTopComponent.instance"/>
+                    <attr intvalue="2" name="position"/>
+                </file>
+                <file name="be-naturalsciences-bmdc-ears-topcomponents-UpdateCruiseTopComponent.shadow">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent-->
+                    <attr name="originalFile" stringvalue="Actions/Window/be-naturalsciences-bmdc-ears-topcomponents-UpdateCruiseTopComponent.instance"/>
+                    <attr intvalue="3" name="position"/>
+                </file>
+                <file name="be-naturalsciences-bmdc-ears-topcomponents-UpdateProgramTopComponent.shadow">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent-->
+                    <attr name="originalFile" stringvalue="Actions/Window/be-naturalsciences-bmdc-ears-topcomponents-UpdateProgramTopComponent.instance"/>
+                    <attr intvalue="4" name="position"/>
+                </file>
+            </folder>
+            <file name="be-naturalsciences-bmdc-ears-topcomponents-CreateEventTopComponent.shadow">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent-->
+                <attr name="originalFile" stringvalue="Actions/Window/be-naturalsciences-bmdc-ears-topcomponents-CreateEventTopComponent.instance"/>
+                <attr intvalue="1" name="position"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="CreateCruiseSetupTopComponent.settings">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+  <instance class="be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent"/>
+</settings>
+]]></file>
+            <file name="CreateEventTopComponent.settings">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+  <instance class="be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent"/>
+</settings>
+]]></file>
+            <file name="CreateProgramSetupTopComponent.settings">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+  <instance class="be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent"/>
+</settings>
+]]></file>
+            <file name="EditCruiseSetupTopComponent.settings">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+  <instance class="be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent"/>
+</settings>
+]]></file>
+            <file name="EditProgramSetupTopComponent.settings">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+  <instance class="be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent"/>
+</settings>
+]]></file>
+            <file name="UpdateCruiseTopComponent.settings">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+  <instance class="be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent"/>
+</settings>
+]]></file>
+            <file name="UpdateProgramTopComponent.settings">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+  <instance class="be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent"/>
+</settings>
+]]></file>
+        </folder>
+        <folder name="Modes">
+            <folder name="editor">
+                <file name="CreateCruiseSetupTopComponent.wstcref">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tc-ref PUBLIC "-//NetBeans//DTD Top Component in Mode Properties 2.0//EN" "http://www.netbeans.org/dtds/tc-ref2_0.dtd">
+<tc-ref version="2.0">
+  <tc-id id="CreateCruiseSetupTopComponent"/>
+  <state opened="false"/>
+</tc-ref>
+]]></file>
+                <file name="CreateEventTopComponent.wstcref">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tc-ref PUBLIC "-//NetBeans//DTD Top Component in Mode Properties 2.0//EN" "http://www.netbeans.org/dtds/tc-ref2_0.dtd">
+<tc-ref version="2.0">
+  <tc-id id="CreateEventTopComponent"/>
+  <state opened="false"/>
+</tc-ref>
+]]></file>
+                <file name="CreateProgramSetupTopComponent.wstcref">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tc-ref PUBLIC "-//NetBeans//DTD Top Component in Mode Properties 2.0//EN" "http://www.netbeans.org/dtds/tc-ref2_0.dtd">
+<tc-ref version="2.0">
+  <tc-id id="CreateProgramSetupTopComponent"/>
+  <state opened="false"/>
+</tc-ref>
+]]></file>
+                <file name="EditCruiseSetupTopComponent.wstcref">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tc-ref PUBLIC "-//NetBeans//DTD Top Component in Mode Properties 2.0//EN" "http://www.netbeans.org/dtds/tc-ref2_0.dtd">
+<tc-ref version="2.0">
+  <tc-id id="EditCruiseSetupTopComponent"/>
+  <state opened="false"/>
+</tc-ref>
+]]></file>
+                <file name="EditProgramSetupTopComponent.wstcref">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tc-ref PUBLIC "-//NetBeans//DTD Top Component in Mode Properties 2.0//EN" "http://www.netbeans.org/dtds/tc-ref2_0.dtd">
+<tc-ref version="2.0">
+  <tc-id id="EditProgramSetupTopComponent"/>
+  <state opened="false"/>
+</tc-ref>
+]]></file>
+            </folder>
+            <folder name="properties">
+                <file name="UpdateCruiseTopComponent.wstcref">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tc-ref PUBLIC "-//NetBeans//DTD Top Component in Mode Properties 2.0//EN" "http://www.netbeans.org/dtds/tc-ref2_0.dtd">
+<tc-ref version="2.0">
+  <tc-id id="UpdateCruiseTopComponent"/>
+  <state opened="false"/>
+</tc-ref>
+]]></file>
+                <file name="UpdateProgramTopComponent.wstcref">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tc-ref PUBLIC "-//NetBeans//DTD Top Component in Mode Properties 2.0//EN" "http://www.netbeans.org/dtds/tc-ref2_0.dtd">
+<tc-ref version="2.0">
+  <tc-id id="UpdateProgramTopComponent"/>
+  <state opened="false"/>
+</tc-ref>
+]]></file>
+            </folder>
+        </folder>
+    </folder>
+    <folder name="Actions">
+        <folder name="Window">
+            <file name="be-naturalsciences-bmdc-ears-topcomponents-CreateCruiseSetupTopComponent.instance">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent-->
+                <attr
+                    methodvalue="org.openide.windows.TopComponent.openAction" name="instanceCreate"/>
+                <attr name="component" newvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent"/>
+                <attr name="preferredID" stringvalue="CreateCruiseSetupTopComponent"/>
+                <attr
+                    bundlevalue="be.naturalsciences.bmdc.ears.topcomponents.Bundle#CTL_CreateCruiseSetupAction" name="displayName"/>
+            </file>
+            <file name="be-naturalsciences-bmdc-ears-topcomponents-CreateEventTopComponent.instance">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent-->
+                <attr
+                    methodvalue="org.openide.windows.TopComponent.openAction" name="instanceCreate"/>
+                <attr name="component" newvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent"/>
+                <attr name="preferredID" stringvalue="CreateEventTopComponent"/>
+                <attr
+                    bundlevalue="be.naturalsciences.bmdc.ears.topcomponents.Bundle#CTL_CreateEventAction" name="displayName"/>
+            </file>
+            <file name="be-naturalsciences-bmdc-ears-topcomponents-CreateProgramSetupTopComponent.instance">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent-->
+                <attr
+                    methodvalue="org.openide.windows.TopComponent.openAction" name="instanceCreate"/>
+                <attr name="component" newvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent"/>
+                <attr name="preferredID" stringvalue="CreateProgramSetupTopComponent"/>
+                <attr
+                    bundlevalue="be.naturalsciences.bmdc.ears.topcomponents.Bundle#CTL_CreateProgramSetupAction" name="displayName"/>
+            </file>
+            <file name="be-naturalsciences-bmdc-ears-topcomponents-EditCruiseSetupTopComponent.instance">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent-->
+                <attr
+                    methodvalue="org.openide.windows.TopComponent.openAction" name="instanceCreate"/>
+                <attr name="component" newvalue="be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent"/>
+                <attr name="preferredID" stringvalue="EditCruiseSetupTopComponent"/>
+                <attr
+                    bundlevalue="be.naturalsciences.bmdc.ears.topcomponents.Bundle#CTL_EditCruiseSetupAction" name="displayName"/>
+            </file>
+            <file name="be-naturalsciences-bmdc-ears-topcomponents-EditProgramSetupTopComponent.instance">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent-->
+                <attr
+                    methodvalue="org.openide.windows.TopComponent.openAction" name="instanceCreate"/>
+                <attr name="component" newvalue="be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent"/>
+                <attr name="preferredID" stringvalue="EditProgramSetupTopComponent"/>
+                <attr
+                    bundlevalue="be.naturalsciences.bmdc.ears.topcomponents.Bundle#CTL_EditProgramSetupAction" name="displayName"/>
+            </file>
+            <file name="be-naturalsciences-bmdc-ears-topcomponents-UpdateCruiseTopComponent.instance">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent-->
+                <attr
+                    methodvalue="org.openide.windows.TopComponent.openAction" name="instanceCreate"/>
+                <attr name="component" newvalue="be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent"/>
+                <attr name="preferredID" stringvalue="UpdateCruiseTopComponent"/>
+                <attr
+                    bundlevalue="be.naturalsciences.bmdc.ears.topcomponents.Bundle#CTL_UpdateCruiseAction" name="displayName"/>
+            </file>
+            <file name="be-naturalsciences-bmdc-ears-topcomponents-UpdateProgramTopComponent.instance">
+                <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent-->
+                <attr
+                    methodvalue="org.openide.windows.TopComponent.openAction" name="instanceCreate"/>
+                <attr name="component" newvalue="be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent"/>
+                <attr name="preferredID" stringvalue="UpdateProgramTopComponent"/>
+                <attr
+                    bundlevalue="be.naturalsciences.bmdc.ears.topcomponents.Bundle#CTL_UpdateProgramAction" name="displayName"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="xml">
+        <folder name="entities">
+            <folder name="be_ac_mumm">
+                <file name="CreateCruiseSetup" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//be.ac.mumm//CreateCruiseSetup//EN"/>
+                </file>
+                <file name="Test" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//be.ac.mumm//Test//EN"/>
+                </file>
+                <file name="CreateProgramSetup" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//be.ac.mumm//CreateProgramSetup//EN"/>
+                </file>
+                <file name="EidtCruiseSetup" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//be.ac.mumm//EidtCruiseSetup//EN"/>
+                </file>
+                <file name="EditProgramSetup" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//be.ac.mumm//EditProgramSetup//EN"/>
+                </file>
+                <file name="UpdateCruise" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//be.ac.mumm//UpdateCruise//EN"/>
+                </file>
+                <file name="UpdateProgram" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//be.ac.mumm//UpdateProgram//EN"/>
+                </file>
+            </folder>
+        </folder>
+        <folder name="memory">
+            <folder name="be">
+                <folder name="naturalsciences">
+                    <folder name="bmdc">
+                        <folder name="ears">
+                            <folder name="topcomponents">
+                                <file name="CreateCruiseSetupTopComponent">
+                                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent-->
+                                    <attr name="settings.providerPath" stringvalue="xml/lookups//be_ac_mumm/CreateCruiseSetup.instance"/>
+                                </file>
+                                <file name="CreateEventTopComponent">
+                                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent-->
+                                    <attr name="settings.providerPath" stringvalue="xml/lookups//be_ac_mumm/Test.instance"/>
+                                </file>
+                                <file name="CreateProgramSetupTopComponent">
+                                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent-->
+                                    <attr name="settings.providerPath" stringvalue="xml/lookups//be_ac_mumm/CreateProgramSetup.instance"/>
+                                </file>
+                                <file name="EditCruiseSetupTopComponent">
+                                    <!--be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent-->
+                                    <attr name="settings.providerPath" stringvalue="xml/lookups//be_ac_mumm/EidtCruiseSetup.instance"/>
+                                </file>
+                                <file name="EditProgramSetupTopComponent">
+                                    <!--be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent-->
+                                    <attr name="settings.providerPath" stringvalue="xml/lookups//be_ac_mumm/EditProgramSetup.instance"/>
+                                </file>
+                                <file name="UpdateCruiseTopComponent">
+                                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent-->
+                                    <attr name="settings.providerPath" stringvalue="xml/lookups//be_ac_mumm/UpdateCruise.instance"/>
+                                </file>
+                                <file name="UpdateProgramTopComponent">
+                                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent-->
+                                    <attr name="settings.providerPath" stringvalue="xml/lookups//be_ac_mumm/UpdateProgram.instance"/>
+                                </file>
+                            </folder>
+                        </folder>
+                    </folder>
+                </folder>
+            </folder>
+        </folder>
+        <folder name="lookups">
+            <folder name="be_ac_mumm">
+                <file name="CreateCruiseSetup.instance">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+                <file name="Test.instance">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+                <file name="CreateProgramSetup.instance">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+                <file name="EidtCruiseSetup.instance">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.EditCruiseSetupTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+                <file name="EditProgramSetup.instance">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.EditProgramSetupTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+                <file name="UpdateCruise.instance">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+                <file name="UpdateProgram.instance">
+                    <!--be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>
