@@ -23,14 +23,6 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
-                    <code-name-base>org.netbeans.libs.junit4</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>1.20.1</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
                     <code-name-base>org.netbeans.modules.options.api</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -84,11 +76,11 @@
             <public-packages/>
             <class-path-extension>
                 <runtime-relative-path>ext/ValidationAPI.jar</runtime-relative-path>
-                <binary-origin>D:\YS_NetBeans82_Project\ears\moduleOptions\release\modules\ext\ValidationAPI.jar</binary-origin>
+                <binary-origin>release/modules/ext/ValidationAPI.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/swingx-all-1.6.4.jar</runtime-relative-path>
-                <binary-origin>D:\YS_NetBeans82_Project\ears\moduleOptions\release\modules\ext\swingx-all-1.6.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/swingx-all-1.6.4.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>

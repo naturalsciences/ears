@@ -1,17 +1,16 @@
 nbproject/private/
 build/
+target/
 nbbuild/
 dist/
-dist-bup/
 nbdist/
 .nb-gradle/
 EARS_SERVER/
 moduleBusinessLayerWSMaven/
-old_ontologies
 *.rdf
 *.sh
 *.sql
-*.txt
+#*.txt
 *.class
 *.log
 *.ctxt
@@ -24,3 +23,7 @@ old_ontologies
 *.rar
 hs_err_pid*
 /SpringExercise/target/
+#build.xml
+.build.xml.swp
+arch.xml
+genfiles.properties

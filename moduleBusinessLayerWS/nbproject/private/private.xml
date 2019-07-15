@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>src/be/naturalsciences/bmdc/ears/ontology/AsConceptFactory.java</url>
+            <bookmark id="1">
+                <name/>
+                <line>110</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/entities/ExceptionMessage.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/utils/SwingUtils.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientUnderway.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientOntology.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/utils/Cloner.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientWeather.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientOnt.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientThermosal.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/ontology/entities/SpecificEventDefinition.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientEvent.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/entities/ThermosalBean.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/ontology/gui/CollapseNodeAction.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/utils/TableColumnAdjuster.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/base/StaticMetadataManager.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientProgram.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/test/unit/src/od/nature/naturalsciences/be/bmdc/services/event/RestClientEventTest.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClient.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/ontology/OntologyNodes.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientNav.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/ontology/OntologyPublicationException.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientTool.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/ontology/gui/ToEventConvertible.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/ontology/gui/ExpandNodeAction.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/rest/RestClientCruise.java</file>
+            <file>file:/home/thomas/NetBeansProjects/earsapp/moduleBusinessLayerWS/src/be/naturalsciences/bmdc/ears/entities/EventBean.java</file>
+        </group>
+    </open-files>
+</project-private>
