@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 nbproject/private/
 build/
 nbbuild/
@@ -21,3 +22,35 @@ old_ontologies
 *.tar.gz
 *.rar
 hs_err_pid*
+=======
+#nbproject/private/
+#build/
+#nbbuild/
+#dist/
+#nbdist/
+#.nb-gradle/
+#EARS_SERVER/
+#old_ontologies
+#*.rdf
+#*.sh
+#*.sql
+#*.txt
+#*.class
+#*.log
+#*.ctxt
+#.mtj.tmp/
+#*.jar
+#*.war
+#*.ear
+#*.zip
+#*.tar.gz
+#*.rar
+#hs_err_pid*
+
+
+
+#YS
+nbproject/
+build.xml
+
+>>>>>>> 3b765a9d3462b6cb77cb8f33738391cfc99c0465

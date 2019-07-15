@@ -19,7 +19,7 @@ import org.openide.util.actions.CookieAction;
         category = "Build",
         id = "be.naturalsciences.bmdc.ears.ontology.gui.ExpandNodeAction")
 @ActionRegistration(
-        displayName = "#CTL_ExpandNodeAction")
+        displayName = "#CTL_ExpandNodeAction",lazy = false)//YS
 
 @Messages("CTL_ExpandNodeAction=Expand all")
 public class ExpandNodeAction extends CookieAction {

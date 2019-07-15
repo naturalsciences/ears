@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -73,13 +74,14 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
     protected SeaAreaTableModel seaAreaModel;
     protected ChiefScientistTableModel chiefScientistModel;
 
-    ComboBoxColumnEditor countryList;
-    ComboBoxColumnEditor organisationList;
+     ComboBoxColumnEditor<CountryBean>  countryList; //YS
+      ComboBoxColumnEditor<OrganisationBean>  organisationList; //YS
     ComboBoxColumnEditor<SeaAreaBean> seaAreaList;
     //protected List<JComboBox> chiefScientistOrganisationEditors;
     //static List<JComboBox<Country>> countryLists;
     //static List<JComboBox<OrganizationBean>> organisationLists;
 
+    @Override
     public ValidationGroup getValidationGroup() {
         return group;
     }
@@ -107,15 +109,13 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         Object o = collateCentreListPrincipal.getSelectedItem();
         if (o != null && o instanceof CountryBean) {
             CountryBean selectedCountry = (CountryBean) o;
-            for (IOrganisation org : StaticMetadataSearcher.getInstance().getOrganisations(true)) {
-                if (org.getCountryObject().equals(selectedCountry)) {
-                    collateCentreListSecondary.addItem(org);
-                }
-            }
-        } else if (o instanceof String) {
-            for (IOrganisation org : StaticMetadataSearcher.getInstance().getOrganisations(true)) {
+            StaticMetadataSearcher.getInstance().getOrganisations(true).stream().filter((org) -> (org.getCountryObject().equals(selectedCountry))).forEachOrdered((org) -> {
                 collateCentreListSecondary.addItem(org);
-            }
+            });
+        } else if (o instanceof String) {
+            StaticMetadataSearcher.getInstance().getOrganisations(true).forEach((org) -> {
+                collateCentreListSecondary.addItem(org);
+            });
         }
     }
 
@@ -137,15 +137,13 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         Object o = startingHarborListPrincipal.getSelectedItem();
         if (o != null && o instanceof CountryBean) {
             CountryBean selectedCountry = (CountryBean) o;
-            for (IHarbour harbour : StaticMetadataSearcher.getInstance().getHarbours(true)) {
-                if (harbour.getCountryObject().equals(selectedCountry)) {
-                    startingHarborListSecondary.addItem(harbour);
-                }
-            }
-        } else if (o instanceof String) {
-            for (IHarbour harbour : StaticMetadataSearcher.getInstance().getHarbours(true)) {
+            StaticMetadataSearcher.getInstance().getHarbours(true).stream().filter((harbour) -> (harbour.getCountryObject().equals(selectedCountry))).forEachOrdered((harbour) -> {
                 startingHarborListSecondary.addItem(harbour);
-            }
+            });
+        } else if (o instanceof String) {
+            StaticMetadataSearcher.getInstance().getHarbours(true).forEach((harbour) -> {
+                startingHarborListSecondary.addItem(harbour);
+            });
         }
     }
 
@@ -167,15 +165,13 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         Object o = arrivalHarborListPrincipal.getSelectedItem();
         if (o != null && o instanceof CountryBean) {
             CountryBean selectedCountry = (CountryBean) o;
-            for (IHarbour harbour : StaticMetadataSearcher.getInstance().getHarbours(true)) {
-                if (harbour.getCountryObject().equals(selectedCountry)) {
-                    arrivalHarborListSecondary.addItem(harbour);
-                }
-            }
-        } else if (o instanceof String) {
-            for (IHarbour harbour : StaticMetadataSearcher.getInstance().getHarbours(true)) {
+            StaticMetadataSearcher.getInstance().getHarbours(true).stream().filter((harbour) -> (harbour.getCountryObject().equals(selectedCountry))).forEachOrdered((harbour) -> {
                 arrivalHarborListSecondary.addItem(harbour);
-            }
+            });
+        } else if (o instanceof String) {
+            StaticMetadataSearcher.getInstance().getHarbours(true).forEach((harbour) -> {
+                arrivalHarborListSecondary.addItem(harbour);
+            });
         }
     }
 
@@ -472,9 +468,9 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         startingHarborListPrincipal.addItem("Choose country to limit harbours");
         arrivalHarborListPrincipal.addItem("Choose country to limit harbours");
 
-        for (IVessel vessel : StaticMetadataSearcher.getInstance().getVessels(true)) {
+        StaticMetadataSearcher.getInstance().getVessels(true).forEach((vessel) -> {
             platformCodeListPrincipal.addItem(vessel);
-        }
+        });
         if (currentVesselResult.getCurrent() != null && currentVesselResult.getCurrent().getConcept() != null) {
             VesselBean currentVessel = currentVesselResult.getCurrent().getConcept();
             platformCodeResult.setText(currentVessel.getCode());
@@ -482,11 +478,12 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         }
         DefaultComboBoxModel collateCentreListPrincipalModel = new DefaultComboBoxModel();
         collateCentreListPrincipal.setModel(collateCentreListPrincipalModel);
-        for (OrganisationBean organisation : StaticMetadataSearcher.getInstance().getOrganisations(true)) {
+        StaticMetadataSearcher.getInstance().getOrganisations(true).stream().map((organisation) -> {
             collateCentreListSecondary.addItem(organisation);
-            CountryBean c = organisation.getCountryObject();
+            return organisation;
+        }).map((organisation) -> organisation.getCountryObject()).forEachOrdered((c) -> {
             SwingUtils.addToComboBox(collateCentreListPrincipalModel, c);
-        }
+        });
 
         DefaultComboBoxModel startingHarborListPrincipalModel = new DefaultComboBoxModel();
         startingHarborListPrincipal.setModel(startingHarborListPrincipalModel);
@@ -494,14 +491,21 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         DefaultComboBoxModel arrivalHarborListPrincipalModel = new DefaultComboBoxModel();
         arrivalHarborListPrincipal.setModel(arrivalHarborListPrincipalModel);
 
-        for (HarbourBean harbour : StaticMetadataSearcher.getInstance().getHarbours(true)) {
+        StaticMetadataSearcher.getInstance().getHarbours(true).stream().map((harbour) -> {
             startingHarborListSecondary.addItem(harbour);
+            return harbour;
+        }).map((harbour) -> {
             arrivalHarborListSecondary.addItem(harbour);
-
-            CountryBean c = harbour.getCountryObject();
+            return harbour;
+        }).map((harbour) -> harbour.getCountryObject()).map((c) -> {
             SwingUtils.addToComboBox(startingHarborListPrincipalModel, c);
-            SwingUtils.addToComboBox(arrivalHarborListPrincipalModel, c);
-        }
+            return c;
+        }).forEachOrdered(new Consumer<CountryBean>() {
+            @Override
+            public void accept(CountryBean c) {
+                SwingUtils.addToComboBox(arrivalHarborListPrincipalModel, c);
+            }
+        });
 
         chiefScientistModel = (ChiefScientistTableModel) chiefScientistTable.getModel();
         chiefScientistModel.setTable(chiefScientistTable);
@@ -616,9 +620,9 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
 
     protected void setUpChiefScientistColumn() {
         Set<ICountry> countries = new TreeSet<>(new CountryComparator());
-        for (IOrganisation org : StaticMetadataSearcher.getInstance().getOrganisations(true)) {
+        StaticMetadataSearcher.getInstance().getOrganisations(true).forEach((org) -> {
             countries.add(org.getCountryObject());
-        }
+        });
         countryList = new ComboBoxColumnEditor(countries, chiefScientistTable, 0, "You can choose a country to narrow down organisations.", this);
         organisationList = new ComboBoxColumnEditor(null, chiefScientistTable, 1, "Choose an organisation.", this);
     }

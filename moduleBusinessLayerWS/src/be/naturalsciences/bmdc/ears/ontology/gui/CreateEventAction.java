@@ -18,6 +18,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.util.actions.CookieAction;
 
+
 @ActionID(
         category = "Build",
         id = "be.naturalsciences.bmdc.ears.ontology.gui.CreateEventAction")
@@ -27,7 +28,7 @@ import org.openide.util.actions.CookieAction;
  @ActionReference(path = "Projects/Actions")
  })*/
 @ActionRegistration(
-        displayName = "#CTL_CreateEventAction")
+        displayName = "#CTL_CreateEventAction",lazy = false)//YS
 
 @Messages("CTL_CreateEventAction=Create event")
 public class CreateEventAction extends CookieAction {

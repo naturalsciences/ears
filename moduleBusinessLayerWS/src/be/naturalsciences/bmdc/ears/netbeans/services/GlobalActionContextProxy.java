@@ -157,6 +157,7 @@ public class GlobalActionContextProxy implements ContextGlobalProvider {
     public void add(CurrentSingleton obj) {
         this.bulkContent.remove(obj);
         this.bulkContent.add(obj);
+      
        // EARSConcept concept = obj.getConcept();
 
         /*if (contains(concept)) { //if it's already there

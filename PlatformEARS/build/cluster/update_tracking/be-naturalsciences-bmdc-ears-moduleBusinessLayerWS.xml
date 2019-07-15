@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.moduleBusinessLayerWS">
+<<<<<<< HEAD
     <module_version install_time="1553864652347" last="true" origin="installer" specification_version="1.0">
         <file crc="1572958201" name="config/Modules/be-naturalsciences-bmdc-ears-moduleBusinessLayerWS.xml"/>
         <file crc="297484223" name="modules/be-naturalsciences-bmdc-ears-moduleBusinessLayerWS.jar"/>
+=======
+    <module_version install_time="1556541918375" last="true" origin="installer" specification_version="1.0">
+        <file crc="3760442317" name="config/Modules/be-naturalsciences-bmdc-ears-moduleBusinessLayerWS.xml"/>
+        <file crc="1617310256" name="modules/be-naturalsciences-bmdc-ears-moduleBusinessLayerWS.jar"/>
+>>>>>>> 3b765a9d3462b6cb77cb8f33738391cfc99c0465
         <file crc="498810239" name="modules/ext/FastInfoset-1.2.12.jar"/>
         <file crc="1470762890" name="modules/ext/activation-1.1.1.jar"/>
         <file crc="4114763104" name="modules/ext/cloning-1.9.2.jar"/>
@@ -40,7 +46,11 @@
         <file crc="1911143149" name="modules/ext/resteasy-multipart-provider-3.0.13.Final.jar"/>
         <file crc="306526995" name="modules/ext/resteasy-multipart-provider-3.0.17.Final.jar"/>
         <file crc="2271144614" name="modules/ext/slf4j-simple-1.7.6.jar"/>
+<<<<<<< HEAD
         <file crc="3098946989" name="modules/ext/uber-ears2-ontology-base-1.0.jar"/>
+=======
+        <file crc="979716284" name="modules/ext/uber-ears2-ontology-base-1.0.jar"/>
+>>>>>>> 3b765a9d3462b6cb77cb8f33738391cfc99c0465
         <file crc="1440035456" name="modules/ext/uuid-3.2.jar"/>
     </module_version>
 </module>

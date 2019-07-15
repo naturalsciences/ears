@@ -105,8 +105,8 @@ public final class InfoBar implements LookupListener {
      *
      */
     //public static FileHandler FH;
-    private static final InputOutput messages = IOProvider.getDefault().getIO("Messages", true);
-    private static final InputOutput exceptions = IOProvider.getDefault().getIO("Exceptions", true);
+    private static final InputOutput MESSAGES = IOProvider.getDefault().getIO("Messages", true);
+    private static final InputOutput EXCEPTIONS = IOProvider.getDefault().getIO("Exceptions", true);
 
     private JPanel panel = new JPanel();
     // private final JLabel connectionLabel;
@@ -370,7 +370,7 @@ public final class InfoBar implements LookupListener {
             } else {
                 sb.append(exMsg);
             }
-            exceptions.getOut().println(sb.toString());
+            EXCEPTIONS.getOut().println(sb.toString());
         }
     }
 
@@ -388,7 +388,7 @@ public final class InfoBar implements LookupListener {
         StringBuilder sb = new StringBuilder(thisMoment);
         sb.append(": ");
         sb.append(msg);
-        messages.getOut().println(sb.toString());
+        MESSAGES.getOut().println(sb.toString());
     }
 
 }

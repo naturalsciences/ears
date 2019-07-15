@@ -22,7 +22,7 @@ import org.openide.util.actions.CookieAction;
         category = "Build",
         id = "be.naturalsciences.bmdc.ears.ontology.gui.CreateChildNodeAction")
 @ActionRegistration(
-        displayName = "#CTL_CreateChildNodeAction")
+        displayName = "#CTL_CreateChildNodeAction",lazy = false)//YS
 
 @NbBundle.Messages("CTL_CreateChildNodeAction=Create child...")
 public class CreateChildNodeAction extends CookieAction {

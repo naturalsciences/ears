@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="be.naturalsciences.bmdc.ears.commonLibraries">
+<<<<<<< HEAD
     <module_version install_time="1553864640333" last="true" origin="installer" specification_version="1.0">
         <file crc="1749863492" name="config/Modules/be-naturalsciences-bmdc-ears-commonLibraries.xml"/>
         <file crc="300501562" name="modules/be-naturalsciences-bmdc-ears-commonLibraries.jar"/>
+=======
+    <module_version install_time="1556541918218" last="true" origin="installer" specification_version="1.0">
+        <file crc="2739095930" name="config/Modules/be-naturalsciences-bmdc-ears-commonLibraries.xml"/>
+        <file crc="1568283965" name="modules/be-naturalsciences-bmdc-ears-commonLibraries.jar"/>
+>>>>>>> 3b765a9d3462b6cb77cb8f33738391cfc99c0465
         <file crc="2433523241" name="modules/ext/xerces-2.8.0.jar"/>
         <file crc="972832849" name="modules/ext/xercesImpl-2.11.0.jar"/>
     </module_version>

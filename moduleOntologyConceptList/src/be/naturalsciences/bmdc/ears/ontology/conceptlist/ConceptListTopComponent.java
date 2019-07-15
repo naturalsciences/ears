@@ -422,6 +422,7 @@ public final class ConceptListTopComponent extends TopComponent implements Looku
                 }
             }
         }
+        
         reMoveAsConcept(concepts);
     }
 

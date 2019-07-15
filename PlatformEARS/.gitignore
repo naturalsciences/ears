@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #nbproject/private/
 #build/
 #nbbuild/
@@ -23,3 +24,40 @@ old_ontologies
 *.exe
 *.tgz
 hs_err_pid*
+=======
+#nbproject/*
+#build/
+#nbbuild/
+#dist/
+#nbdist/
+#.nb-gradle/
+#EARS_SERVER/
+#old_ontologies
+#*.rdf
+#*.sh
+#*.sql
+#*.txt
+#*.class
+#*.log
+#*.ctxt
+#.mtj.tmp/
+##*.jar
+##*.war
+#*.ear
+#*.zip
+#*.tar.gz
+#*.rar
+#*.exe
+#*.tgz
+#hs_err_pid*
+
+
+
+#YS
+build/
+branding/
+branding.jnlp
+build.xml
+master.jnlp
+nbproject/
+>>>>>>> 3b765a9d3462b6cb77cb8f33738391cfc99c0465

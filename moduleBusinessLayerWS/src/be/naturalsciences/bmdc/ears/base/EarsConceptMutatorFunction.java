@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  *
  * @author Thomas Vandenberghe
+ * @param <E>
  */
 public interface EarsConceptMutatorFunction<E extends EARSConcept> {
     public E execute(Map map);

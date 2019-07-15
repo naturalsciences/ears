@@ -19,7 +19,7 @@ import org.openide.util.actions.CookieAction;
         category = "Build",
         id = "be.naturalsciences.bmdc.ears.ontology.gui.CollapseNodeAction")
 @ActionRegistration(
-        displayName = "#CTL_CollapseNodeAction")
+        displayName = "#CTL_CollapseNodeAction",lazy = false)//YS
 
 @Messages("CTL_CollapseNodeAction=Collapse all")
 public class CollapseNodeAction extends CookieAction {

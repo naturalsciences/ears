@@ -52,7 +52,6 @@ import javax.swing.JPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
@@ -73,8 +72,9 @@ import org.openide.windows.WindowManager;
 @Messages("CTL_GeneralToolBarAction=GeneralToolBarAction")
 public final class GeneralToolBarAction extends AbstractAction implements Presenter.Toolbar, LookupListener {
 
-    JComboBox programComboBox;
-    JComboBox cruiseComboBox;
+    JComboBox<ProgramBean> programComboBox;//YS
+    JComboBox<String> cruiseComboBox;//YS
+   
 
     RestClientCruise cruiseClient;
     RestClientProgram programClient;
@@ -101,13 +101,22 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
     ItemListener cruiseIl = new ItemListener() {
         @Override
         public void itemStateChanged(ItemEvent ie) {
+          
             if (ie.getStateChange() == ItemEvent.SELECTED) {
-                JComboBox cb = (JComboBox) ie.getSource();
+               JComboBox<ItemEvent> cb =   (JComboBox<ItemEvent>) ie.getSource();//YS
+                
+                
                 Object o2 = cb.getSelectedItem();
                 if (o2 != null && o2 instanceof CruiseBean) {
                     CruiseBean cr = (CruiseBean) o2;
                     Messaging.report("Current cruise: " + cr.toString(), Message.State.INFO, this.getClass(), false);
                     GlobalActionContextProxy.getInstance().add(CurrentCruise.getInstance(cr));
+                }
+                else
+                {
+               GlobalActionContextProxy.getInstance().add(CurrentProgram.getInstance(null));
+                         programComboBox.removeAllItems();
+                      
                 }
             }
         }
@@ -116,8 +125,10 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
     ItemListener programIl = new ItemListener() {
         @Override
         public void itemStateChanged(ItemEvent ie) {
+       
             if (ie.getStateChange() == ItemEvent.SELECTED) {
-                JComboBox cb = (JComboBox) ie.getSource();
+                JComboBox<ItemEvent> cb =   (JComboBox<ItemEvent>) ie.getSource();//YS
+//                        ie.getSource();
                 Object o2 = cb.getSelectedItem();
                 if (o2 != null && o2 instanceof ProgramBean) {
                     ProgramBean pr = (ProgramBean) o2;
@@ -146,6 +157,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         if (WebserviceUtils.testWS("ears2/getCruise")) {
             try {
                 cruiseClient = new RestClientCruise();
+           
                 programClient = new RestClientProgram();
                 eventClient = new RestClientEvent();
             } catch (ConnectException ex) {
@@ -224,17 +236,21 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
      * Instantiate the cruisecombobox if needed and populate or repopulate it.
      */
     private void populateCruiseCombobox() {
+        
         if (cruiseComboBox == null) {
-            cruiseComboBox = new JComboBox();
+            cruiseComboBox = new JComboBox<>();//YS
         }
         cruiseComboBox.removeItemListener(cruiseIl);
         if (cruises != null) {
             if (cruiseComboBox.getItemCount() > 0) {
                 cruiseComboBox.removeAllItems();
             }
+              cruiseComboBox.addItem("Choose a Cruise");
             if (cruises.size() > 0) {
                 for (ICruise cruise : cruises) {
+              
                     SwingUtils.addToComboBox(cruiseComboBox, cruise);
+                  
                 }
                 //cruiseComboBox.setSelectedItem(cruiseComboBox.getItemAt(0));
             } else {
@@ -243,7 +259,8 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         }
         if (currentCruise != null && currentCruise.getConcept() != null) {
-            cruiseComboBox.setSelectedItem(currentCruise.getConcept());
+        cruiseComboBox.setSelectedItem(currentCruise.getConcept());
+        
         }
         cruiseComboBox.addItemListener(cruiseIl);
 
@@ -254,22 +271,28 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
      * Instantiate the programcombobox if needed and populate or repopulate it.
      */
     private void populateProgramCombobox() {
+        
+        
+              
         if (programComboBox == null) {
-            programComboBox = new JComboBox();
+            programComboBox = new JComboBox<>();//YS
         }
         programComboBox.removeItemListener(programIl);
         if (currentPrograms != null) {
             if (programComboBox.getItemCount() > 0) {
                 programComboBox.removeAllItems();
             }
-            if (currentPrograms.size() > 0) {
+            if (currentPrograms.size() > 0  && cruiseComboBox.getSelectedIndex() != 0) {
+              
                 for (IProgram program : currentPrograms) {
                     SwingUtils.addToComboBox(programComboBox, program);
                 }
                 if (currentCruise != null && currentCruise.getConcept() != null && (currentProgram == null || currentProgram.getConcept() == null)) {
-                    ProgramBean currentProgramBean = (ProgramBean) programComboBox.getItemAt(0);
+                    ProgramBean currentProgramBean =  programComboBox.getItemAt(0);
                     programComboBox.setSelectedItem(currentProgramBean);
                     currentProgram = CurrentProgram.getInstance(currentProgramBean);
+                     GlobalActionContextProxy.getInstance().add(CurrentProgram.getInstance(currentProgramBean));
+
                     Messaging.report("Current program: " + currentProgram.getConcept().toString(), Message.State.INFO, this.getClass(), false);
                 }
 
@@ -309,11 +332,12 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         o_createEvent.addActionListener(new CreateEventActionListener());
 
         if (cruiseComboBox == null) {
-            cruiseComboBox = new JComboBox();
+            cruiseComboBox = new JComboBox<>();//YS
         }
 
         if (programComboBox == null) {
-            programComboBox = new JComboBox();
+            programComboBox = new JComboBox<>();//YS
+  
         }
         jPanel.add(o_createCruise);
         jPanel.add(o_createProgram);
@@ -364,7 +388,12 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
                         Messaging.report(ex.getMessage(), ex, this.getClass(), false);
                     }
                 }
-                List<CruiseBean> list = new ArrayList(cruises);
+              List<CruiseBean> list = new ArrayList(cruises);
+                
+          
+                
+                
+                
                 if (programClient != null && WebserviceUtils.testWS("ears2/getProgram")) {
                     currentCruise = currentCruiseResult.getCurrent();
                     if (currentCruise != null) {
@@ -415,7 +444,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
+//UpdateProgramTopComponent
             if (UpdateProgramTopComponent.getInstance() instanceof UpdateProgramTopComponent) {
                 UpdateProgramTopComponent currentCruiseTopComponent = UpdateProgramTopComponent.getInstance();
                 currentCruiseTopComponent.close();
@@ -433,6 +462,8 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         @Override
         public void actionPerformed(ActionEvent e) {
+      
+   
             CreateEventTopComponent cnptc = new CreateEventTopComponent();
             cnptc.open();
 

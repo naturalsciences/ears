@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+    <module name="be.naturalsciences.bmdc.ears.moduleOntologyBrowser" spec="1.0"/>
+    <instanceof class="be.naturalsciences.bmdc.ears.ontology.browser.OntologyFileBrowser"/>
+    <instanceof class="be.naturalsciences.bmdc.ears.ontology.rdf.DirectoryChangeListener"/>
+    <instanceof class="be.naturalsciences.bmdc.ears.ontology.rdf.Refreshable"/>
+    <instanceof class="be.naturalsciences.bmdc.ears.utils.TaskListener"/>
+    <instanceof class="java.awt.Component"/>
+    <instanceof class="java.awt.Container"/>
+    <instanceof class="java.awt.MenuContainer"/>
+    <instanceof class="java.awt.event.ActionListener"/>
+    <instanceof class="java.awt.image.ImageObserver"/>
+    <instanceof class="java.io.Externalizable"/>
+    <instanceof class="java.io.Serializable"/>
+    <instanceof class="java.lang.Object"/>
+    <instanceof class="java.util.EventListener"/>
+    <instanceof class="javax.accessibility.Accessible"/>
+    <instanceof class="javax.swing.JComponent"/>
+    <instanceof class="javax.swing.TransferHandler$HasGetTransferHandler"/>
+    <instanceof class="org.openide.explorer.ExplorerManager$Provider"/>
+    <instanceof class="org.openide.util.HelpCtx$Provider"/>
+    <instanceof class="org.openide.util.Lookup$Provider"/>
+    <instanceof class="org.openide.windows.TopComponent"/>
+    <serialdata class="be.naturalsciences.bmdc.ears.ontology.browser.OntologyFileBrowser">
+        ACED0005737200296F72672E6F70656E6964652E77696E646F77732E546F70436F6D706F6E656E74245265706C6163657284
+        874494BDDF6D64030000787074004162652E6E61747572616C736369656E6365732E626D64632E656172732E6F6E746F6C6F
+        67792E62726F777365722E4F6E746F6C6F677946696C6542726F777365727372000F6A6176612E6C616E672E53686F727468
+        4D37133460DA5202000153000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B02000078
+        700001770400000001707074000C42726F7773652074726565737078
+    </serialdata>
+</settings>

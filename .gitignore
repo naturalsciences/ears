@@ -1,5 +1,6 @@
 #nbproject/private/
 #build/
+<<<<<<< HEAD
 nbbuild/
 dist/
 dist-bup/
@@ -24,3 +25,32 @@ old_ontologies
 *.rar
 hs_err_pid*
 /SpringExercise/target/
+=======
+#nbbuild/
+#dist/
+#nbdist/
+#.nb-gradle/
+#EARS_SERVER/
+#moduleBusinessLayerWSMaven/
+#old_ontologies
+#*.rdf
+#*.sh
+#*.sql
+#*.txt
+#*.class
+#*.log
+#*.ctxt
+#.mtj.tmp/
+#*.jar
+#*.war
+#*.ear
+#*.zip
+#*.tar.gz
+#*.rar
+#hs_err_pid*
+#/PlatformEARS/moduleOntologyBase/nbproject/private/
+
+
+#YS 
+LICENSE 
+>>>>>>> 3b765a9d3462b6cb77cb8f33738391cfc99c0465

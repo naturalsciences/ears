@@ -116,7 +116,7 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
 
     public void addEntity(E entity) {
         getEntities().add(entity);
-        fireTableDataChanged();
+     fireTableDataChanged();
     }
 
     public void addEntities(Collection<E> entities) {
