@@ -69,7 +69,7 @@ public class RestClientProgram extends RestClient {
 
             Response response = getTarget.request(MediaType.APPLICATION_XML).get();
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
             }
             programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {
             });
@@ -86,7 +86,7 @@ public class RestClientProgram extends RestClient {
             try {
                 response = target.request().get();
                 if (response.getStatus() != 200) {
-                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
                 }
                 program = response.readEntity(ProgramBean.class);
                 response.close();
@@ -154,7 +154,7 @@ public class RestClientProgram extends RestClient {
             Response response = getTarget.queryParam("cruiseId", cruiseId).request().get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
             }
             // Read output in string format
             programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {

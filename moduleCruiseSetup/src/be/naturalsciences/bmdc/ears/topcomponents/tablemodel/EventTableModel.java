@@ -203,13 +203,11 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                     }
                 }
                 break;
-                
-                
-                     case PROPERTIES:
-                          System.out.println("YS-- CASE PROPERTIES " +event.getLabel() + event.getProperty());
+
+            case PROPERTIES:
+                System.out.println("YS-- CASE PROPERTIES " + event.getLabel() + event.getProperty());
                 break;
-              
-                
+
         }
     }
 
@@ -219,7 +217,7 @@ public class EventTableModel extends EntityTableModel<EventBean> {
         if (!response.isBad()) {
             entities.remove(rowsToDelete);
             fireTableDataChanged();
-            
+
         } else {
             Messaging.report("Event wasn't deleted from the web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
         }
@@ -228,20 +226,18 @@ public class EventTableModel extends EntityTableModel<EventBean> {
 
     @Override
     public void addEntity(EventBean e) {
-       
+
         e.setEventId(LocalDateTime.ofInstant(e.getTimeStampDt().toInstant(), e.getTimeStampDt().getOffset()).toLocalTime().toString().replace(".", "").replace(":", "").subSequence(0, 9).toString());
         IResponseMessage response = restClientEvent.postEvent(e);
         if (!response.isBad()) {
-           
+
             entities.add(e);
-             fireTableRowsInserted(entities.size() - 1, entities.size() - 1);
-           fireTableDataChanged();
+            fireTableRowsInserted(entities.size() - 1, entities.size() - 1);
+            fireTableDataChanged();
             System.out.println("YS-- be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel.addEntity()");
         } else {
             Messaging.report("Event wasn't saved to web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
         }
-
-      
 
     }
 
@@ -270,14 +266,7 @@ public class EventTableModel extends EntityTableModel<EventBean> {
             case PROGRAM:
                 return event.getProgramProperty();
             case LABEL:
-                     if (event.hasProperties()) {
-                         return event.getLabel();
-                  //  return event.getProperties();//YS
-                    // return StringUtils.concatString(event.getPropertyMap().toString(), ";");
-                    //return event.getPropertyMap();
-                } else {
-                    return "";
-                }
+                return event.getLabel();
             case DELETE:
                 java.net.URL imageURL = EventTableModel.class.getResource("/images/deleteImg.png");
                 Icon deleteIcon = new ImageIcon(imageURL, "Delete event " + event.getId());

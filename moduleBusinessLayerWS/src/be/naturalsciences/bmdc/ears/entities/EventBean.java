@@ -55,7 +55,6 @@ public class EventBean implements Serializable, EARSConcept {
     public static final Map<Enum, String> PROPERTY_URLS;
 
     public enum Prop {
-
         DEPTH_M, HASDATA, LABEL, LENGTH_M, PARAMETER, PROGRAM, RECIPIENT_VOLUME_L, RELATED_EVENT, SAMPLEID, SAMPLED_VOLUME_L, SENSORHEIGHT_M, SUBJECT, SUBSAMPLEID, SWATH_MODE, VOLUMECENTRIFUGE_READING, VOLUMECENTRIFUGED_L, VOLUMEFILTERED_L, VOLUMEFILTERED_READING, WIDTH_SWATH
     };
 
@@ -416,11 +415,8 @@ public class EventBean implements Serializable, EARSConcept {
 
     public void setActor(String actor) {
         this.actor = actor;
-        
+
     }
-    
-    
-   
 
     /**
      * *
@@ -433,13 +429,13 @@ public class EventBean implements Serializable, EARSConcept {
     public String getProperty() {
         Set<Property> propResults = new TreeSet<>(new EventPropertyComparator());
         for (Property property : getProperties()) {
-        //    System.out.println("YS1" + property.value +property.code+"  " +property.name);
+            //    System.out.println("YS1" + property.value +property.code+"  " +property.name);
             if (property.value != null && !property.value.equals("")) {
-              /*  if ("label".equals(property.name)) {
+                /*  if ("label".equals(property.name)) {
                        System.out.println("YS4" + property.value );
                     setLabel(property.value);
                 }
-                */
+                 */
                 propResults.add(property);
             }
 
@@ -461,30 +457,14 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     public String getLabel() {
-       
-      
-    /*   String value ="";
-        for (Property property : getProperties()) {
-            
-            if (property.value != null && !property.value.equals("") && "label".equals(property.name)) {
-               
-                  value=  property.value;
-                }
-        */    
+        if (hasProperties()) {
+            Set<String> values = getPropertyValues(Prop.LABEL);
+            return values.toArray(new String[1])[0];
+        } else {
+            return "";
 
-       
-       Set<String> values = getPropertyValues(Prop.LABEL);
-   
-        return values.toArray(new String[1])[0];
-   
         }
-    
-   /*  public String setLabel(String label) {
-       
-         
-        return label;
     }
-    */
 
     public Object getProgramProperty() {
         Set<String> values = getPropertyValues(Prop.PROGRAM);
@@ -844,13 +824,9 @@ public class EventBean implements Serializable, EARSConcept {
         String url = PROPERTY_URLS.get(prop);
         Set<String> r = new THashSet<>();
         for (Property property : getProperties()) {
-          
-            
             if (property.code.equals(url)) {
-              //    System.out.println("YS2" + property.value +property.code+"  " +property.name); 
                 r.add(property.value);
             }
-
         }
         return r;
     }

@@ -67,7 +67,7 @@ public class RestClientWeather extends RestClient {
         Response response = getLastWeatherXmlTarget.request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+           throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastWeatherXmlTarget.getUri().toString() + ")");
         }
         wt = response.readEntity(WeatherBean.class);
 
@@ -81,7 +81,7 @@ public class RestClientWeather extends RestClient {
 
         Response response = getNearestWeatherTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getNearestWeatherTarget.getUri().toString() + ")");
         }
         wt = response.readEntity(WeatherBean.class);
 
@@ -98,7 +98,7 @@ public class RestClientWeather extends RestClient {
                 .request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastWeatherXmlTarget.getUri().toString() + ")");
         }
         wts = response.readEntity(new GenericType<Collection<WeatherBean>>() {
         });

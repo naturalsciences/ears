@@ -68,7 +68,7 @@ public class RestClientThermosal extends RestClient {
         Response response = getLastThermosalXmlTarget.request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastThermosalXmlTarget.getUri().toString() + ")");
         }
         th = response.readEntity(ThermosalBean.class);
         response.close();
@@ -81,7 +81,7 @@ public class RestClientThermosal extends RestClient {
 
         Response response = getNearestThermosalTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getNearestThermosalTarget.getUri().toString() + ")");
         }
         th = response.readEntity(ThermosalBean.class);
 
@@ -98,7 +98,7 @@ public class RestClientThermosal extends RestClient {
                 .request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastThermosalXmlTarget.getUri().toString() + ")");
         }
         ths = response.readEntity(new GenericType<Collection<ThermosalBean>>() {
         });

@@ -205,7 +205,7 @@ public class RestClientOnt extends RestClient {
             Response response = authenticateTarget.request(MediaType.TEXT_PLAIN).get();
 
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + authenticateTarget.getUri().toString() + ")");
             }
             String result = response.readEntity(String.class);
             response.close();

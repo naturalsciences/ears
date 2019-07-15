@@ -173,7 +173,7 @@ public class Startable implements Runnable, LookupListener {
         Thread thr2 = new Thread() {
             public void run() {
                 OntologySynchronizer.synchronizeVesselOntology();
-              //  OntologyFileBrowser.open(OntologyFileBrowser.getVesselNode()); //ontology object and its individuals are now in global lookup
+                //  OntologyFileBrowser.open(OntologyFileBrowser.getVesselNode()); //ontology object and its individuals are now in global lookup
             }
         };
         thr2.start();
@@ -186,7 +186,7 @@ public class Startable implements Runnable, LookupListener {
             }
         };
         thr3.start();
-        vesselMetadataManager =  new StaticMetadataManager<>(VesselBean.class);
+        vesselMetadataManager = new StaticMetadataManager<>(VesselBean.class);
 //                new StaticMetadataManager<>(VesselBean.class);
         seaAreaMetadataManager = new StaticMetadataManager<>(SeaAreaBean.class);
         harbourMetadataManager = new StaticMetadataManager<>(HarbourBean.class);
@@ -313,15 +313,13 @@ public class Startable implements Runnable, LookupListener {
         } else {
             Message msg = new Message("Current vessel couldn't be retrieved from config file.", null, this.getClass(), true, Message.State.BAD);
             Messaging.report(msg);
-
         }
-
     }
 
     @Override
     public void resultChanged(LookupEvent le) {
         if (currentUrlResult.matches(le) && (currentUrlResult.getCurrent() == null ? null : currentUrlResult.getCurrent().getConcept()) != currentUrl) {
-            currentUrl = currentUrlResult.getCurrent().getConcept();
+            currentUrl = currentUrlResult.getCurrent() != null ? currentUrlResult.getCurrent().getConcept() : null;
             OntologySynchronizer.synchronizeVesselOntology();
             OntologySynchronizer.synchronizeAllProgramOntologies(currentVessel.getConcept());
         }

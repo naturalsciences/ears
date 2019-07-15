@@ -105,7 +105,7 @@ public class RestClientOntology extends RestClient {
             Response response = getHarborsTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getHarborsTarget.getUri().toString() + ")");
             }
             // Read output in string format
             // System.out.println(response.readEntity(new GenericType<String>(){}) );
@@ -127,7 +127,7 @@ public class RestClientOntology extends RestClient {
             Response response = getCollateCentresTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+               throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getCollateCentresTarget.getUri().toString() + ")");
             }
             // Read output in string format
             collateCentres = (Collection<CollateCentreBean>) response.readEntity(new GenericType<Collection<CollateCentreBean>>() {
@@ -148,7 +148,7 @@ public class RestClientOntology extends RestClient {
             Response response = getChiefOrganisationsTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getChiefOrganisationsTarget.getUri().toString() + ")");
             }
             // Read output in string format
             organizations = (Collection<OrganisationBean>) response.readEntity(new GenericType<Collection<OrganisationBean>>() {
@@ -169,7 +169,7 @@ public class RestClientOntology extends RestClient {
             Response response = getPlatformsTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getPlatformsTarget.getUri().toString() + ")");
             }
             // Read output in string format
             platforms = (Collection<PlatformClassBean>) response.readEntity(new GenericType<Collection<PlatformClassBean>>() {
@@ -191,7 +191,7 @@ public class RestClientOntology extends RestClient {
 
             //Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getToolsTarget.getUri().toString() + ")");
             }
             // Read output in string format
             //System.out.println(response.readEntity(new GenericType<String>(){}) );
@@ -239,7 +239,7 @@ public class RestClientOntology extends RestClient {
             Response response = getActionsTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getActionsTarget.getUri().toString() + ")");
             }
             // Read output in string format
             actions = (Collection<ActionBean>) response.readEntity(new GenericType<Collection<ActionBean>>() {
@@ -272,7 +272,7 @@ public class RestClientOntology extends RestClient {
             Response response = getPropertyTarget.queryParam("action", action).request().get();
             // Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getPropertyTarget.getUri().toString() + ")");
             }
             properties = response.readEntity(new GenericType<Collection<PropertyBean>>() {
             });
@@ -292,7 +292,7 @@ public class RestClientOntology extends RestClient {
             Response response = getCategoryListTarget.request(MediaType.APPLICATION_XML).get();
             //Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getCategoryListTarget.getUri().toString() + ")");
             }
             // Read output in string format
             categories = (Collection<CategoryBean>) response.readEntity(new GenericType<Collection<CategoryBean>>() {

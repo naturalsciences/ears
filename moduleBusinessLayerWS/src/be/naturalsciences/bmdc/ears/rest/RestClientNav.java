@@ -72,7 +72,7 @@ public class RestClientNav extends RestClient {
         Response response = getLastNavXmlTarget.request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastNavXmlTarget.getUri().toString() + ")");
         }
         nav = response.readEntity(NavBean.class);
 
@@ -86,7 +86,7 @@ public class RestClientNav extends RestClient {
 
         Response response = getNearestNavTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getNearestNavTarget.getUri().toString() + ")");
         }
         nav = response.readEntity(NavBean.class);
 
@@ -103,7 +103,7 @@ public class RestClientNav extends RestClient {
                 .request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastNavXmlTarget.getUri().toString() + ")");
         }
         navs = response.readEntity(new GenericType<Collection<NavBean>>() {
         });

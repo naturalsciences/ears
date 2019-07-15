@@ -79,7 +79,7 @@ public class RestClientEvent extends RestClient {
             try {
                 response = getTarget.request(MediaType.APPLICATION_XML).get();
                 if (response.getStatus() != 200) {
-                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
                 }
                 events = (Collection<EventBean>) response.readEntity(new GenericType<Collection<EventBean>>() {
                 });
@@ -107,7 +107,7 @@ public class RestClientEvent extends RestClient {
             try {
                 response = getTarget.queryParam("id", eventId).request().get();
                 if (response.getStatus() != 200) {
-                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
                 }
                 event = response.readEntity(EventBean.class);
 
@@ -191,7 +191,7 @@ public class RestClientEvent extends RestClient {
             Response response = getTarget.queryParam("date", sdf.format(dateParsed)).request().get();
             // Check Status
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
             }
             event = response.readEntity(EventBean.class);
             //System.out.println(event);

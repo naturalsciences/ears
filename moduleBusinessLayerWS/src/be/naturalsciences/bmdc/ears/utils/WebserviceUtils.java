@@ -48,7 +48,7 @@ public class WebserviceUtils {
 
     /**
      * *
-     * Test the given url given an url part, the path. The path is appended to
+     * Test the given url given an url part, the path. Return true if the path results in a 200. The path is appended to
      * the domain, which is provided via an application setting. If the path is null only the domain will be
      * tested.
      *

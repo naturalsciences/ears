@@ -96,7 +96,7 @@ public class RestClientCruise extends RestClient {
             try {
                 response = target.request().get();
                 if (response.getStatus() != 200) {
-                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
                 }
                 cruise = response.readEntity(CruiseBean.class);
                 response.close();
@@ -126,7 +126,7 @@ public class RestClientCruise extends RestClient {
             try {
                 Response response = target.request().get();
                 if (response.getStatus() != 200) {
-                    throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+                    throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
                 }
                 cruises = (Collection<CruiseBean>) response.readEntity(new GenericType<Collection<CruiseBean>>() {
                 });

@@ -77,7 +77,7 @@ public class RestClientUnderway extends RestClient {
 
         Response response = getNearestUndTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed : HTTP error code : " + response.getStatus());
+            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getNearestUndTarget.getUri().toString() + ")");
         }
         und = response.readEntity(UnderwayBean.class);
 
