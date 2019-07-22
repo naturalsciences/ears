@@ -111,15 +111,13 @@ class EventPropertyDialog extends JDialog implements LookupListener {
         getRootPane().setDefaultButton(okButton);
         okButton.getAccessibleContext().setAccessibleDescription(okString);
         okButton.setActionCommand("OK");
-     
+
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-                
-               CreateEventTopComponent.getRestClientEvent().modifyEvent(event);
-            getParent().repaint(); //YS
-              
+                CreateEventTopComponent.getRestClientEvent().modifyEvent(event);
+                getParent().repaint();
             }
         });
         if (okListener != null) {
@@ -228,7 +226,7 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                             }
                         }
                         property.value = (String) propertyValueComboBox.getSelectedItem();
-                        event.getProperties().add(property);
+                        event.attachProperty(property);
                         okButton.setEnabled(true);
                     }
                 }

@@ -200,7 +200,7 @@ public class OntologyTreeViewer extends TopComponent implements LookupListener, 
         public void convertToEvent() {
             AsConceptNode node = (AsConceptNode) mgr.getSelectedNodes()[0];
             try {
-                ToEventConvertible.convertToEvent(node);
+                ToEventConvertible.convertToEventAndAddToLookup(node);
             } catch (EarsException ex) {
                 Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }

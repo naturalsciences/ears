@@ -74,8 +74,8 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
     protected SeaAreaTableModel seaAreaModel;
     protected ChiefScientistTableModel chiefScientistModel;
 
-     ComboBoxColumnEditor<CountryBean>  countryList; //YS
-      ComboBoxColumnEditor<OrganisationBean>  organisationList; //YS
+    ComboBoxColumnEditor<CountryBean> countryList;
+    ComboBoxColumnEditor<OrganisationBean> organisationList;
     ComboBoxColumnEditor<SeaAreaBean> seaAreaList;
     //protected List<JComboBox> chiefScientistOrganisationEditors;
     //static List<JComboBox<Country>> countryLists;

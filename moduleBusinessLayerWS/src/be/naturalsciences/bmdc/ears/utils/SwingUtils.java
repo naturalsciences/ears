@@ -16,6 +16,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 /**
  *
@@ -88,6 +89,15 @@ public class SwingUtils {
         if (!modelContains(box.getModel(), o)) {
             box.addItem(o);
         }
+    }
+
+    public static int[] convertSelectedRowIndicesToModel(JTable table) {
+        int[] selectedRows = table.getSelectedRows();
+        int[] modelRows = new int[selectedRows.length];
+        for (int i = 0; i < selectedRows.length; i++) {
+            modelRows[i] = table.convertRowIndexToModel(selectedRows[i]);
+        }
+        return modelRows;
     }
 
     /* public static void createDialog(JDialog dialog, Component parent) {

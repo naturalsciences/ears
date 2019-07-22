@@ -152,7 +152,7 @@ public final class InfoBar implements LookupListener {
         } catch (ConnectException ex) {
             Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), true);
         } catch (EarsException ex) {
-            Messaging.report("Problem with the navigation web service", ex, this.getClass(), true);;
+            Messaging.report("Problem with the navigation web service", ex, this.getClass(), true);
         }
 
         if (messageResult.allInstances().size() > 0) {
@@ -175,7 +175,7 @@ public final class InfoBar implements LookupListener {
                     centralTimeLabel.setText("Latest (~10s) server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
                 }
             } catch (ConnectException ex) {
-                Exceptions.printStackTrace(ex);
+               Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
             }
         });
 

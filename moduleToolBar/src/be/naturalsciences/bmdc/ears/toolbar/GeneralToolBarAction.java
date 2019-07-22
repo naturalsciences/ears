@@ -72,8 +72,8 @@ import org.openide.windows.WindowManager;
 @Messages("CTL_GeneralToolBarAction=GeneralToolBarAction")
 public final class GeneralToolBarAction extends AbstractAction implements Presenter.Toolbar, LookupListener {
 
-    JComboBox<ProgramBean> programComboBox;//YS
-    JComboBox<String> cruiseComboBox;//YS
+    JComboBox<ProgramBean> programComboBox;
+    JComboBox<String> cruiseComboBox;
 
     RestClientCruise cruiseClient;
     RestClientProgram programClient;
@@ -102,7 +102,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         public void itemStateChanged(ItemEvent ie) {
 
             if (ie.getStateChange() == ItemEvent.SELECTED) {
-                JComboBox<ItemEvent> cb = (JComboBox<ItemEvent>) ie.getSource();//YS
+                JComboBox<ItemEvent> cb = (JComboBox<ItemEvent>) ie.getSource();
 
                 Object o2 = cb.getSelectedItem();
                 if (o2 != null && o2 instanceof CruiseBean) {
@@ -123,7 +123,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         public void itemStateChanged(ItemEvent ie) {
 
             if (ie.getStateChange() == ItemEvent.SELECTED) {
-                JComboBox<ItemEvent> cb = (JComboBox<ItemEvent>) ie.getSource();//YS
+                JComboBox<ItemEvent> cb = (JComboBox<ItemEvent>) ie.getSource();
 //                        ie.getSource();
                 Object o2 = cb.getSelectedItem();
                 if (o2 != null && o2 instanceof ProgramBean) {
@@ -234,7 +234,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
     private void populateCruiseCombobox() {
 
         if (cruiseComboBox == null) {
-            cruiseComboBox = new JComboBox<>();//YS
+            cruiseComboBox = new JComboBox<>();
         }
         cruiseComboBox.removeItemListener(cruiseIl);
         if (cruises != null) {
@@ -326,11 +326,11 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         o_createEvent.addActionListener(new CreateEventActionListener());
 
         if (cruiseComboBox == null) {
-            cruiseComboBox = new JComboBox<>();//YS
+            cruiseComboBox = new JComboBox<>();
         }
 
         if (programComboBox == null) {
-            programComboBox = new JComboBox<>();//YS
+            programComboBox = new JComboBox<>();
 
         }
         jPanel.add(o_createCruise);

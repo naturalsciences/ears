@@ -72,8 +72,6 @@ public class CruiseTableModel extends AbstractTableModel implements FilterableTa
 
     @Override
     public Object getValueAt(int row, int column) {
-    //    System.out.println("YS7--be.naturalsciences.bmdc.ears.topcomponents.tablemodel.CruiseTableModel.getValueAt()"+ data.size());
-    
         CruiseBean cruise = data.get(row);
         switch (getColumnName(column)) {
             case NAME:

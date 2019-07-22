@@ -31,7 +31,7 @@ import org.openide.util.Utilities;
         displayName = "#CTL_OpenRdfFileTypeAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Loaders/application/rdf+xml/Actions", position = -100, separatorAfter = -50)
+    @ActionReference(path = "Loaders/application/rdf+xml/Actions", position = 1)
 })
 @Messages("CTL_OpenRdfFileTypeAction=Edit...")
 public final class OpenRdfFileTypeAction implements ActionListener {

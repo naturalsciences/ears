@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -28,10 +29,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -326,8 +329,12 @@ public class EventBean implements Serializable, EARSConcept {
         this.eventId = buildEventId();
     }
 
-    private String buildEventId() {
-        return this.timeStampDt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + cruise.getCruiseName() + "-" + counter;
+    public String buildEventId() {
+        //return this.timeStampDt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + cruise.getCruiseName() + "-" + counter;
+
+        return UUID.randomUUID().toString();
+
+        //  return (Long.toHexString(random.nextInt(1000000000)) + Long.toHexString(random.nextInt(1000000000))).substring(0, 9);
     }
 
     @XmlAttribute(name = "eventId")
@@ -429,7 +436,6 @@ public class EventBean implements Serializable, EARSConcept {
     public String getProperty() {
         Set<Property> propResults = new TreeSet<>(new EventPropertyComparator());
         for (Property property : getProperties()) {
-            //    System.out.println("YS1" + property.value +property.code+"  " +property.name);
             if (property.value != null && !property.value.equals("")) {
                 /*  if ("label".equals(property.name)) {
                        System.out.println("YS4" + property.value );
@@ -575,7 +581,7 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "subjectName")
-    public String getToolCategory() {
+    public String getToolCategoryJson() {
         if (toolCategoryUri != null && toolCategoryUri.keySet() != null) {
             return serializeConcept(toolCategoryUri);
         } else {
@@ -583,8 +589,8 @@ public class EventBean implements Serializable, EARSConcept {
         }
     }
 
-    public void setToolCategory(String subjectUri) {
-        this.toolCategoryUri = deserializeConcept(subjectUri);
+    public void setToolCategoryJson(String toolcategoryJson) {
+        this.toolCategoryUri = deserializeConcept(toolcategoryJson);
     }
 
     public String getToolCategoryUri() {
@@ -614,7 +620,7 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "categoryName")
-    public String getProcess() {
+    public String getProcessJson() {
         if (processUri != null && processUri.keySet() != null) {
             return serializeConcept(processUri);
         } else {
@@ -622,8 +628,8 @@ public class EventBean implements Serializable, EARSConcept {
         }
     }
 
-    public void setProcess(String categoryUri) {
-        this.processUri = deserializeConcept(categoryUri);
+    public void setProcessJson(String processJson) {
+        this.processUri = deserializeConcept(processJson);
     }
 
     public String getProcessUri() {
@@ -653,7 +659,7 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "name")
-    public String getAction() {
+    public String getActionJson() {
         if (actionUri != null && actionUri.keySet() != null) {
             return serializeConcept(actionUri);
         } else {
@@ -661,8 +667,8 @@ public class EventBean implements Serializable, EARSConcept {
         }
     }
 
-    public void setAction(String actionUri) {
-        this.actionUri = deserializeConcept(actionUri);
+    public void setActionJson(String actionJson) {
+        this.actionUri = deserializeConcept(actionJson);
     }
 
     public String getActionUri() {
@@ -763,14 +769,10 @@ public class EventBean implements Serializable, EARSConcept {
         Property propertyCopy = new Property(property.getUri().toASCIIString(), property.getTermRef().getName(), property.isMandatory(), property.isMultiple());
         propertyCopy.value = value;
         this.getProperties().add(propertyCopy);
-        /*String propertyUrl = PROPERTY_URLS.get(prop);
-         Set propValues = getPropertyValues(prop);
-         if (propValues == null) { //ie if key doesn't exist, if this property wasn't before registered.
-         propValues = new THashSet<>();
-         }
-         propValues.add(value);
+    }
 
-         propertyMap.put(propertyUrl, propValues);*/
+    public void attachProperty(Property property) {
+        this.getProperties().add(property);
     }
 
     /**
@@ -788,10 +790,6 @@ public class EventBean implements Serializable, EARSConcept {
             }
 
         }
-        /*for (String s : getPropertyMap().get(EventBean.PROPERTY_URLS.get(prop))) {
-         return s.equals(value);
-         }*/
-        //getPropertyMap().get(EventBean.PROPERTY_URLS.get(prop)).get(0).equals("true");
         return false;
     }
 
@@ -969,6 +967,33 @@ public class EventBean implements Serializable, EARSConcept {
 
     }
 
+    /**
+     * *
+     * Clone an EventBean, including the id and eventId
+     *
+     * @return
+     */
+    @Override
+    public EventBean clone() {
+        EventBean clone = new EventBean();
+
+        clone.setProgram(this.getProgram());
+        clone.setCruise(this.getCruise());
+
+        clone.setToolCategoryJson(this.getToolCategoryJson());
+        clone.setToolSet(this.getToolSet());
+        clone.setProcessJson(this.getProcessJson());
+        clone.setActionJson(this.getActionJson());
+        clone.setProperties(this.getProperties());
+
+        clone.setActor(this.actor);
+        clone.setTimeStampDt(this.timeStampDt);
+
+        clone.setEventId(this.eventId);
+        clone.setId(this.id);
+        return clone;
+    }
+
     @Override
     public String toString() {
 
@@ -980,13 +1005,12 @@ public class EventBean implements Serializable, EARSConcept {
 
     public String getDescription() {
         StringBuilder sb = new StringBuilder();
-        sb.append("T: ");
         sb.append(this.getToolNames());
-        sb.append(" P: ");
-        sb.append(this.getToolCategoryName());
-        sb.append(" A: ");
+        sb.append(": ");
+        sb.append(this.getProcessName());
+        sb.append("/");
         sb.append(this.getActionName());
-        sb.append(" TIME: ");
+        sb.append(": ");
         sb.append(this.getTimeStamp());
         return sb.toString();
     }

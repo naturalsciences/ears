@@ -66,17 +66,14 @@ public final class OntologyFileBrowser extends TopComponent implements ExplorerM
         @Override
         public void doWork() {
             progr.start();
-           
             try {
                 progr.progress("Starting to build " + node.getScope() + " nodes.");
                 node.populateNode();
-                System.out.println("YS -----------be.naturalsciences.bmdc.ears.ontology.browser.OntologyFileBrowser.OntologyRetriever.doWork()");
                 //node.refresh();
             } catch (OutOfMemoryError ex) {
                 Messaging.report("OutOfMemoryException while opening the " + node.getScope() + " node(s).", ex, this.getClass(), true);
             } finally {
                 progr.finish();
-                
             }
 
         }

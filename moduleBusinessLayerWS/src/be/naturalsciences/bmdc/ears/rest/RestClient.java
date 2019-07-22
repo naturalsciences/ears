@@ -136,13 +136,6 @@ public abstract class RestClient implements Serializable {
             }
             printResponse(target, response, cls, responseMessage);
             response.close();
-            // MessageBean res = new MessageBean(event.getId(), "Cruise inserted");
-            /*MessageBean res = (MessageBean) response.readEntity(new GenericType<MessageBean>() {
-             });*/
-            //System.out.println("DEBUG MESSAGES:" + res.getCode() + ", " + res.getDescription());
-            // Response code
-            //System.out.println(response.getStatus());
-            //response.close();
         }
         return responseMessage;
     }

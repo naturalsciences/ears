@@ -41,7 +41,7 @@ public interface ToEventConvertible {
 
     public IOntologyModel getOntologyModel();
 
-    public static void convertToEvent(AsConceptNode node) throws EarsException {
+    public static void convertToEventAndAddToLookup(AsConceptNode node) throws EarsException {
         if (node.getConcept() instanceof be.naturalsciences.bmdc.ears.ontology.entities.Action) {
             be.naturalsciences.bmdc.ears.ontology.entities.Action action = (be.naturalsciences.bmdc.ears.ontology.entities.Action) node.getConcept();
             List<AsConcept> la = new ArrayList<>();

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.swing.Icon;
@@ -45,10 +46,10 @@ public class EventTableModel extends EntityTableModel<EventBean> {
     public static final String ACTOR = "Actor";
     public static final String PROGRAM = "Program";
     public static final String LABEL = "Label";
-    public static final String DELETE = "Delete";
+    //   public static final String DELETE = "Delete";
     public static final String PROPERTIES = "Properties";
 
-    public static final String[] COLUMN_NAMES = {DATE, TIME, TIMEZONE, TOOL_CATEGORY, TOOL, PROCESS, ACTION, ACTOR, PROGRAM, LABEL, DELETE, PROPERTIES};
+    public static final String[] COLUMN_NAMES = {DATE, TIME, TIMEZONE, TOOL_CATEGORY, TOOL, PROCESS, ACTION, ACTOR, PROGRAM, LABEL,/* DELETE,*/ PROPERTIES};
 
     public EventTableModel(JTable table, List<EventBean> entities) {
         super(table, entities);
@@ -114,8 +115,8 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                 return false;
             case LABEL:
                 return false;
-            case DELETE:
-                return true;
+            /* case DELETE:
+                return true;*/
             case PROPERTIES:
                 return true;
             default:
@@ -130,7 +131,6 @@ public class EventTableModel extends EntityTableModel<EventBean> {
      */
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        System.out.println("YS be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel.setValueAt()");
         Object originalValue = getValueAt(rowIndex, columnIndex);
         EventBean event = getEntities().get(rowIndex);
         String colName = getColumnName(columnIndex);
@@ -203,38 +203,43 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                     }
                 }
                 break;
-
-            case PROPERTIES:
-                System.out.println("YS-- CASE PROPERTIES " + event.getLabel() + event.getProperty());
-                break;
-
         }
     }
 
     @Override
-    public void removeRow(int rowsToDelete) {
-        IResponseMessage response = restClientEvent.removeEvent(entities.get(rowsToDelete).getEventId().trim());
+    public void removeRow(int row) {
+        IResponseMessage response = restClientEvent.removeEvent(entities.get(row).getEventId().trim());
         if (!response.isBad()) {
-            entities.remove(rowsToDelete);
+            entities.remove(row);
             fireTableDataChanged();
 
         } else {
             Messaging.report("Event wasn't deleted from the web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
         }
+    }
 
+    @Override
+    public void removeEntity(EventBean event) {
+        IResponseMessage response = restClientEvent.removeEvent(event.getEventId().trim());
+        if (!response.isBad()) {
+            entities.remove(event);
+            fireTableDataChanged();
+
+        } else {
+            Messaging.report("Event wasn't deleted from the web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
+        }
     }
 
     @Override
     public void addEntity(EventBean e) {
+        e.setEventId(e.buildEventId());
 
-        e.setEventId(LocalDateTime.ofInstant(e.getTimeStampDt().toInstant(), e.getTimeStampDt().getOffset()).toLocalTime().toString().replace(".", "").replace(":", "").subSequence(0, 9).toString());
         IResponseMessage response = restClientEvent.postEvent(e);
         if (!response.isBad()) {
 
             entities.add(e);
             fireTableRowsInserted(entities.size() - 1, entities.size() - 1);
             fireTableDataChanged();
-            System.out.println("YS-- be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel.addEntity()");
         } else {
             Messaging.report("Event wasn't saved to web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
         }
@@ -267,7 +272,7 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                 return event.getProgramProperty();
             case LABEL:
                 return event.getLabel();
-            case DELETE:
+            /* case DELETE:
                 java.net.URL imageURL = EventTableModel.class.getResource("/images/deleteImg.png");
                 Icon deleteIcon = new ImageIcon(imageURL, "Delete event " + event.getId());
                 if (imageURL != null) {
@@ -275,15 +280,17 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                     return deleteIcon;
                 }
 
-                return "";
+                return "";*/
             case PROPERTIES:
+                return "properties";
+            /*
                 if (event.hasProperties()) {
                     return event.getProperties();
                     // return StringUtils.concatString(event.getPropertyMap().toString(), ";");
                     //return event.getPropertyMap();
                 } else {
-                    return "";
-                }
+                    return "properties";
+                }*/
             default:
                 return null;
         }

@@ -238,10 +238,10 @@ public class RestClientEvent extends RestClient {
                 ResteasyWebTarget target = postTarget.queryParam("id", event.getEventId())
                         .queryParam("date", event.getTimeStamp())
                         .queryParam("actor", event.getActor())
-                        .queryParam("subject", encodeUrl(event.getToolCategory()))
+                        .queryParam("subject", encodeUrl(event.getToolCategoryJson()))
                         .queryParam("tool", encodeUrl(event.getTools()))
-                        .queryParam("categoryName", encodeUrl(event.getProcess()))
-                        .queryParam("actionName", encodeUrl(event.getAction()))
+                        .queryParam("categoryName", encodeUrl(event.getProcessJson()))
+                        .queryParam("actionName", encodeUrl(event.getActionJson()))
                         .queryParam("actionProperty", encodeUrl(event.getProperty()));
 
                 return performGetWhichIsActuallyAPost(target, EventBean.class);
@@ -266,10 +266,10 @@ public class RestClientEvent extends RestClient {
                     .queryParam("eventId", event.getEventId())
                     .queryParam("timeStamp", event.getTimeStamp())
                     .queryParam("actor", event.getActor() == null ? "" : event.getActor())
-                    .queryParam("subject", encodeUrl(event.getToolCategory()))
+                    .queryParam("subject", encodeUrl(event.getToolCategoryJson()))
                     .queryParam("tool", encodeUrl(event.getTools()))
-                    .queryParam("categoryName", encodeUrl(event.getProcess()))
-                    .queryParam("actionName", encodeUrl(event.getAction()))
+                    .queryParam("categoryName", encodeUrl(event.getProcessJson()))
+                    .queryParam("actionName", encodeUrl(event.getActionJson()))
                     .queryParam("actionProperty", encodeUrl(event.getProperty()));
             return performGetWhichIsActuallyAPost(target, EventBean.class);
         }

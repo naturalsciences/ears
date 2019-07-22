@@ -212,8 +212,8 @@ public class SpecificEventDefinition extends EventDefinition implements ISpecifi
             be.naturalsciences.bmdc.ears.utils.Cloner<SpecificEventDefinition> cc = new be.naturalsciences.bmdc.ears.utils.Cloner(this, clonedObjects);
             SpecificEventDefinition shallowClone = cc.cloneOriginal();
 
-            /*shallowClone.process = this.getProcess().clone(clonedObjects);
-        shallowClone.action = this.getAction().clone(clonedObjects);
+            /*shallowClone.process = this.getProcessJson().clone(clonedObjects);
+        shallowClone.action = this.getActionJson().clone(clonedObjects);
         return shallowClone;*/
             be.naturalsciences.bmdc.ears.utils.Cloner<Process> ccProcess = new be.naturalsciences.bmdc.ears.utils.Cloner(this.getProcess(), clonedObjects);
             Process shallowProcess = ccProcess.cloneOriginal();

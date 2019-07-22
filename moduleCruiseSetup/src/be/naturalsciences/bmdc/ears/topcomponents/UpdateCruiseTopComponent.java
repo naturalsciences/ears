@@ -420,8 +420,8 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
             model.fireTableDataChanged();
             o_cruiseJtable.repaint();
         }
-*/
-               if (currentVesselResult.getCurrent() != null) {
+         */
+        if (currentVesselResult.getCurrent() != null) {
             try {
                 model.refreshModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));
             } catch (ConnectException ex) {

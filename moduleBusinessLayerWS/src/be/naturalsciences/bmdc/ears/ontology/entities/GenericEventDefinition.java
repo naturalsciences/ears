@@ -116,8 +116,8 @@ public class GenericEventDefinition extends EventDefinition implements IGenericE
         hash ^= (getId() != null ? getId().hashCode() : 0);
         hash ^= (getUri() != null ? getUri().hashCode() : 0);
         /*hash ^= (getToolCategoryRef() != null ? getToolCategoryRef().hashCode() : 0);
-         hash ^= (getProcess() != null ? getProcess().hashCode() : 0);
-         hash ^= (getAction() != null ? getAction().hashCode() : 0);*/
+         hash ^= (getProcessJson() != null ? getProcessJson().hashCode() : 0);
+         hash ^= (getActionJson() != null ? getActionJson().hashCode() : 0);*/
         return hash;
     }
 
@@ -133,9 +133,9 @@ public class GenericEventDefinition extends EventDefinition implements IGenericE
 
         return shallowClone;
 
-        /*        be.naturalsciences.bmdc.ears.utils.Cloner<Process> ccProcess = new be.naturalsciences.bmdc.ears.utils.Cloner(this.getProcess(), clonedObjects);
+        /*        be.naturalsciences.bmdc.ears.utils.Cloner<Process> ccProcess = new be.naturalsciences.bmdc.ears.utils.Cloner(this.getProcessJson(), clonedObjects);
         Process shallowProcess = ccProcess.cloneOriginal();
-        be.naturalsciences.bmdc.ears.utils.Cloner<Action> ccAction = new be.naturalsciences.bmdc.ears.utils.Cloner(this.getAction(), clonedObjects);
+        be.naturalsciences.bmdc.ears.utils.Cloner<Action> ccAction = new be.naturalsciences.bmdc.ears.utils.Cloner(this.getActionJson(), clonedObjects);
         Action shallowAction = ccAction.cloneOriginal();
         shallowClone.process = shallowProcess;
          shallowClone.action = shallowAction;
@@ -393,8 +393,8 @@ public class GenericEventDefinition extends EventDefinition implements IGenericE
             /*sev.setToolRef(tool);
              tool.getSpecificEventDefinitionCollection().add(sev);
              //this.getSpecificEventDefinitionCollection().add(sev);
-             sev.setProcess(this.process);
-             sev.setAction(this.action);
+             sev.setProcessJson(this.process);
+             sev.setActionJson(this.action);
 
             
 
