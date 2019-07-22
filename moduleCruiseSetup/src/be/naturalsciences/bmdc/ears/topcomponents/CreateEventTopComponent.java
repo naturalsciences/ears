@@ -18,6 +18,7 @@ import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.IProgram;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
+import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import be.naturalsciences.bmdc.ears.listeners.SelectOnClickPopupMenuListener;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
@@ -740,14 +741,13 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                 Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
                 for (EventBean event : events) {
                     if (event.getProperties() != null) {
-                        for (EventBean.Property property : event.getProperties()) {
+                        for (PropertyBean property : event.getProperties()) {
                             try {
-                                Set<Property> properties = Individuals.getConcepts(allIndividuals, new URI(property.code), true, Property.class);
+                                Set<Property> properties = Individuals.getConcepts(allIndividuals, new URI(property.getCode()), true, Property.class);
                                 for (Property earsProperty : properties) {
-                                    property.isMandatory = earsProperty.isMandatory();
-                                    property.isMultiple = earsProperty.isMultiple();
-                                    property.valueClass = earsProperty.getValueClass();
-
+                                    property.setIsMandatory(earsProperty.isMandatory());
+                                    property.setIsMultiple(earsProperty.isMultiple());
+                                    property.setValueClass(earsProperty.getValueClass());
                                 }
                             } catch (URISyntaxException ex) {
                                 Messaging.report("URISyntaxException", ex, this.getClass(), false);
@@ -767,11 +767,9 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                             }
                         }
                         if (individuals.getModel() instanceof VesselOntology) {
-
                             for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
                                 if (sev.equals(event)) {
                                     for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
-
                                         event.attachProperty(property, null);
                                     }
                                 }

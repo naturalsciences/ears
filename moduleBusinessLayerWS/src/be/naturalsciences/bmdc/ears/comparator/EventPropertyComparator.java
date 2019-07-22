@@ -6,20 +6,21 @@
 package be.naturalsciences.bmdc.ears.comparator;
 
 import be.naturalsciences.bmdc.ears.entities.EventBean;
+import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import java.util.Comparator;
 
 /**
  *
  * @author thomas
  */
-public class EventPropertyComparator implements Comparator<EventBean.Property> {
+public class EventPropertyComparator implements Comparator<PropertyBean> {
 
     @Override
-    public int compare(EventBean.Property t, EventBean.Property t1) {
-        int result = t.name.compareTo(t1.name);
+    public int compare(PropertyBean t, PropertyBean t1) {
+        int result = t.getName().compareTo(t1.getName());
 
         if (result == 0) {
-            return t.value.compareTo(t1.value);
+            return t.getValue().compareTo(t1.getValue());
         } else {
             return result;
         }

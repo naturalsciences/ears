@@ -7,7 +7,7 @@ package be.naturalsciences.bmdc.ears.topcomponents;
 
 import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
 import be.naturalsciences.bmdc.ears.entities.EventBean;
-import be.naturalsciences.bmdc.ears.entities.EventBean.Property;
+import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
@@ -137,13 +137,13 @@ class EventPropertyDialog extends JDialog implements LookupListener {
         //   this.addWindowListener(new javax.swing.ColorChooserDialog.Closer());
     }
 
-    private JComponent getPropertyValueField(Property property, Object defaultValue) {
+    private JComponent getPropertyValueField(PropertyBean property, Object defaultValue) {
         JComponent propertyValueField = null;
-        if (property.valueClass == null) {
+        if (property.getValueClass() == null) {
             JTextField propertyValueTextField = new JTextField(20);
             propertyValueField = propertyValueTextField;
-            if (property.value != null) {
-                propertyValueTextField.setText(property.value);
+            if (property.getValue() != null) {
+                propertyValueTextField.setText(property.getValue());
             } else if (defaultValue instanceof String) {
                 propertyValueTextField.setText((String) defaultValue);
             }
@@ -161,22 +161,22 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                 }
 
                 private void update() {
-                    if ((propertyValueTextField.getText().equals(defaultValue) || propertyValueTextField.getText().isEmpty()) && property.isMandatory) {
-                        propertyValueTextField.setText(property.value);
+                    if ((propertyValueTextField.getText().equals(defaultValue) || propertyValueTextField.getText().isEmpty()) && property.isMandatory()) {
+                        propertyValueTextField.setText(property.getValue());
                         okButton.setEnabled(false);
                         Messaging.report("A mandatory property can't be set to the default value =('" + defaultValue + "'). Your changes have been reset.", Message.State.BAD, EventPropertyDialog.class, true);
                     } else {
-                        property.value = propertyValueTextField.getText();
+                        property.setValue(propertyValueTextField.getText());
                         okButton.setEnabled(true);
                     }
                 }
 
             });
 
-        } else if (property.valueClass.equals("Program")) {
+        } else if (property.getValueClass().equals("Program")) {
 
             JComboBox propertyValueComboBox = new JComboBox();
-            propertyValueComboBox.setName(property.code);
+            propertyValueComboBox.setName(property.getCode());
             propertyValueComboBox.setEditable(false);
             propertyValueField = propertyValueComboBox;
             propertyValueComboBox.addItem(defaultValue);
@@ -188,10 +188,10 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                 }
             }
 
-            if (property.value == null || property.value.equals(defaultValue)) {
+            if (property.getValue() == null || property.getValue().equals(defaultValue)) {
                 propertyValueComboBox.setSelectedItem(defaultValue); //let the DocumentListener decide whether this is a legal change
             } else {
-                propertyValueComboBox.setSelectedItem(property.value.trim()); //let the DocumentListener decide whether this is a legal change
+                propertyValueComboBox.setSelectedItem(property.getValue().trim()); //let the DocumentListener decide whether this is a legal change
             }
 
             propertyValueComboBox.addItemListener(new ItemListener() {
@@ -204,28 +204,28 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                 }
 
                 private void update() {
-                    if (propertyValueComboBox.getSelectedItem().equals(defaultValue) && property.isMandatory) {
-                        propertyValueComboBox.setSelectedItem(property.value);
+                    if (propertyValueComboBox.getSelectedItem().equals(defaultValue) && property.isMandatory()) {
+                        propertyValueComboBox.setSelectedItem(property.getValue());
                         okButton.setEnabled(false);
                         Messaging.report("A mandatory property can't be set to the default value =('" + defaultValue + "'). Your changes have been reset.", Message.State.BAD, EventPropertyDialog.class, true);
                     } else if (propertyValueComboBox.getSelectedItem().equals(defaultValue)) {
-                        property.value = "";
+                        property.setValue("");
                         okButton.setEnabled(true);
                     } else {
                         String newValue = (String) propertyValueComboBox.getSelectedItem();
-                        for (Property existingProperty : event.getProperties()) {
-                            if (existingProperty != null && existingProperty.value != null) {
-                                System.out.println(existingProperty.code + ": " + existingProperty.value);
-                                if (existingProperty.value.equals(newValue)) {
-                                    System.out.println(existingProperty.code + ": " + existingProperty.value + " equals " + newValue);
+                        for (PropertyBean existingProperty : event.getProperties()) {
+                            if (existingProperty != null && existingProperty.getValue() != null) {
+                                System.out.println(existingProperty.getCode() + ": " + existingProperty.getValue());
+                                if (existingProperty.getValue().equals(newValue)) {
+                                    System.out.println(existingProperty.getCode() + ": " + existingProperty.getValue() + " equals " + newValue);
                                     okButton.setEnabled(false);
-                                    Messaging.report("A property denoting a " + property.valueClass + " can't have multiple identical values. The value already occurs.", Message.State.BAD, EventPropertyDialog.class, true);
+                                    Messaging.report("A property denoting a " + property.getValueClass() + " can't have multiple identical values. The value already occurs.", Message.State.BAD, EventPropertyDialog.class, true);
 
                                     return;
                                 }
                             }
                         }
-                        property.value = (String) propertyValueComboBox.getSelectedItem();
+                        property.setValue((String) propertyValueComboBox.getSelectedItem());
                         event.attachProperty(property);
                         okButton.setEnabled(true);
                     }
@@ -254,7 +254,7 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                         okButton.setEnabled(true);
                     } else {
                         String newValue = (String) propertyValueComboBox.getSelectedItem();
-                        for (Property existingProperty : event.getProperties()) {
+                        for (PropertyBean existingProperty : event.getProperties()) {
                             if (existingProperty != null && existingProperty.value != null) {
                                 System.out.println(existingProperty.code + ": " + existingProperty.value);
                                 if (existingProperty.value.equals(newValue)) {
@@ -285,34 +285,34 @@ class EventPropertyDialog extends JDialog implements LookupListener {
 
         contentPane.add(buttonPane, BorderLayout.NORTH);
 
-        Set<Property> properties = this.event.getProperties();
+        Set<PropertyBean> properties = this.event.getProperties();
 
         JPanel propertyPane = new JPanel();
         propertyPane.setLayout(new MigLayout());
 
         contentPane.add(propertyPane);
-        for (Property property : properties) {
-            JLabel propertyKeyLabel = new JLabel(property.name);
+        for (PropertyBean property : properties) {
+            JLabel propertyKeyLabel = new JLabel(property.getName());
 
             propertyPane.add(propertyKeyLabel);
             JComponent propertyValueField = null;
-            if (property.valueClass == null) {
+            if (property.getValueClass() == null) {
                 propertyValueField = getPropertyValueField(property, "");
             } else {
-                propertyValueField = getPropertyValueField(property, "No " + property.valueClass);
+                propertyValueField = getPropertyValueField(property, "No " + property.getValueClass());
             }
-            if (property.isMultiple) {
-                multipleSelectionFields.put(property.code, 1);
+            if (property.isMultiple()) {
+                multipleSelectionFields.put(property.getCode(), 1);
                 boolean addButtonCondition = true;
                 boolean minusButtonCondition = true;
                 int maximum = 5;
                 if (propertyValueField instanceof JComboBox) {
                     JComboBox propertyValueComboBox = (JComboBox) propertyValueField;
                     maximum = propertyValueComboBox.getItemCount();
-                    if (multipleSelectionFields.get(property.code) > propertyValueComboBox.getItemCount()) {
+                    if (multipleSelectionFields.get(property.getCode()) > propertyValueComboBox.getItemCount()) {
                         addButtonCondition = false;
                     }
-                    if (multipleSelectionFields.get(property.code) > 1) {
+                    if (multipleSelectionFields.get(property.getCode()) > 1) {
                         minusButtonCondition = false;
                     }
                 }
@@ -341,43 +341,43 @@ class EventPropertyDialog extends JDialog implements LookupListener {
 
     }
 
-    private JButton getAddButton(JPanel pane, Property property, int maximum) {
+    private JButton getAddButton(JPanel pane, PropertyBean property, int maximum) {
         JButton addButton = new JButton("+");
-        if (addButtons.get(property.code) != null) {
-            List addButtonList = addButtons.get(property.code);
+        if (addButtons.get(property.getCode()) != null) {
+            List addButtonList = addButtons.get(property.getCode());
             addButtonList.add(addButton);
-            addButtons.put(property.code, addButtonList);
+            addButtons.put(property.getCode(), addButtonList);
         } else {
             List addButtonList = new ArrayList();
             addButtonList.add(addButton);
-            addButtons.put(property.code, addButtonList);
+            addButtons.put(property.getCode(), addButtonList);
         }
-        if (addButtons.get(property.code).size() == maximum) {
+        if (addButtons.get(property.getCode()).size() == maximum) {
             addButton.setEnabled(false);
         }
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                Property propertyCopy = property.clone();
-                propertyCopy.value = null;
-                multipleSelectionFields.put(propertyCopy.code, multipleSelectionFields.get(propertyCopy.code) + 1);
+                PropertyBean propertyCopy = property.clone();
+                propertyCopy.setValue(null);
+                multipleSelectionFields.put(propertyCopy.getCode(), multipleSelectionFields.get(propertyCopy.getCode()) + 1);
 
-                JLabel propertyKeyLabel = new JLabel(propertyCopy.name);
+                JLabel propertyKeyLabel = new JLabel(propertyCopy.getName());
                 JComponent propertyValueField = null;
-                if (property.valueClass == null) {
+                if (property.getValueClass() == null) {
                     propertyValueField = getPropertyValueField(propertyCopy, "");
                 } else {
-                    propertyValueField = getPropertyValueField(propertyCopy, "No " + propertyCopy.valueClass);
+                    propertyValueField = getPropertyValueField(propertyCopy, "No " + propertyCopy.getValueClass());
                 }
 
-                if (multipleSelectionFields.get(propertyCopy.code) < maximum - 1) {
+                if (multipleSelectionFields.get(propertyCopy.getCode()) < maximum - 1) {
                     pane.add(propertyKeyLabel);
                     pane.add(propertyValueField);
                     JButton newAddButton = getAddButton(pane, propertyCopy, maximum);
                     pane.add(newAddButton);
                     pane.add(getMinusButton(pane, propertyCopy, propertyKeyLabel, propertyValueField, newAddButton, addButton), "wrap");
                 } else {
-                    for (JButton button : addButtons.get(propertyCopy.code)) {
+                    for (JButton button : addButtons.get(propertyCopy.getCode())) {
                         button.setEnabled(false);
                     }
                     pane.add(propertyKeyLabel);
@@ -396,25 +396,25 @@ class EventPropertyDialog extends JDialog implements LookupListener {
         return addButton;
     }
 
-    private JButton getMinusButton(JPanel pane, Property property, JLabel propertyKeyLabel, JComponent propertyValueField, JButton addButtonOfOwnRow, JButton callingAddButton) {
+    private JButton getMinusButton(JPanel pane, PropertyBean property, JLabel propertyKeyLabel, JComponent propertyValueField, JButton addButtonOfOwnRow, JButton callingAddButton) {
         JButton minusButton = new JButton("-");
-        if (minusButtons.get(property.code) != null) {
-            List addButtonList = minusButtons.get(property.code);
+        if (minusButtons.get(property.getCode()) != null) {
+            List addButtonList = minusButtons.get(property.getCode());
             addButtonList.add(minusButton);
-            minusButtons.put(property.code, addButtonList);
+            minusButtons.put(property.getCode(), addButtonList);
         } else {
             List minusButtonList = new ArrayList();
             minusButtonList.add(minusButton);
-            minusButtons.put(property.code, minusButtonList);
+            minusButtons.put(property.getCode(), minusButtonList);
         }
-        if (minusButtons.get(property.code).size() == 1) {
+        if (minusButtons.get(property.getCode()).size() == 1) {
             minusButton.setEnabled(false);
         }
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
 
-                if (multipleSelectionFields.get(property.code) > 2) {
+                if (multipleSelectionFields.get(property.getCode()) > 2) {
                     pane.remove(propertyKeyLabel);
                     pane.remove(propertyValueField);
                     if (addButtonOfOwnRow != null) {
@@ -433,10 +433,10 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                     if (minusButton != null) {
                         pane.remove(minusButton);
                     }
-                    for (JButton button : addButtons.get(property.code)) {
+                    for (JButton button : addButtons.get(property.getCode())) {
                         button.setEnabled(true);
                     }
-                    for (JButton button : minusButtons.get(property.code)) {
+                    for (JButton button : minusButtons.get(property.getCode())) {
                         button.setEnabled(false);
                     }
                     /*if (callingAddButton != null) {
@@ -444,14 +444,13 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                     }*/
                 }
                 event.getProperties().remove(property);
-                property.value = "";
-                multipleSelectionFields.put(property.code, multipleSelectionFields.get(property.code) - 1);
+                property.setValue("");
+                multipleSelectionFields.put(property.getCode(), multipleSelectionFields.get(property.getCode()) - 1);
 
                 pane.revalidate();
                 pane.repaint();
                 EventPropertyDialog.this.repaint();
                 EventPropertyDialog.this.pack();
-
             }
         };
 

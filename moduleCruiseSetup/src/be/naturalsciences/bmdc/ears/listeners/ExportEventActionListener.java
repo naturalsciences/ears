@@ -9,6 +9,7 @@ import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.NavBean;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
 import be.naturalsciences.bmdc.ears.entities.VesselBean;
@@ -181,8 +182,8 @@ public class ExportEventActionListener implements EventListener {
                                 "Acquisition Timestamp", "Latitude", "Longitude", "Depth", "Surface water temperature"));
                         Map<String, String> properties = new TreeMap<>();
                         for (EventBean event : events) {
-                            for (EventBean.Property property : event.getProperties()) {
-                                properties.put(property.code, property.name);
+                            for (PropertyBean property : event.getProperties()) {
+                                properties.put(property.getCode(), property.getName());
                             }
                         }
                         for (Map.Entry<String, String> entry : properties.entrySet()) {

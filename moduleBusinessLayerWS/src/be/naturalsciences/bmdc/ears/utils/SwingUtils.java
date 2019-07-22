@@ -23,9 +23,9 @@ import javax.swing.JTable;
  * @author thomas
  */
 public class SwingUtils {
-
+    
     public static final int COMBOBOX_MAX_ROW_COUNT = 20;
-
+    
     public static void setScrollSpeed(JScrollPane pane, int speed) {
         if (pane != null) {
             JScrollBar bar = pane.getVerticalScrollBar();
@@ -34,7 +34,7 @@ public class SwingUtils {
             }
         }
     }
-
+    
     public static boolean modelContains(ComboBoxModel model, Object o) {
         for (int i = 0; i < model.getSize(); i++) {
             if (model.getElementAt(i).equals(o)) {
@@ -52,12 +52,12 @@ public class SwingUtils {
     private static int insertPoint(AbstractListModel model, Object key) {
         int low = 0;
         int high = model.getSize() - 1;
-
+        
         while (low <= high) {
             int mid = (low + high) >>> 1;
             Comparable midVal = (Comparable) model.getElementAt(mid);
             int cmp = midVal.compareTo(key);
-
+            
             if (cmp < 0) {
                 low = mid + 1;
             } else if (cmp > 0) {
@@ -66,7 +66,7 @@ public class SwingUtils {
                 return mid; // key found
             }
         }
-
+        
         return low;  // key not found
     }
 
@@ -84,13 +84,13 @@ public class SwingUtils {
             model.insertElementAt(o, insertPoint);
         }
     }
-
+    
     public static void addToComboBox(JComboBox box, Object o) {
         if (!modelContains(box.getModel(), o)) {
             box.addItem(o);
         }
     }
-
+    
     public static int[] convertSelectedRowIndicesToModel(JTable table) {
         int[] selectedRows = table.getSelectedRows();
         int[] modelRows = new int[selectedRows.length];
@@ -111,7 +111,7 @@ public class SwingUtils {
     public static int createYNDialogAndGetResponse(Component parentComponent, String message, String title) {
         JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
         JDialog dialog = pane.createDialog(parentComponent, title);
-
+        dialog.setResizable(true);
         /*Double cx = closeToThisComponent.getLocation().getX() - parentComponent.getLocation().getX();
         Double cy = closeToThisComponent.getLocation().getY() - parentComponent.getLocation().getY();
         dialog.setLocation(cx.intValue(), cy.intValue());*/

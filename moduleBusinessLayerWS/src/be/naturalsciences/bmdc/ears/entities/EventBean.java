@@ -108,7 +108,7 @@ public class EventBean implements Serializable, EARSConcept {
      * Map<String, List<String>>
      */
     //private Map<SingletonMap<String, String>, Set<String>> propertyMap = new THashMap<>(); //property
-    private Set<Property> properties = new TreeSet<>(new EventPropertyComparator());
+    private Set<PropertyBean> properties = new TreeSet<>(new EventPropertyComparator());
     ;
  
     /**
@@ -159,74 +159,6 @@ public class EventBean implements Serializable, EARSConcept {
     private static final long serialVersionUID = 1L;
 
     private String eventId;
-
-    public class Property implements Comparable<Property> {
-
-        public String code;
-        public String name;
-        public transient boolean isMandatory;
-        public transient boolean isMultiple;
-        public transient String valueClass;
-        public String value;
-
-        public Property(String code, String name, boolean isMandatory, boolean isMultiple) {
-            this.code = code;
-            this.name = name;
-            this.isMandatory = isMandatory;
-            this.isMultiple = isMultiple;
-        }
-
-        public Property clone() {
-            Property prop = new Property(this.code, this.name, this.isMandatory, this.isMultiple);
-            prop.valueClass = valueClass;
-            prop.value = value;
-            return prop;
-        }
-
-        @Override
-        public int compareTo(Property other) {
-            int i;
-            if (this.value == null && other.value == null) {
-                i = 0;
-            } else if (this.value != null && other.value != null) {
-                i = this.value.compareTo(other.value);
-            } else {
-                i = -1;
-            }
-            if (i != 0) {
-                return i;
-            }
-            return this.code.compareTo(other.code);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof Property) {
-                Property other = (Property) o;
-                if (this.code.equals(other.code)) {
-                    if ((this.value == null && other.value == null) || this.value.equals(other.value)) {
-                        return true;
-                    }
-                }
-                return false;
-            } else {
-                return false;
-            }
-        }
-
-        public boolean equals(IProperty p) {
-
-            return this.code.equals(p.getUri().toString());
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            hash = 97 * hash + Objects.hashCode(this.code);
-            hash = 97 * hash + Objects.hashCode(this.value);
-            return hash;
-        }
-    }
 
     public EventBean() {
         super();
@@ -284,17 +216,17 @@ public class EventBean implements Serializable, EARSConcept {
         this.toolCategoryUri = new SingletonMap(AsConcept.getConceptUriString(toolCategory), AsConcept.getConceptName(toolCategory));//Collections.singletonMap(AsConcept.getConceptUriString(toolCategory), AsConcept.getConceptName(toolCategory));
         this.actionUri = new SingletonMap(AsConcept.getConceptUriString(action), AsConcept.getConceptName(action));//Collections.singletonMap(AsConcept.getConceptUriString(action), AsConcept.getConceptName(action));
 
-        Property programProperty = new Property(PROPERTY_URLS.get(Prop.PROGRAM), "program", true, true);
-        programProperty.value = program.getProgramId();
-        programProperty.valueClass = "Program";
+        PropertyBean programProperty = new PropertyBean(PROPERTY_URLS.get(Prop.PROGRAM), "program", true, true);
+        programProperty.setValue(program.getProgramId());
+        programProperty.setValueClass("Program");
         this.properties.add(programProperty);
 
         if (properties != null) {
             for (IProperty earsProperty : properties) {
-                Property prop = new Property(AsConcept.getConceptUri(earsProperty).toASCIIString(), AsConcept.getConceptName(earsProperty), earsProperty.isMandatory(), earsProperty.isMultiple());
-                prop.isMandatory = earsProperty.isMandatory();
-                prop.isMultiple = earsProperty.isMultiple();
-                prop.valueClass = earsProperty.getValueClass();
+                PropertyBean prop = new PropertyBean(AsConcept.getConceptUri(earsProperty).toASCIIString(), AsConcept.getConceptName(earsProperty), earsProperty.isMandatory(), earsProperty.isMultiple());
+                prop.setIsMandatory(earsProperty.isMandatory());
+                prop.setIsMultiple(earsProperty.isMultiple());
+                prop.setValueClass(earsProperty.getValueClass());
 
                 this.properties.add(prop);
             }
@@ -434,9 +366,9 @@ public class EventBean implements Serializable, EARSConcept {
      */
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "property")
     public String getProperty() {
-        Set<Property> propResults = new TreeSet<>(new EventPropertyComparator());
-        for (Property property : getProperties()) {
-            if (property.value != null && !property.value.equals("")) {
+        Set<PropertyBean> propResults = new TreeSet<>(new EventPropertyComparator());
+        for (PropertyBean property : getProperties()) {
+            if (property.getValue() != null && !property.getValue().equals("")) {
                 /*  if ("label".equals(property.name)) {
                        System.out.println("YS4" + property.value );
                     setLabel(property.value);
@@ -454,11 +386,11 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     @XmlTransient
-    public Set<Property> getProperties() {
+    public Set<PropertyBean> getProperties() {
         return properties;
     }
 
-    public void setProperties(Set<Property> properties) {
+    public void setProperties(Set<PropertyBean> properties) {
         this.properties = properties;
     }
 
@@ -472,7 +404,7 @@ public class EventBean implements Serializable, EARSConcept {
         }
     }
 
-    public Object getProgramProperty() {
+    public String getProgramProperty() {
         Set<String> values = getPropertyValues(Prop.PROGRAM);
         return values.toArray(new String[1])[0];
     }
@@ -760,32 +692,32 @@ public class EventBean implements Serializable, EARSConcept {
      * @param value
      */
     public void attachProperty(IProperty property, String value) {
-        for (Property ownProperty : getProperties()) {
+        for (PropertyBean ownProperty : getProperties()) {
             if (ownProperty.equals(property)) {
                 return;
             }
         }
 
-        Property propertyCopy = new Property(property.getUri().toASCIIString(), property.getTermRef().getName(), property.isMandatory(), property.isMultiple());
-        propertyCopy.value = value;
+        PropertyBean propertyCopy = new PropertyBean(property.getUri().toASCIIString(), property.getTermRef().getName(), property.isMandatory(), property.isMultiple());
+        propertyCopy.setValue(value);
         this.getProperties().add(propertyCopy);
     }
 
-    public void attachProperty(Property property) {
+    public void attachProperty(PropertyBean property) {
         this.getProperties().add(property);
     }
 
     /**
      * *
-     * Test whether the property has the specified value
+     * Test whether the specified property has the specified value
      *
      * @param prop
      * @param value
      * @return
      */
     public boolean hasPropertyValue(Enum prop, String value) {
-        for (Property property : getProperties()) {
-            if (property.code.equals(PROPERTY_URLS.get(prop)) && property.value.equals(value)) {
+        for (PropertyBean property : getProperties()) {
+            if (property.getCode().equals(PROPERTY_URLS.get(prop)) && property.getValue().equals(value)) {
                 return true;
             }
 
@@ -821,9 +753,9 @@ public class EventBean implements Serializable, EARSConcept {
     public Set<String> getPropertyValues(Enum prop) {
         String url = PROPERTY_URLS.get(prop);
         Set<String> r = new THashSet<>();
-        for (Property property : getProperties()) {
-            if (property.code.equals(url)) {
-                r.add(property.value);
+        for (PropertyBean property : getProperties()) {
+            if (property.getCode().equals(url)) {
+                r.add(property.getValue());
             }
         }
         return r;
@@ -831,10 +763,10 @@ public class EventBean implements Serializable, EARSConcept {
 
     public Set<String> getPropertyValues(String propertyUrl) {
         Set<String> r = new THashSet<>();
-        for (Property property : getProperties()) {
+        for (PropertyBean property : getProperties()) {
 
-            if (property.code.equals(propertyUrl)) {
-                r.add(property.value);
+            if (property.getCode().equals(propertyUrl)) {
+                r.add(property.getValue());
             }
 
         }
@@ -903,10 +835,10 @@ public class EventBean implements Serializable, EARSConcept {
      *
      * @return
      */
-    private static String serializeProperties(Set<Property> properties) {
-        Set<Property> result = new TreeSet<>(new EventPropertyComparator());
-        for (Property property : properties) {
-            if (property.value != null && !property.value.equals("")) {
+    private static String serializeProperties(Set<PropertyBean> properties) {
+        Set<PropertyBean> result = new TreeSet<>(new EventPropertyComparator());
+        for (PropertyBean property : properties) {
+            if (property.getValue() != null && !property.getValue().equals("")) {
                 result.add(property);
             }
         }
@@ -921,7 +853,7 @@ public class EventBean implements Serializable, EARSConcept {
      * @param propString
      * @return
      */
-    private static Set<Property> deserializeProperties(String propString) {
+    private static Set<PropertyBean> deserializeProperties(String propString) {
         if (propString == null) {
             return new THashSet<>();
         }
@@ -933,7 +865,7 @@ public class EventBean implements Serializable, EARSConcept {
             } catch (UnsupportedEncodingException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            Type type = new TypeToken<Set<Property>>() {
+            Type type = new TypeToken<Set<PropertyBean>>() {
             }.getType();
 
             return gson.fromJson(propString, type);
@@ -968,7 +900,7 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     /**
-     * *
+     * ***
      * Clone an EventBean, including the id and eventId
      *
      * @return
@@ -984,7 +916,12 @@ public class EventBean implements Serializable, EARSConcept {
         clone.setToolSet(this.getToolSet());
         clone.setProcessJson(this.getProcessJson());
         clone.setActionJson(this.getActionJson());
-        clone.setProperties(this.getProperties());
+        Set<PropertyBean> properties = this.getProperties();
+        Set<PropertyBean> clonedProperties = new THashSet<>();
+        for (PropertyBean property : properties) {
+            clonedProperties.add(property.clone());
+        }
+        clone.setProperties(clonedProperties);
 
         clone.setActor(this.actor);
         clone.setTimeStampDt(this.timeStampDt);

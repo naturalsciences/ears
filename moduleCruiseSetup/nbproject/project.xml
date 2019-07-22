@@ -147,7 +147,9 @@
             </module-dependencies>
             <public-packages>
                 <package>be.naturalsciences.bmdc.ears.application</package>
+                <package>be.naturalsciences.bmdc.ears.listeners</package>
                 <package>be.naturalsciences.bmdc.ears.topcomponents</package>
+                <package>be.naturalsciences.bmdc.ears.topcomponents.tablemodel</package>
                 <package>be.naturalsciences.bmdc.ears.validators</package>
             </public-packages>
             <class-path-extension>

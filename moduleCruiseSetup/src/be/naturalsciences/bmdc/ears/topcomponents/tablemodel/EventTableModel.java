@@ -272,25 +272,8 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                 return event.getProgramProperty();
             case LABEL:
                 return event.getLabel();
-            /* case DELETE:
-                java.net.URL imageURL = EventTableModel.class.getResource("/images/deleteImg.png");
-                Icon deleteIcon = new ImageIcon(imageURL, "Delete event " + event.getId());
-                if (imageURL != null) {
-                    // ImageIcon icon = new ImageIcon(favicon);
-                    return deleteIcon;
-                }
-
-                return "";*/
             case PROPERTIES:
                 return "properties";
-            /*
-                if (event.hasProperties()) {
-                    return event.getProperties();
-                    // return StringUtils.concatString(event.getPropertyMap().toString(), ";");
-                    //return event.getPropertyMap();
-                } else {
-                    return "properties";
-                }*/
             default:
                 return null;
         }
