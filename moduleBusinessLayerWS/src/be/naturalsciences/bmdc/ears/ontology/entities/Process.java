@@ -288,7 +288,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
             return false;
         }
         Process other = (Process) object;
-        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
+        if (!(this.getId() == null && other.getId() == null) && ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId())))) {
             return false;
         }
         if ((this.uri == null && other.uri != null) || (this.uri != null && !this.uri.equals(other.uri))) {

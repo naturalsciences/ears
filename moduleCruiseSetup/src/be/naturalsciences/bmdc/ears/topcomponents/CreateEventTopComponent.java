@@ -780,10 +780,6 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
                 model = new EventTableModel(eventTable, events);
                 eventTable.setModel(model);
-
-                /*int newHeight = DEFAULT_ROW_HEIGHT * events.size();
-                Dimension dim = new Dimension(eventTable.getWidth(), newHeight);
-                eventTable.setPreferredSize(dim);*/
                 resizeToEvents(eventTable);
             }
         }
@@ -825,7 +821,6 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             int programColumnId = model.findColumn(EventTableModel.PROGRAM);
             int labelColumnId = model.findColumn(EventTableModel.LABEL);
             int propertyColumnId = model.findColumn(EventTableModel.PROPERTIES);
-            //  int deleteColumnId = model.findColumn(EventTableModel.DELETE);
 
             TableColumn dateColumn = tableColumnModel.getColumn(dateColumnId);
             TableColumn timeColumn = tableColumnModel.getColumn(timeColumnId);
@@ -838,7 +833,6 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             TableColumn programColumn = tableColumnModel.getColumn(programColumnId);
             TableColumn labelColumn = tableColumnModel.getColumn(labelColumnId);
             propertyColumn = tableColumnModel.getColumn(propertyColumnId);
-            // TableColumn deleteColumn = tableColumnModel.getColumn(deleteColumnId);
 
             setColumnWidths(dateColumn, 80, 80);
             setColumnWidths(timeColumn, 80, 70);
@@ -851,7 +845,6 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             setColumnWidths(programColumn, 500, 80);
             setColumnWidths(labelColumn, 500, 80);
             setColumnWidths(propertyColumn, 100, 100);
-            //  setColumnWidths(deleteColumn, 60, 60);
 
             eventTable.getTableHeader().setReorderingAllowed(true);
 
@@ -877,11 +870,13 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             eventTable.setDefaultEditor(LocalTime.class, timeEdit);
 
             //add actor column
-            actorColumn.setCellRenderer(new ActorCellRenderer());
+            actorColumn.setCellRenderer(new DropdownTableCellRenderer());
             actorColumn.setCellEditor(new ActorCellEditor(actors));
 
-            //add delete button
-//            ButtonColumn deleteButtonColumn = new ButtonColumn(eventTable, deleteEventAction, deleteColumnId, "Delete event");
+            //add action column
+            actionColumn.setCellRenderer(new DropdownTableCellRenderer());
+            actionColumn.setCellEditor(new ActionCellEditor());
+            
             //add properties button
             ButtonColumn editPropertyButtonColumn = new ButtonColumn(eventTable, editPropertyEventAction, propertyColumnId, "Edit properties");
 

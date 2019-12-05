@@ -161,7 +161,7 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
             return false;
         }
         Action other = (Action) object;
-        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
+        if (!(this.getId() == null && other.getId() == null) && ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId())))) {
             return false;
         }
         if ((this.uri == null && other.uri != null) || (this.uri != null && !this.uri.equals(other.uri))) {

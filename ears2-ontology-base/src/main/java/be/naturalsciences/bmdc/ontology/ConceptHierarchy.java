@@ -7,6 +7,7 @@ package be.naturalsciences.bmdc.ontology;
 
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.IAction;
+import be.naturalsciences.bmdc.ontology.entities.IEventDefinition;
 import be.naturalsciences.bmdc.ontology.entities.IFakeConcept;
 import be.naturalsciences.bmdc.ontology.entities.IProcess;
 import be.naturalsciences.bmdc.ontology.entities.IProperty;
@@ -14,6 +15,7 @@ import be.naturalsciences.bmdc.ontology.entities.ITool;
 import be.naturalsciences.bmdc.ontology.entities.IToolCategory;
 import gnu.trove.set.hash.THashSet;
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -251,6 +253,11 @@ public class ConceptHierarchy {
     @Override
     public ConceptHierarchy clone() {
         return new ConceptHierarchy(toolCategory, tool, hostedTool, process, action, property, root);
+    }
+
+    public IEventDefinition getEvent() {
+        List<IEventDefinition> eventDefinitionCollection = process.getEventDefinitionCollection(tool, action);
+        return eventDefinitionCollection.size() > 0 ? eventDefinitionCollection.get(0) : null;
     }
 
 }

@@ -248,12 +248,16 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
             return false;
         }
         Tool other = (Tool) object;
-        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
+        /*    if (!(this.getId() == null && other.getId() == null) && ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId())))) {
+            return false;
+        }*/
+        if (!Objects.equals(this.getId(), other.getId())) {
             return false;
         }
         if ((this.uri == null && other.uri != null) || (this.uri != null && !this.uri.equals(other.uri))) {
             return false;
         }
+        
         if (!Objects.equals(this.serialNumber, other.serialNumber)) {
             return false;
         }

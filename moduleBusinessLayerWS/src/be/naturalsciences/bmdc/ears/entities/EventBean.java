@@ -160,6 +160,8 @@ public class EventBean implements Serializable, EARSConcept {
 
     private String eventId;
 
+    private String eventDefinitionId;
+
     public EventBean() {
         super();
     }
@@ -180,7 +182,7 @@ public class EventBean implements Serializable, EARSConcept {
      * attachProperty()
      * @param actor Optional
      */
-    public EventBean(ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, LinkedHashSet<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor) throws IllegalArgumentException {
+    public EventBean(String eventDefinitionId, ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, LinkedHashSet<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor) throws IllegalArgumentException {
         super();
         if (toolCategory == null) {
             throw new IllegalArgumentException("Null tool category provided");
@@ -236,29 +238,8 @@ public class EventBean implements Serializable, EARSConcept {
         this.cruise = cruise;
         this.program = program;
         this.eventId = buildEventId();
+        this.eventDefinitionId = eventDefinitionId;
         counter++;
-    }
-
-    /**
-     * *
-     * Constructor for an event. Do not use when creating event from
-     * webservices, only for event creation module. Implementation based on URI.
-     *
-     * @param program Must be provided
-     * @param cruise Must be provided
-     * @param toolCategory Must be provided
-     * @param tools
-     * @param process Must be provided
-     * @param action Must be provided
-     * @param properties Optional. Only property keys, not their values. If left
-     * empty, property key and a value can be provided later with
-     * attachProperty()
-     * @param actor Optional
-     */
-    public EventBean(ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, LinkedHashSet<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor, OffsetDateTime timeStamp) throws IllegalArgumentException {
-        this(program, cruise, toolCategory, tools, process, action, properties, actor);
-        this.timeStampDt = timeStamp;
-        this.eventId = buildEventId();
     }
 
     public String buildEventId() {
@@ -267,6 +248,14 @@ public class EventBean implements Serializable, EARSConcept {
         return UUID.randomUUID().toString();
 
         //  return (Long.toHexString(random.nextInt(1000000000)) + Long.toHexString(random.nextInt(1000000000))).substring(0, 9);
+    }
+
+    public String getEventDefinitionId() {
+        return eventDefinitionId;
+    }
+
+    public void setEventDefinitionId(String eventDefinitionId) {
+        this.eventDefinitionId = eventDefinitionId;
     }
 
     @XmlAttribute(name = "eventId")

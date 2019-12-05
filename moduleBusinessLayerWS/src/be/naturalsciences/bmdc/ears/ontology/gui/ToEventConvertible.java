@@ -18,6 +18,7 @@ import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.IOntologyModel;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
+import be.naturalsciences.bmdc.ontology.entities.IEventDefinition;
 import be.naturalsciences.bmdc.ontology.entities.IProperty;
 import be.naturalsciences.bmdc.ontology.entities.ITool;
 import gnu.trove.set.hash.THashSet;
@@ -46,10 +47,10 @@ public interface ToEventConvertible {
             be.naturalsciences.bmdc.ears.ontology.entities.Action action = (be.naturalsciences.bmdc.ears.ontology.entities.Action) node.getConcept();
             List<AsConcept> la = new ArrayList<>();
             la.addAll(node.getParentsAsConcept());
-            ConceptHierarchy cng = new ConceptHierarchy(la);
-
-            Set<IProperty> properties = new THashSet<>(action.getChildren(cng));
             la.add(node.getConcept());
+            ConceptHierarchy cng = new ConceptHierarchy(la);
+            Set<IProperty> properties = new THashSet<>(action.getChildren(cng));
+            IEventDefinition eventDefinition = cng.getEvent();
 
             cng = new ConceptHierarchy(la);
 
@@ -80,7 +81,7 @@ public interface ToEventConvertible {
                     if (!overrideAnonymous) {
                         actor = currentActor.getLastNameFirstName();
                     }
-                    EventBean event = new EventBean(currentProgram, currentCruise, cng.getToolCategory(), tools, cng.getProcess(), cng.getAction(), properties, actor);
+                    EventBean event = new EventBean(eventDefinition.getUri().toString(), currentProgram, currentCruise, cng.getToolCategory(), tools, cng.getProcess(), cng.getAction(), properties, actor);
                     GlobalActionContextProxy.getInstance().addEnsureOne(event);
                 } else {
                     throw new EarsException("There is no current actor selected. Please (create and) select the current actor first.");

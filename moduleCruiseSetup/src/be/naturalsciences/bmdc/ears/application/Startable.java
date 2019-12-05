@@ -129,7 +129,7 @@ public class Startable implements Runnable, LookupListener {
                 if (!WebserviceUtils.testWS("ears2Nav/getLastNavXml")) {
                     Messaging.report("Note that the ears2Nav webservices are offline. This doesn't impact the application.", Message.State.BAD, this.getClass(), true);
                 }
-                if (!WebserviceUtils.testWS("ears2Ont/ontology/vessel/date")) {
+                if (!WebserviceUtils.testWS("ears2Ont/authenticate")) { //works even if there is no vessel ontology stored
                     Messaging.report("Note that the ears2Ont webservices are offline. You will not be able to edit any tree and will be using possibly outdated ones.", Message.State.BAD, this.getClass(), true);
                 }
             } else {
