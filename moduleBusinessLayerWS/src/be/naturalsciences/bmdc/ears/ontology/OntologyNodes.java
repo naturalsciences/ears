@@ -580,7 +580,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
 
             int version = this.model.getVersion();
 
-            owlCreator.createOntoFile(EARSOntologyCreator.LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), version + 1, destPath, null, null, null);
+            owlCreator.createOntoFile(EARSOntologyCreator.LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), version + 1, destPath, null, null, null, true);
 
             if (this.model.getScope().equals(ScopeMap.Scope.VESSEL.name()) && user != null) {
                 IResponseMessage response = client.uploadVesselOntology(destPath, user.getUsername(), user.getPassword());

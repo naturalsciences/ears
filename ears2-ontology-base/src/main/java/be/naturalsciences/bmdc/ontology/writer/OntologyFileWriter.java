@@ -50,40 +50,35 @@ public class OntologyFileWriter {
      * @param group
      * @return
      */
-    public BufferedOutputStream createOntoFile(OWLOntology onto, OntologyFileFormat outputFormat, Path fullPath, String owner, String perm, String group) throws org.semanticweb.owlapi.model.OWLOntologyCreationException {
-        //FileOutputStream output = null;
-        //fullPath = createFile(fullPath, perm, group);
+    public BufferedOutputStream createOntoFile(OWLOntology onto, OntologyFileFormat outputFormat, Path fullPath, String owner, String perm, String group, boolean overwriteIfExists) throws org.semanticweb.owlapi.model.OWLOntologyCreationException {
         if (onto == null) {
             throw new IllegalArgumentException("The provided ontology is null.");
         }
-        
-        
-        OWLDocumentFormat format = outputFormat.getOntologyFormat();
-        int bufferSize = 8 * 1024;
-        BufferedOutputStream output = FileUtils.createFile(fullPath, outputFormat.getExtension(), owner, perm, group, bufferSize);
-        result = fullPath.toFile();
-        if (output == null) {
-            throw new OWLOntologyCreationException("Failed in writing BufferedOutputStream to " + fullPath.toString());
-        }
-        /*result.exists();
-         result.isFile();*/
-        try {
-            //output = new FileOutputStream(fullPath.toFile());
-            /*if (outputFormat.getFormat().equals(OntologyFileFormatFactory.JSON_LD_FORMAT)) {
-             JsonLdStorer.register(manager); // Needed once per ontologyManager}
-             }*/
-            long t1 = java.lang.System.currentTimeMillis();
-            
-            manager.saveOntology(onto, format, output);
-            long t2 = java.lang.System.currentTimeMillis();
-            System.out.println("Saving ontology took: " + String.valueOf(t2 - t1));
-            output.flush();
-            output.close();
-            long t3 = java.lang.System.currentTimeMillis();
-            System.out.println("Writing file took: " + String.valueOf(t3 - t2));
-            return output;
-        } catch (Exception e) {
-            throw new OWLOntologyCreationException("Failed in saving ontology to folder " + fullPath.toString(), e);
+
+        if (!fullPath.toFile().exists() || (fullPath.toFile().exists() && overwriteIfExists)) {
+            OWLDocumentFormat format = outputFormat.getOntologyFormat();
+            int bufferSize = 8 * 1024;
+            BufferedOutputStream output = FileUtils.createFile(fullPath, outputFormat.getExtension(), owner, perm, group, bufferSize);
+            result = fullPath.toFile();
+            if (output == null) {
+                throw new OWLOntologyCreationException("Failed in writing BufferedOutputStream to " + fullPath.toString());
+            }
+            try {
+                long t1 = java.lang.System.currentTimeMillis();
+
+                manager.saveOntology(onto, format, output);
+                long t2 = java.lang.System.currentTimeMillis();
+                System.out.println("Saving ontology took: " + String.valueOf(t2 - t1));
+                output.flush();
+                output.close();
+                long t3 = java.lang.System.currentTimeMillis();
+                System.out.println("Writing file took: " + String.valueOf(t3 - t2));
+                return output;
+            } catch (Exception e) {
+                throw new OWLOntologyCreationException("Failed in saving ontology to folder " + fullPath.toString(), e);
+            }
+        } else {
+            throw new OWLOntologyCreationException("Overwriting an existing ontology is not allowed.");
         }
     }
 

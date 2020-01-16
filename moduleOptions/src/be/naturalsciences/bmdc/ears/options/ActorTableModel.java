@@ -39,7 +39,7 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
     public Map<String, String> errors;
 
     public ActorTableModel() {
-        errors = new HashMap();
+        errors = new HashMap<>();
         Set<Actor> actors = null;
         try {
             actors = Configs.getAllActors();

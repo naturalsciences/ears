@@ -66,15 +66,15 @@ public class NewVesselRdfFileTypeAction implements ActionListener {
             EARSOntologyCreator creator = new EARSOntologyCreator(scope, "Vessel tree of " + vesselName);
             File tempFile = new File(Constants.VESSEL_ONTOLOGY_LOCATION);
             try {
-                creator.createOntoFile(LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), 0, tempFile.toPath(), null, null, null);
+                creator.createOntoFile(LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), 0, tempFile.toPath(), null, null, null, false);
             } catch (OWLOntologyCreationException ex) {
-                Exceptions.printStackTrace(ex);
+                Messaging.report("Could not create vessel ontology file.", ex, this.getClass(), true);
             }
             try {
                 FileObject templateFo = FileUtil.createData(tempFile);
                 context = (RdfFileTypeDataObject) RdfFileTypeDataObject.find(templateFo);
             } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+                Messaging.report("Could not create vessel ontology file.", ex, this.getClass(), true);
             }
         } else {
             Messaging.report("There is no current vessel selected. Please select it in the options.", Message.State.BAD, this.getClass(), true);

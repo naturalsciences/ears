@@ -261,7 +261,7 @@ public class StaticMetadataManager<C extends EARSConcept> {
                     concepts = writeJsonMetadata(this.type);
                     //t2 = System.nanoTime();// / 1000000000.0;
                 } else {
-                    return new ArrayList();
+                    return new ArrayList<>();
                 }
             } else if (wrapper == null || wrapper.toDate() == null) {
                 throw new EarsException("The static metadata for type '" + type + "' can't be found and the remote ontology service can't be reached. The program won't function properly.");
@@ -275,12 +275,12 @@ public class StaticMetadataManager<C extends EARSConcept> {
     }
 
     private <C extends EARSConcept> List<C> writeJsonMetadata(Class<C> cls) {
-        List<C> concepts = new ArrayList();
+        List<C> concepts = new ArrayList<>();
         try {
             concepts = readConceptsFromSparql(sparqlQueries.get(cls), cls);
             String fileLocation = Constants.METADATA_FILES.get(cls);
             try (Writer writer = new FileWriter(fileLocation)) {
-                JsonWrapper<C> output = new JsonWrapper(ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT), concepts);
+                JsonWrapper<C> output = new JsonWrapper<>(ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT), concepts);
                 Gson gson = new GsonBuilder().create();
 
                 gson.toJson(output, writer);
@@ -304,7 +304,7 @@ public class StaticMetadataManager<C extends EARSConcept> {
         sparqlQuery = sparqlQuery.replace("\n", " ");
 
         Set<String> countries = Configs.getCountries();
-        Set<String> countries2 =new HashSet();
+        Set<String> countries2 =new HashSet<>();
         
         String countryQuery = null;
         if (countries == null) {
@@ -339,7 +339,7 @@ public class StaticMetadataManager<C extends EARSConcept> {
 
         JSONArray arr = obj.getJSONObject("results").getJSONArray("bindings");
         int l = arr.length();
-        List<C> result = new ArrayList(l);
+        List<C> result = new ArrayList<>(l);
         Map<String, Method> setters = ReflectionUtils.getSettersAndFields(cls);
         Map<Method, Object> setterValues = new THashMap<>();
         for (int i = 0; i < l; i++) {
@@ -389,7 +389,7 @@ public class StaticMetadataManager<C extends EARSConcept> {
                     }
                 }
             }
-            List noMatch = new ArrayList();
+            List<String> noMatch = new ArrayList<>();
             for (ProjectBean project : projects) {
                 if (project.getOrganisation() != null && project.getOrganisationObject() == null) {
                     noMatch.add(project.getOrganisation());
@@ -407,7 +407,7 @@ public class StaticMetadataManager<C extends EARSConcept> {
                     country.setHasHarbours(true);
                     boolean hasOrganisations = false;
                     for (int i = 0; i < countries.size(); i++) {
-                        ArrayList<CountryBean> list = new ArrayList(countries);
+                        ArrayList<CountryBean> list = new ArrayList<>(countries);
                         if (list.get(i).equals(country)) {
                             countries.remove(country);
                             hasOrganisations = list.get(i).hasOrganisations();
@@ -464,7 +464,7 @@ public class StaticMetadataManager<C extends EARSConcept> {
         String date = root.get("date").getAsString();
         JsonArray concepts = root.get("concepts").getAsJsonArray();
         // JsonArray conceptElements = concepts.getAsJsonArray();
-        List results = new ArrayList();
+        List<C> results = new ArrayList<>();
         for (JsonElement conceptElement : concepts) {
             C c = gson.fromJson(conceptElement, cls);
             if (c != null) {

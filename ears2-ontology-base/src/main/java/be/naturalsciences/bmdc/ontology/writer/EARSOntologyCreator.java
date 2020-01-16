@@ -1892,7 +1892,7 @@ public class EARSOntologyCreator {
      * @return
      * @throws OWLOntologyCreationException
      */
-    public BufferedOutputStream createOntoFile(LoadOnto importOrPaste, File axiomaFile, int newVersion, Path fullPath, String owner, String perm, String group) throws OWLOntologyCreationException {
+    public BufferedOutputStream createOntoFile(LoadOnto importOrPaste, File axiomaFile, int newVersion, Path fullPath, String owner, String perm, String group, boolean overwriteIfExists) throws OWLOntologyCreationException {
         URL axiomaUrl = null;
         try {
             axiomaUrl = Paths.get(axiomaFile.getCanonicalPath()).toUri().toURL();
@@ -1903,7 +1903,7 @@ public class EARSOntologyCreator {
         OntologyFileFormat outputFormat = OntologyFileFormat.RDF_FORMAT;
         OWLOntology earsOnto = createOntology(importOrPaste, axiomaUrl, newVersion);
         if (earsOnto != null) {
-            return owlFileCreator.createOntoFile(earsOnto, outputFormat, fullPath, owner, perm, group);
+            return owlFileCreator.createOntoFile(earsOnto, outputFormat, fullPath, owner, perm, group, overwriteIfExists);
         } else {
             throw new OWLOntologyCreationException("The owl ontology could not be created from the given inputs.");
         }

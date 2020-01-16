@@ -52,11 +52,7 @@ public class NewProgramRdfFileTypeAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         CurrentProgram currentProgram = Utilities.actionsGlobalContext().lookup(CurrentProgram.class);
-        CurrentSettings settings = Utilities.actionsGlobalContext().lookup(CurrentSettings.class);
-       /* Boolean allowTestOnto = null;
-        if (settings != null) {
-            allowTestOnto = settings.getConcept().get("test_onto");
-        }*/
+
         ScopeMap scope = null;
         String filename = null;
         String programName = null;
@@ -65,30 +61,23 @@ public class NewProgramRdfFileTypeAction implements ActionListener {
             scope = ScopeMap.PROGRAM_SCOPE;
             scope.put(ScopeMap.Scope.PROGRAM, programName);
             filename = programName + ".rdf";
-        } /*else if (allowTestOnto != null && allowTestOnto.booleanValue()) {
-            scope = ScopeMap.TEST_SCOPE;
-            scope.put(ScopeMap.Scope.TEST, "");
-            filename = TestOntology.getPreferredName();
-        }*/
+        }
         if (scope != null) {
             EARSOntologyCreator creator = new EARSOntologyCreator(scope, "Program tree of " + programName);
-//File tempFile = new File(System.getProperty("java.io.tmpdir"), "untitled.rdf");
 
             Constants.PROGRAM_ONTOLOGY_DIR.mkdirs();
 
             File tempFile = new File(Constants.PROGRAM_ONTOLOGY_DIR, filename);
             try {
-                //FileUtils.createFile(tempFile.toPath(), "rdf", null, null, 8 * 1024);
-
-                creator.createOntoFile(LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), 0, tempFile.toPath(), null, null, null);
+                creator.createOntoFile(LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), 0, tempFile.toPath(), null, null, null, false);
             } catch (OWLOntologyCreationException ex) {
-                Exceptions.printStackTrace(ex);
+                Messaging.report("Could not create program ontology file.", ex, this.getClass(), true);
             }
             try {
                 FileObject templateFo = FileUtil.createData(tempFile);
                 context = (RdfFileTypeDataObject) RdfFileTypeDataObject.find(templateFo);
             } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+                Messaging.report("Could not create program ontology file.", ex, this.getClass(), true);
             }
         } else {
             Messaging.report("There is no current program selected. Please (create and) select the current program first.", Message.State.BAD, this.getClass(), true);

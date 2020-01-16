@@ -7,6 +7,8 @@ package be.naturalsciences.bmdc.ears.ontology.rdf;
 
 import be.naturalsciences.bmdc.ears.ontology.TestOntology;
 import be.naturalsciences.bmdc.ears.properties.Constants;
+import be.naturalsciences.bmdc.ears.utils.Message;
+import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.writer.EARSOntologyCreator;
 import be.naturalsciences.bmdc.ontology.writer.EARSOntologyCreator.LoadOnto;
 import be.naturalsciences.bmdc.ontology.writer.ScopeMap;
@@ -53,15 +55,15 @@ public class NewTestRdfFileTypeAction implements ActionListener {
             Constants.PROGRAM_ONTOLOGY_DIR.mkdirs();
             File tempFile = new File(Constants.PROGRAM_ONTOLOGY_DIR, filename);
             try {
-                creator.createOntoFile(LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), 0, tempFile.toPath(), null, null, null);
+                creator.createOntoFile(LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), 0, tempFile.toPath(), null, null, null,true);
             } catch (OWLOntologyCreationException ex) {
-                Exceptions.printStackTrace(ex);
+                Messaging.report("Could not create test ontology file.", ex, this.getClass(), true);
             }
             try {
                 FileObject templateFo = FileUtil.createData(tempFile);
                 context = (RdfFileTypeDataObject) RdfFileTypeDataObject.find(templateFo);
             } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+                Messaging.report("Could not create test ontology file.", ex, this.getClass(), true);
             }
         }
         if (context != null) {

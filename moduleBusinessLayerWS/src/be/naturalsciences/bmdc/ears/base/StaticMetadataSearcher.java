@@ -49,7 +49,7 @@ public class StaticMetadataSearcher implements LookupListener {
     private Lookup.Result<OrganisationBean> organisationResult;
     private Lookup.Result<ProjectBean> projectResult;
 
-    private static final Set<Class> recalculateList = new THashSet();
+    private static final Set<Class> recalculateList = new THashSet<>();
 
     public static StaticMetadataSearcher getInstance() {
         return INSTANCE;
@@ -109,24 +109,24 @@ public class StaticMetadataSearcher implements LookupListener {
             Collection<? extends C> lookupAll = Utilities.actionsGlobalContext().lookupAll(cls);
             if (lookupAll.size() > 0) {//If another component of EARS did add the metadata for this class to the lookup.
                 if (!sorted) {
-                    concepts = new THashSet(lookupAll);
+                    concepts = new THashSet<>(lookupAll);
                 } else {
-                    concepts = new TreeSet(lookupAll);
+                    concepts = new TreeSet<>(lookupAll);
                 }
                 results.put(key, concepts);
             } else {
-                StaticMetadataManager<C> organisationMetadataManager = new StaticMetadataManager(cls);
+                StaticMetadataManager<C> organisationMetadataManager = new StaticMetadataManager<>(cls);
 
                 try {
                     if (!sorted) {
-                        concepts = new THashSet(organisationMetadataManager.readMetadataFromFile());
+                        concepts = new THashSet<>(organisationMetadataManager.readMetadataFromFile());
                     } else {
-                        concepts = new TreeSet(organisationMetadataManager.readMetadataFromFile());
+                        concepts = new TreeSet<>(organisationMetadataManager.readMetadataFromFile());
                     }
 
                 } catch (FileNotFoundException ex) {
                     Messaging.report("The static metadata of type '" + cls.getSimpleName() + "' can't be found.", ex, StaticMetadataSearcher.class, true);
-                    return new THashSet();
+                    return new THashSet<>();
                 }
             }
         }
