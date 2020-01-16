@@ -19,6 +19,7 @@ import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
  */
 public interface IOntologyModel {
 
-    public enum Action {
+    public enum ActionEnum {
 
         BROWSING, EDITING
     };
@@ -43,7 +44,7 @@ public interface IOntologyModel {
 
     public ResultSet query(String q) throws Exception;
 
-    public void open(ArrayDeque<Class<? extends AsConcept>> classesOrder, Action operation) throws FileNotFoundException, IOException;
+    public void open(ArrayDeque<Class<? extends AsConcept>> classesOrder, ActionEnum operation) throws FileNotFoundException, IOException;
 
     public IOntologyNodes getNodes();
 
@@ -53,11 +54,15 @@ public interface IOntologyModel {
 
     public String getScopedTo();
 
-    public boolean actionIsAllowed(String act);
+   // public boolean actionIsAllowed(String act);
 
-    public void close(Action operation);
+    public void close(ActionEnum operation);
 
     public boolean isEditable();
+    
+    public boolean isPasswordProtected();
+    
+    public Set<ActionEnum> getCurrentActions();
 
     public File getFile();
 

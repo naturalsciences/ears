@@ -33,7 +33,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
  */
 @ActionID(id = "be.naturalsciences.bmdc.ears.ontology.rdf.NewTestRdfFileTypeAction", category = "File")
 @ActionRegistration(displayName = "#CTL_NewTestRdfFileTypeAction")
-@ActionReference(path = "Menu/File", position = 20)
+@ActionReference(path = "Menu/File", position = 15)
 @Messages("CTL_NewTestRdfFileTypeAction=New test tree")
 public class NewTestRdfFileTypeAction implements ActionListener {
 
@@ -50,12 +50,9 @@ public class NewTestRdfFileTypeAction implements ActionListener {
 
         if (scope != null) {
             EARSOntologyCreator creator = new EARSOntologyCreator(scope, "Test tree of " + filename);
-
             Constants.PROGRAM_ONTOLOGY_DIR.mkdirs();
-
             File tempFile = new File(Constants.PROGRAM_ONTOLOGY_DIR, filename);
             try {
-                //FileUtils.createFile(tempFile.toPath(), "rdf", null, null, 8 * 1024);
                 creator.createOntoFile(LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), 0, tempFile.toPath(), null, null, null);
             } catch (OWLOntologyCreationException ex) {
                 Exceptions.printStackTrace(ex);

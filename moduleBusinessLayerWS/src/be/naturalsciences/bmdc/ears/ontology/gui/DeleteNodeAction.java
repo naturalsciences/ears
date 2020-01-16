@@ -34,14 +34,19 @@ public class DeleteNodeAction extends CookieAction {
     @Override
     protected boolean enable(Node[] activatedNodes) {
         AsConceptNode node = context.lookup(AsConceptNode.class);
-        boolean isRoot = false;
-        try {
-            isRoot = node.isRoot();
-        } catch (NullPointerException e) {
-            Messaging.report("Method DeleteNodeAction.enable not applicable as node no longer exists.", e, this.getClass(), false);
+        if (node != null) {
+            return !node.isRoot();
+        } else {
             return false;
         }
-        return !isRoot;
+        //boolean isRoot = false;
+        //  try {
+        //   isRoot = node.isRoot();
+        //  } catch (NullPointerException e) {
+        //      Messaging.report("Method DeleteNodeAction.enable not applicable as node no longer exists.", e, this.getClass(), false);
+        //      return false;
+        //  }
+        //return !isRoot;
     }
 
     @Override

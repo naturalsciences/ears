@@ -256,7 +256,12 @@ public class ConceptHierarchy {
     }
 
     public IEventDefinition getEvent() {
-        List<IEventDefinition> eventDefinitionCollection = process.getEventDefinitionCollection(tool, action);
+        List<IEventDefinition> eventDefinitionCollection;
+        if (hostedTool == null) {
+            eventDefinitionCollection = process.getEventDefinitionCollection(tool, action);
+        } else {
+            eventDefinitionCollection = process.getEventDefinitionCollection(hostedTool, action);
+        }
         return eventDefinitionCollection.size() > 0 ? eventDefinitionCollection.get(0) : null;
     }
 

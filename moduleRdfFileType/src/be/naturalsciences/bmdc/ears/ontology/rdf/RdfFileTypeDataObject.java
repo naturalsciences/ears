@@ -398,8 +398,6 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
                 progr.progress("Start save.");
                 boolean failed = false;
                 failed = !dobj.getOntModel().getNodes().save();
-                //dobj.getLookupContent().remove(this);
-                //saveComplete();
                 try {
                     dobj.refresh(false);
                 } catch (IOException ex) {
@@ -409,7 +407,7 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
                 if (!failed) {
                     Messaging.report("The tree has been saved.", Message.State.GOOD, RdfFileTypeDataObject.class, true);
                 } else {
-                    Messaging.report("There was a problem saving the tree.", Message.State.BAD, RdfFileTypeDataObject.class, true);
+                    //Messaging.report("There was a problem saving the tree.", Message.State.BAD, RdfFileTypeDataObject.class, true);
                 }
                 progr.finish();
             }

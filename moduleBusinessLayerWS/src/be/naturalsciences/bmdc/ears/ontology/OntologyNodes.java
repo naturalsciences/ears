@@ -627,19 +627,19 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
         try {
             save(path);
         } catch (OWLOntologyCreationIOException ex) {
-            Messaging.report("The ontology server is unreachable.", ex, this.getClass(), false);
+            Messaging.report("The ontology server is unreachable", ex, this.getClass(), false);
             return false;
         } catch (OWLOntologyCreationException ex) {
-            Messaging.report("The tree couldn't be serialized to rdf.", ex, this.getClass(), false);
+            Messaging.report("The tree couldn't be serialized to rdf", ex, this.getClass(), false);
             return false;
         } catch (EarsException ex) {
-            Messaging.report("The tree couldn't be saved.", ex, this.getClass(), false);
+            Messaging.report("The tree couldn't be saved", ex, this.getClass(), false);
             return false;
         }
         try {
             // this.getModel().reopen();
         } catch (Exception ex) {
-            Messaging.report("The tree file could not be re-read after saving.", ex, this.getClass(), false);
+            Messaging.report("The tree file could not be re-read after saving", ex, this.getClass(), false);
             return false;
 
         } finally {

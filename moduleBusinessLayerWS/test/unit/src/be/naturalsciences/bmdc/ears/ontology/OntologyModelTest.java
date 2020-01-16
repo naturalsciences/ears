@@ -54,7 +54,7 @@ public class OntologyModelTest {
 
         IOntologyModel ontModel = OntologyFactory.getOntology(f);
 
-        ontModel.open(OntologyNodes.DEFAULT_ORDER, IOntologyModel.Action.BROWSING);
+        ontModel.open(OntologyNodes.DEFAULT_ORDER, IOntologyModel.ActionEnum.BROWSING);
         Set<AsConcept> individuals = ontModel.getNodes().getIndividuals(false);
         IdentityHashMap ihm = new IdentityHashMap();
         for (AsConcept individual : individuals) {
@@ -91,7 +91,7 @@ public class OntologyModelTest {
         File f = new File("/home/thomas/NetBeansProjects/moduleBusinessLayerWS/test/unit/src/resources/test-pr-ontology.rdf");
         IOntologyModel ontModel = OntologyFactory.getOntology(f);
 
-        ontModel.open(OntologyNodes.DEFAULT_ORDER, IOntologyModel.Action.BROWSING);
+        ontModel.open(OntologyNodes.DEFAULT_ORDER, IOntologyModel.ActionEnum.BROWSING);
         AsConceptNode.ContextBehaviour beh = AsConceptNode.EDIT_BEHAVIOUR;
 
         beh.factory = new AsConceptFactory(ontModel);

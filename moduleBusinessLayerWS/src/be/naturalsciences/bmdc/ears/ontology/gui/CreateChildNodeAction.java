@@ -5,6 +5,10 @@
  */
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
+import be.naturalsciences.bmdc.ears.ontology.entities.Action;
+import be.naturalsciences.bmdc.ears.ontology.entities.Tool;
+import be.naturalsciences.bmdc.ears.ontology.entities.ToolCategory;
+import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
@@ -22,7 +26,7 @@ import org.openide.util.actions.CookieAction;
         category = "Build",
         id = "be.naturalsciences.bmdc.ears.ontology.gui.CreateChildNodeAction")
 @ActionRegistration(
-        displayName = "#CTL_CreateChildNodeAction",lazy = false)//YS
+        displayName = "#CTL_CreateChildNodeAction", lazy = false)
 
 @NbBundle.Messages("CTL_CreateChildNodeAction=Create child...")
 public class CreateChildNodeAction extends CookieAction {
@@ -35,7 +39,9 @@ public class CreateChildNodeAction extends CookieAction {
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return true;
+        AsConceptNode node = context.lookup(AsConceptNode.class);
+        Class<? extends AsConcept> cls = node != null ? node.getConcept().getClass() : null;
+        return cls != null && (cls.equals(ToolCategory.class) || cls.equals(Action.class));
     }
 
     @Override
@@ -50,11 +56,12 @@ public class CreateChildNodeAction extends CookieAction {
 
     @Override
     protected int mode() {
-        return org.openide.util.actions.CookieAction.MODE_ONE;
+        return org.openide.util.actions.CookieAction.MODE_ALL;
     }
 
     @Override
-    protected void performAction(Node[] activatedNodes) {
+    protected void performAction(Node[] activatedNodes
+    ) {
 
         for (Node n : activatedNodes) {
             AsConceptNode node = (AsConceptNode) n;

@@ -206,6 +206,11 @@
             <version>1.11</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>be.naturalsciences.bmdc</groupId>
+            <artifactId>bmdc-utils</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

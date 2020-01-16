@@ -74,7 +74,7 @@ public class CreateEventAction extends CookieAction {
 
     @Override
     protected int mode() {
-        return org.openide.util.actions.CookieAction.MODE_EXACTLY_ONE;
+        return org.openide.util.actions.CookieAction.MODE_ALL;
     }
 
     @Override

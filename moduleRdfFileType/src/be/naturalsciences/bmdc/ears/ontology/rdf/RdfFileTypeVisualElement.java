@@ -140,7 +140,7 @@ public final class RdfFileTypeVisualElement extends CloneableTopComponent implem
     @Override
     public void componentClosed() {
         this.obj.close();
-        this.obj.getOntModel().close(OntologyModel.Action.EDITING);
+        this.obj.getOntModel().close(OntologyModel.ActionEnum.EDITING);
     }
 
     @Override
@@ -233,7 +233,7 @@ public final class RdfFileTypeVisualElement extends CloneableTopComponent implem
     @Override
     public void stateChanged(ChangeEvent ce) {
         try {
-            obj.getOntModel().open(OntologyNodes.DEFAULT_ORDER, OntologyModel.Action.EDITING);
+            obj.getOntModel().open(OntologyNodes.DEFAULT_ORDER, OntologyModel.ActionEnum.EDITING);
         } catch (FileNotFoundException ex) {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {

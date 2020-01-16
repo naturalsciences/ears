@@ -47,4 +47,14 @@ public class StaticOntology extends OntologyModel implements IStaticOntology {
         return false;
     }
 
+    @Override
+    public boolean isEditable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPasswordProtected() {
+       return true;
+    }
+
 }

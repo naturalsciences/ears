@@ -172,7 +172,9 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
                 // currentCruise = CurrentCruise.getInstance(cruiseClient.getCruiseByDate(OffsetDateTime.now(), currentVessel.getConcept()));
 
                 if (currentCruise != null && currentCruise.getConcept() == null) {
-                    currentCruise = CurrentCruise.getInstance((CruiseBean) cruises.toArray()[0]);
+                    if (cruises.size() > 0) {
+                        currentCruise = CurrentCruise.getInstance((CruiseBean) cruises.toArray()[0]);
+                    }
                 }
                 if (currentCruise != null && currentCruise.getConcept() != null) {
                     GlobalActionContextProxy.getInstance().add(currentCruise);

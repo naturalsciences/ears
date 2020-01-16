@@ -46,4 +46,15 @@ public class TestOntology extends OntologyModel {
         return false;
     }
 
+    @Override
+    public boolean isEditable() {
+        return true;
+    }
+
+    @Override
+    public boolean isPasswordProtected() {
+        return false;
+    }
+
+
 }

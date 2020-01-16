@@ -421,20 +421,19 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
 
     @Override
     public Action[] getActions(boolean context) {
-        Action a = SystemAction.get(ExpandNodeAction.class);
+      //  Action a = SystemAction.get(ExpandNodeAction.class);
         if (this.behaviour == EDIT_BEHAVIOUR) {
             return new Action[]{
                 SystemAction.get(DeleteNodeAction.class),
                 SystemAction.get(ExpandNodeAction.class),
                 //SystemAction.get(CollapseNodeAction.class),
-                //SystemAction.get(CreateChildNodeAction.class), //After discussion during ODIP 2 in October 2017 in Galway it was decided to disallow creating new terms.
+                SystemAction.get(CreateChildNodeAction.class), //After discussion during ODIP 2 in October 2017 in Galway it was decided to only allow creating new tools or properties.
                 SystemAction.get(CreateEventAction.class)};
         } else {
             return new Action[]{
                 SystemAction.get(ExpandNodeAction.class),
                 //SystemAction.get(CollapseNodeAction.class), 
                 SystemAction.get(CreateEventAction.class)};
-
         }
     }
 
@@ -649,12 +648,10 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
                         Property multiplePropertyProp = null;
                         Property serialNumberProp = null;
                         Property toolIdentifierProp = null;
-                        CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class
-                        );
+                        CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);
                         String currentVesselCode = null;
                         if (currentVessel != null && currentVessel.getConcept() != null) {
                             currentVesselCode = currentVessel.getConcept().getCode();
-
                         }
 
                         if (currentVesselCode != null && this.behaviour == EDIT_BEHAVIOUR && currentModel.isEditable() && concept.getTermRef().isOwnTerm(currentVesselCode)) {

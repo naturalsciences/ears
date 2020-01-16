@@ -85,7 +85,7 @@ public class RdfVisualElementPanel extends JPanel implements ExplorerManager.Pro
     }
 
     private void initTree() throws IOException {
-        this.dobj.getOntModel().open(OntologyNodes.DEFAULT_ORDER, OntologyModel.Action.EDITING);
+        this.dobj.getOntModel().open(OntologyNodes.DEFAULT_ORDER, OntologyModel.ActionEnum.EDITING);
         AsConceptNode rootNode = new AsConceptNode(this.dobj.getOntModel(), this.beh);
 
         mgr.setRootContext(rootNode);

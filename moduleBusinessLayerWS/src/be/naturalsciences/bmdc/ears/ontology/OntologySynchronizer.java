@@ -39,11 +39,11 @@ public class OntologySynchronizer {
         }
     }
 
-    public static void synchronizeBaseOntology() {
+    public static void synchronizeBaseOntology(boolean force) {
         String defaultName = BaseOntology.getPreferredName();
         File baseOntologyFile = new File(Constants.ONTO_DIR, defaultName + ".rdf");
         try {
-            synchronizeOntology(baseOntologyFile);
+            synchronizeOntology(baseOntologyFile, force);
         } catch (ConnectException ex) {
             Messaging.report("Could not synchronize the base ontology.", ex, OntologySynchronizer.class, true);
         } catch (EarsException ex) {
@@ -51,11 +51,11 @@ public class OntologySynchronizer {
         }
     }
 
-    public static void synchronizeVesselOntology() {
+    public static void synchronizeVesselOntology(boolean force) {
         String defaultName = VesselOntology.getPreferredName();
         File vesselOntologyFile = new File(Constants.ONTO_DIR, defaultName + ".rdf");
         try {
-            synchronizeOntology(vesselOntologyFile);
+            synchronizeOntology(vesselOntologyFile, force);
         } catch (ConnectException ex) {
             Messaging.report("Could not synchronize the vessel ontology.", ex, OntologySynchronizer.class, true);
         } catch (EarsException ex) {
@@ -63,7 +63,7 @@ public class OntologySynchronizer {
         }
     }
 
-    public static void synchronizeAllProgramOntologies(VesselBean vessel) {
+    public static void synchronizeAllProgramOntologies(VesselBean vessel, boolean force) {
 
         RestClientProgram programClient;
         Collection<ProgramBean> programs = null;
@@ -84,7 +84,7 @@ public class OntologySynchronizer {
             for (String programId : programIds) {
                 File trialFile = new File(Constants.TREES_DIR, programId + ".rdf");
                 try {
-                    synchronizeOntology(trialFile);
+                    synchronizeOntology(trialFile, force);
                 } catch (ConnectException ex) {
                     Exceptions.printStackTrace(ex);
                 } catch (EarsException ex) {
@@ -103,9 +103,9 @@ public class OntologySynchronizer {
      * @param ontologyFile
      * @param defaultFileName
      */
-    public static void synchronizeOntology(File ontologyFile) throws ConnectException, EarsException {
+    public static void synchronizeOntology(File ontologyFile, boolean force) throws ConnectException, EarsException {
         IOntologyModel ontology = OntologyFactory.getOntology(ontologyFile);
-        synchronizeOntology(ontology);
+        synchronizeOntology(ontology, force);
     }
 
     /**
@@ -116,7 +116,7 @@ public class OntologySynchronizer {
      * @param ontologyFile
      * @param defaultFileName
      */
-    public static void synchronizeOntology(IOntologyModel ontology) throws ConnectException, EarsException {
+    private static void synchronizeOntology(IOntologyModel ontology, boolean force) throws ConnectException, EarsException {
         File ontologyFile = ontology.getFile();
         String fileName = ontologyFile.getName();
         // Path folder = ontologyFile.toPath().getParent();
@@ -124,7 +124,7 @@ public class OntologySynchronizer {
             Map<String, String> staticStuff = IOntologyModel.getStaticStuff(ontologyFile);
             Date localDate = OntologyModel.getMostSpecificDate(staticStuff);
 
-            if (ontology.isOutdated(localDate)) {
+            if (force || ontology.isOutdated(localDate)) {
                 File file = ontology.downloadLatestVersion(fileName);
 
                 if (file != null) {

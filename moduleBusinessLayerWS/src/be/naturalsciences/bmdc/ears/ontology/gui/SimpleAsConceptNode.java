@@ -1,5 +1,6 @@
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
+import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.ontology.entities.FakeConcept;
 import be.naturalsciences.bmdc.ears.ontology.entities.Tool;
 import be.naturalsciences.bmdc.ears.ontology.entities.ToolCategory;
@@ -24,42 +25,55 @@ import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
+ * A class denoting a node in the concept list class groupings
  *
  * @author Thomas Vandenberghe
  */
 public class SimpleAsConceptNode extends AbstractNode {
-    
+
     private final AsConcept concept;
     private boolean isRoot = false;
-    
+
     public SimpleAsConceptNode(AsConcept concept) {
         super(Children.LEAF, Lookups.singleton(concept));
         setName(concept.toString());
         this.concept = concept;
         this.isRoot = false;
     }
-    
+
     @Override
     public String getHtmlDisplayName() {
-        
-        if (this.concept instanceof IToolCategory) {
-            return "<font color='#0B486B'>" + getDisplayName() + "</font>";
-        } else if (this.concept instanceof ITool) {
-            return "<font color='#02779E'>" + getDisplayName() + "</font>";
-        } else if (this.concept instanceof IProcess) {
-            return "<font color='#DC4B40'>" + getDisplayName() + "</font>";
-        } else if (this.concept instanceof IAction) {
-            return "<font color='#F59E03'>" + getDisplayName() + "</font>";
-        } else if (this.concept instanceof IProperty) {
-            return "<font color='#EB540A'>" + getDisplayName() + "</font>";
-        } else {
-            return "<font color='#2C3539'>" + getDisplayName() + "</font>";
+        CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);
+        String currentVesselCode = null;
+        if (currentVessel != null && currentVessel.getConcept() != null) {
+            currentVesselCode = currentVessel.getConcept().getCode();
         }
+
+        String r = null;
+        if (this.concept instanceof IToolCategory) {
+            r = "<font color='#0B486B'>" + getDisplayName() + "</font>";
+        } else if (this.concept instanceof ITool) {
+            r = "<font color='#02779E'>" + getDisplayName() + "</font>";
+        } else if (this.concept instanceof IProcess) {
+            r = "<font color='#DC4B40'>" + getDisplayName() + "</font>";
+        } else if (this.concept instanceof IAction) {
+            r = "<font color='#F59E03'>" + getDisplayName() + "</font>";
+        } else if (this.concept instanceof IProperty) {
+            r = "<font color='#EB540A'>" + getDisplayName() + "</font>";
+        } else {
+            r = "<font color='#2C3539'>" + getDisplayName() + "</font>";
+        }
+
+        if (concept.getTermRef().isOwnTerm(currentVesselCode)) {
+            r = "<i>" + r + "</i>";
+        }
+        return r;
     }
-    
+
     @Override
     public String getDisplayName() {
         if (isRoot()) {
@@ -70,17 +84,17 @@ public class SimpleAsConceptNode extends AbstractNode {
             return "root";
         }
     }
-    
+
     @Override
     public void setDisplayName(String displayName) {
         concept.getTermRef().getEarsTermLabel().setPrefLabel(displayName);
     }
-    
+
     @Override
     public String getName() {
         return concept.getTermRef().getOrigUrn();
     }
-    
+
     @Override
     public final String getShortDescription() {
         if (concept != null && concept.getTermRef() != null) {
@@ -92,7 +106,7 @@ public class SimpleAsConceptNode extends AbstractNode {
         }
         return "";
     }
-    
+
     @Override
     public Image getIcon(int type) {
         if (this.concept instanceof IToolCategory) {
@@ -111,11 +125,11 @@ public class SimpleAsConceptNode extends AbstractNode {
             return ImageUtilities.loadImage("be/naturalsciences/bmdc/ears/ontology/treeviewer/unknown.png"); //flaticon
         }
     }
-    
+
     private boolean isRoot() {
         return isRoot;
     }
-    
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -127,14 +141,14 @@ public class SimpleAsConceptNode extends AbstractNode {
         SimpleAsConceptNode other = (SimpleAsConceptNode) object;
         return other.concept.equals(this.concept);
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 7;
         hash = 41 * hash + Objects.hashCode(this.concept);
         return hash;
     }
-    
+
     @Override
     public Transferable drag() {
         if (this.concept instanceof ToolCategory) {
@@ -156,12 +170,12 @@ public class SimpleAsConceptNode extends AbstractNode {
             return null;
         }
     }
-    
+
     @Override
     protected Sheet createSheet() {
         Sheet sheet = Sheet.createDefault();
         if (!(this.concept instanceof FakeConcept)) {
-            
+
             Sheet.Set set = Sheet.createPropertiesSet();
 
             //AsConcept infoConcept = Utilities.actionsGlobalContext().lookup(AsConcept.class);
@@ -169,7 +183,7 @@ public class SimpleAsConceptNode extends AbstractNode {
             Term term = this.concept.getTermRef();
             URI uri = term.getUri();
             EarsTermLabel label = term.getEarsTermLabel(IEarsTerm.Language.en);
-            
+
             try {
                 Node.Property nameProp = null;
                 Node.Property altNameProp = null;
@@ -179,7 +193,7 @@ public class SimpleAsConceptNode extends AbstractNode {
                 nameProp = new PropertySupport.Reflection(label, String.class, "getPrefLabel", null);
                 altNameProp = new PropertySupport.Reflection(label, String.class, "getAltLabel", null);
                 defProp = new PropertySupport.Reflection(label, String.class, "getDefinition", null);
-                
+
                 Node.Property kindProp = new PropertySupport.Reflection(/*infoConcept*/this.concept, String.class, "getKind", null);
                 Node.Property uriProp = new PropertySupport.Reflection(uri, String.class, "toASCIIString", null);
                 Node.Property urnProp = new PropertySupport.Reflection(term, String.class, "getIdentifierUrn", null);
@@ -210,9 +224,9 @@ public class SimpleAsConceptNode extends AbstractNode {
             } catch (NoSuchMethodException ex) {
                 ErrorManager.getDefault();
             }
-            
+
             sheet.put(set);
-            
+
         }
         return sheet;
     }

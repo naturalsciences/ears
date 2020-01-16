@@ -5,6 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.ontology;
 
+import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.properties.Constants;
 import be.naturalsciences.bmdc.ears.rest.RestClientOnt;
 import be.naturalsciences.bmdc.ontology.EarsException;
@@ -15,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Date;
+import org.openide.util.Utilities;
 
 /**
  *
@@ -54,6 +56,16 @@ public class VesselOntology extends OntologyModel implements IVesselOntology {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean isEditable() {
+        return Utilities.actionsGlobalContext().lookup(CurrentVessel.class).getConcept().getCode().equals(scopeMap.getScopedTo()); //only editable if the current vessel is the same as this ontologies' scopedTo value.
+    }
+
+    @Override
+    public boolean isPasswordProtected() {
+        return true;
     }
 
 }

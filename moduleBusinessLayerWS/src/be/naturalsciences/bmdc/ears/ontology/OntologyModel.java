@@ -88,46 +88,18 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
 
     private boolean killModelAfterNodeCalculation;
 
-    private ScopeMap scopeMap;
-    private boolean editable;
-    //private boolean opened;
+    protected ScopeMap scopeMap;
 
-    /*private int lastToolCategoryId;
-     private int lastToolId;
-     private int lastProcessId;
-     private int lastActionId;
-     private int lastPropertyId;
-     private int lastSevId;
-     private int lastGevId;
-     private int lastConceptId;*/
-    //OntModelSpec spec2 = new OntModelSpec(OntModelSpec.OWL_LITE_MEM); //OWL_MEM_RULE_INF //OWL_LITE_MEM
     OntModelSpec spec2 = new OntModelSpec(ModelFactory.createMemModelMaker(), null, SimpleReasonerFactory.theInstance(), ProfileRegistry.OWL_LANG);
-    private Set<Action> currentActions = new THashSet<>();
+    private Set<ActionEnum> currentActions = new THashSet<>();
     private ArrayDeque<Class<? extends AsConcept>> classesOrder;
 
     public static final String BROWSE_ONTOLOGY = "be.naturalsciences.bmdc.ears.ontology.rdf.OpenRdfFileTypeActionBrowse";
-    public static final String EDIT_ONTOLOGY = "be.naturalsciences.bmdc.ears.ontology.rdf.OpenRdfFileTypeAction";
+    public static final String EDIT_ONTOLOGY = "be.naturalsciences.bmdc.ears.ontology.rdf.OpenRdfFileTypeActionEdit";
 
     @Override
     public Lookup getLookup() {
         return lookup;
-    }
-
-    public boolean actionIsAllowed(String act) {
-        /*if (this.getJenaModel() == null) {
-         return false; //can't edit/browse
-         } else*/
-        if (!this.editable && act.equals(EDIT_ONTOLOGY)) {
-            return false;
-        } else if (this.currentActions.contains(Action.BROWSING) && act.equals(BROWSE_ONTOLOGY)) {
-            return false;
-        } else if (this.currentActions.contains(Action.EDITING) && act.equals(EDIT_ONTOLOGY)) {
-            return false;
-        } else if (act.equals(EDIT_ONTOLOGY) && !WebserviceUtils.testWS("ears2Ont/ontology/vessel/date")) {
-            return false;
-        }
-
-        return true;
     }
 
     String sparqlQuery = "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
@@ -169,11 +141,18 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         return version;
     }
 
-    @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
+    /**
+     * *
+     * Change whether this model can be edited. Models can only be made
+     * uneditable.
+     *
+     * @param editable
+     */
+    /*void setEditable(boolean editable) {
+        if (!editable) {
+            this.editable = editable;
+        }
+    }*/
     @Override
     public OntologyNodes<AsConcept> getNodes() {
         return nodes;
@@ -182,19 +161,6 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
     @Override
     public Individuals getIndividuals() {
         return individuals;
-    }
-
-    /**
-     * *
-     * Change whether this model can be edited. Models can only be made
-     * uneditable.
-     *
-     * @param editable
-     */
-    void setEditable(boolean editable) {
-        if (!editable) {
-            this.editable = editable;
-        }
     }
 
     public ScopeMap getScopeMap() {
@@ -252,10 +218,8 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         if (staticStuff == null) {
             throw new IOException("Scope or versionInfo can't be found in the RDF file. The file could not be opened.");
         }
-        //  ScopeMap scopeMap = new ScopeMap(Scope.valueOf(staticStuff.get(IOntologyModel.SCOPE)), staticStuff.get(IOntologyModel.SCOPEDTO));
         this.scopeMap = new ScopeMap(Scope.valueOf(staticStuff.get(IOntologyModel.SCOPE)), staticStuff.get(IOntologyModel.SCOPEDTO));
-        verifyEditable(scopeMap);
-//        verifyVersion(scopeMap, getMostSpecificDate(staticStuff));
+        //verifyEditable(scopeMap);
         createModel(reasoning);
     }
 
@@ -297,7 +261,7 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         this.ontologyFile = null;
         this.killModelAfterNodeCalculation = killModelAfterNodeCalculation;
         this.jenaModel = model;
-        this.editable = false;
+        //this.editable = false;
     }
 
     private void createModel(boolean reasoning) throws FileNotFoundException, IOException {
@@ -330,27 +294,11 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
 
             Date resultDate = ((XSDDateTime) modifiedProperty.getLiteral().getValue()).asCalendar().getTime();
             versionInfo = resultDate;
-            /*String vi = modifiedProperty.getString();
-            SimpleDateFormat parserSDF = new SimpleDateFormat("yyyyMMdd");
-            try {
-                versionInfo = parserSDF.parse(vi);
-            } catch (ParseException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), false);
-                versionInfo = null;
-            }*/
         }
 
         if (versionInfoProperty != null) {
             String versionS = versionInfoProperty.getString();
             version = Integer.parseInt(versionS);
-            /*String vi = versionInfoProperty.getString();
-            SimpleDateFormat parserSDF = new SimpleDateFormat("yyyyMMdd");
-            try {
-                versionInfo = parserSDF.parse(vi);
-            } catch (ParseException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), false);
-                versionInfo = null;
-            }*/
         }
 
         if (this.jenaModel.getProperty(ontology, scopeProp) != null) {
@@ -366,7 +314,12 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         }
         buildIndividuals();
         GlobalActionContextProxy.getInstance().add(this.getIndividuals()); //are added to the list and last forever, opening and reopening the ontology doesn't change this.
-
+    }
+    
+    
+    @Override
+    public Set<ActionEnum> getCurrentActions() {
+        return this.currentActions;
     }
 
     /**
@@ -378,14 +331,13 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
      * @param operation
      * @throws java.io.FileNotFoundException
      */
-    public void open(ArrayDeque<Class<? extends AsConcept>> classesOrder, Action operation) throws FileNotFoundException, IOException {
+    public void open(ArrayDeque<Class<? extends AsConcept>> classesOrder, ActionEnum operation) throws FileNotFoundException, IOException {
         this.currentActions.add(operation);
         this.classesOrder = classesOrder;
         if (this.jenaModel == null) {
             createModel(true);
         }
         this.nodes = new OntologyNodes<AsConcept>(this, this.classesOrder, this.killModelAfterNodeCalculation);
-        //this.opened = true;
 
         CurrentOntologyModels currentFiles = Utilities.actionsGlobalContext().lookup(CurrentOntologyModels.class);
         if (currentFiles == null) {
@@ -400,39 +352,7 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
 
     }
 
-    /**
-     * *
-     * Reads the rdf serialization, creates a Jena model out of it and finally
-     * creates the nodes represented in the Jenamodel as a list of upper
-     * concepts. The order of the concepts that are constructed in the node is
-     * provided by a deque of classes. First call open() before calling this
-     * method!
-     *
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    /*final void reopen() throws FileNotFoundException, IOException {
-        createModel(true);
-        if (this.classesOrder != null) {
-            this.nodes = new OntologyNodes<AsConcept>(this, this.classesOrder, killModelAfterNodeCalculation);
-
-        } else {
-            throw new IllegalStateException("This model first needs a deque of classes to create the nodes. First use the open() method.");
-        }
-
-        CurrentOntologyModels currentFiles = Utilities.actionsGlobalContext().lookup(CurrentOntologyModels.class);
-        if (currentFiles == null) {
-            LinkedHashSet files = new LinkedHashSet();
-            files.add(this);
-            GlobalActionContextProxy.getInstance().add(CurrentOntologyModels.getInstance(files));
-        } else {
-            currentFiles.getConcept().add(this);
-            GlobalActionContextProxy.getInstance().add(currentFiles);
-        }
-        //this.opened = true;
-        //GlobalActionContextProxy.getInstance().add(this.getIndividuals());
-    }*/
-    public void close(Action operation) {
+    public void close(ActionEnum operation) {
         currentActions.remove(operation);
         //this.opened = false;
         //this.individuals.removeNodeListeners();
@@ -574,24 +494,24 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         return i;
     }
 
-    private void verifyEditable(ScopeMap scopeMap) throws FileNotFoundException {
+    /*private void verifyEditable(ScopeMap scopeMap) throws FileNotFoundException {
         if (scopeMap == null) {
-            this.editable = false;
+            //    this.editable = false;
         } else if (scopeMap.sameScope(ScopeMap.BASE_SCOPE) || scopeMap.sameScope(ScopeMap.STATIC_SCOPE)) {
-            this.editable = false;
+            //    this.editable = false;
         } else if (!ontologyScopedToAndCurrentVesselMatch(scopeMap)) {
-            this.editable = false;
+            //    this.editable = false;
         } else {
-            this.editable = true;
+            //   this.editable = true;
         }
-    }
+    }*/
 
     /**
      * *
      * Verify whether the provided ontologyFile can be used. If a newer version
      * is present, it is downloaded.
      */
-    private void verifyVersion(ScopeMap scopeMap, Date date) {
+   /* private void verifyVersion(ScopeMap scopeMap, Date date) {
         try {
             OntologySynchronizer.synchronizeOntology(this);
         } catch (ConnectException ex) {
@@ -599,7 +519,7 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         } catch (EarsException ex) {
             Messaging.report("The local " + scopeMap.getScopeString() + " tree could not be synced as the EARS web services url is not properly set.", ex, this.getClass(), false);
         }
-    }
+    }*/
 
     protected static File downloadLatestVersion(Path folder, String name) {
         return downloadLatestVersion(folder.toFile(), name);

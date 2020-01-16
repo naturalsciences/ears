@@ -239,7 +239,7 @@ public class RestClientEvent extends RestClient {
                         .queryParam("date", event.getTimeStamp())
                         .queryParam("actor", event.getActor())
                         .queryParam("subject", encodeUrl(event.getToolCategoryJson()))
-                        .queryParam("tool", encodeUrl(event.getTools()))
+                        .queryParam("tool", encodeUrl(event.getToolsJson()))
                         .queryParam("categoryName", encodeUrl(event.getProcessJson()))
                         .queryParam("actionName", encodeUrl(event.getActionJson()))
                         .queryParam("actionProperty", encodeUrl(event.getProperty()));
@@ -267,7 +267,7 @@ public class RestClientEvent extends RestClient {
                     .queryParam("timeStamp", event.getTimeStamp())
                     .queryParam("actor", event.getActor() == null ? "" : event.getActor())
                     .queryParam("subject", encodeUrl(event.getToolCategoryJson()))
-                    .queryParam("tool", encodeUrl(event.getTools()))
+                    .queryParam("tool", encodeUrl(event.getToolsJson()))
                     .queryParam("categoryName", encodeUrl(event.getProcessJson()))
                     .queryParam("actionName", encodeUrl(event.getActionJson()))
                     .queryParam("actionProperty", encodeUrl(event.getProperty()));

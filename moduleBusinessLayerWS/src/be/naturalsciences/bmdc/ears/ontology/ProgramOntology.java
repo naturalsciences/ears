@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Date;
+import java.util.Set;
 
 /**
  *
@@ -54,4 +55,15 @@ public class ProgramOntology extends OntologyModel implements IProgramOntology {
             return false;
         }
     }
+
+    @Override
+    public boolean isEditable() {
+        return true;
+    }
+
+    @Override
+    public boolean isPasswordProtected() {
+        return false;
+    }
+
 }

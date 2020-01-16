@@ -265,7 +265,7 @@ public final class ConceptListTopComponent extends TopComponent implements Looku
                 try {
                     ((ClassNode) pair.getValue()).getChildren().remove(nodes);
                 } catch (IllegalStateException ex) {
-                    Logger.getLogger(ConceptListTopComponent.class.getName()).log(Level.INFO, "", ex);
+                 //   Logger.getLogger(ConceptListTopComponent.class.getName()).log(Level.INFO, "", ex);
                 }
             }
             //Logger.getLogger(ConceptListTopComponent.class.getName()).log(Level.INFO, "reMoveAsConcept: Removed " + nodes.length + " nodes in " + cls.getSimpleName());

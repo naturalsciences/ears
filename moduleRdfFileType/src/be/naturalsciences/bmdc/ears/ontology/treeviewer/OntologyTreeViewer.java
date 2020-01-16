@@ -116,7 +116,7 @@ public class OntologyTreeViewer extends TopComponent implements LookupListener, 
             associateLookup(lookup);
 
             this.ontModel = dataObject.getOntModel();//dataObject.getLookup().lookup(OntologyModel.class);
-            this.ontModel.open(OntologyNodes.DEFAULT_ORDER, OntologyModel.Action.BROWSING);
+            this.ontModel.open(OntologyNodes.DEFAULT_ORDER, OntologyModel.ActionEnum.BROWSING);
 
             mgr.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -219,6 +219,6 @@ public class OntologyTreeViewer extends TopComponent implements LookupListener, 
 
     @Override
     public void componentClosed() {
-        this.ontModel.close(OntologyModel.Action.BROWSING);
+        this.ontModel.close(OntologyModel.ActionEnum.BROWSING);
     }
 }

@@ -6,6 +6,7 @@
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
+import java.text.MessageFormat;
 import java.util.Set;
 import org.openide.nodes.AbstractNode;
 
@@ -22,8 +23,7 @@ public class ClassNode extends AbstractNode {
         super(new ClassChildren(/*cls, */ontologyDataObjects));
         this.cls = cls;
     }
-
-
+      
     @Override
     public String getName() {
         return cls.getSimpleName();

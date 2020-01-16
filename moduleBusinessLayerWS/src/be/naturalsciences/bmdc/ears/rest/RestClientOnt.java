@@ -54,7 +54,7 @@ public class RestClientOnt extends RestClient {
     protected ResteasyWebTarget authenticateTarget;
 
     private void init() throws EarsException, ConnectException {
-        if (!WebserviceUtils.testWS("ears2Ont/ontology/vessel/date")) {
+        if (!WebserviceUtils.testWS("ears2Ont/authenticate")) {
             online = false;
             throw new ConnectException();
         }

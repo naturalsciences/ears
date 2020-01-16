@@ -23,7 +23,7 @@ import org.openide.nodes.Node;
 import org.openide.util.Utilities;
 
 /**
- *
+ * A class denoting all elements in the concept list class groupings
  * @author thomas
  */
 public class ClassChildren extends Children.Keys {
@@ -108,7 +108,6 @@ public class ClassChildren extends Children.Keys {
                     uniqueName = "PROBLEM-CASE";
                     Messaging.report("There was a problem with concept " + copiedConcept.getUri().toASCIIString() + " of one of the trees: it has no or multiple names. If it was the base tree, please contact the EARS governance team.", Message.State.BAD, ClassChildren.class, true);
                 }
-
                 childNode.setName(uniqueName);
                 childNodes.add(childNode);
 

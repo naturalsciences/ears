@@ -16,19 +16,10 @@ import org.junit.Test;
 
 /**
  *
- * @author Yvan Stojanov http://www.slf4j.org/codes.html
- * http://stackoverflow.com/questions/7685510/log4j-warning-while-initializing
- *
- *
- *
+ * @author Yvan Stojanov
  */
 public class TestRestClientProgram extends TestCase {
-    /*
-     Ensemble des objets utilisés dans plusieurs 
-     fonctions d une même classe de test
-     */
 
-    //private Program program;
     private ProgramBean program;
     private RestClientProgram restClientProgram;
     private Collection<ProgramBean> collectionsProgram;
@@ -36,10 +27,6 @@ public class TestRestClientProgram extends TestCase {
     private Collection<ProjectBean> collectionsprojects;
 
     @Override
-    /*
-     Chaque objet utilisé est alors déclaré en tant que variuable d instance de la classe de test
-     initialisé dans la methode setUp() et eventuellement libere dans la methode tearDown
-     */
     protected void setUp() throws Exception { //setUp() method which runs before every test invocation.
         program = new ProgramBean();
         restClientProgram = new RestClientProgram();
@@ -53,10 +40,7 @@ public class TestRestClientProgram extends TestCase {
 
     @Test
     public void testPostProgramByParamsBean() {
-
-        //BasicConfigurator.configure();
         ProgramBean programToSend = new ProgramBean();
-  //           ProgramBean programToSendBe = new ProgramBean();
 
         programToSend.setCruiseId("fin");
         programToSend.setProgramId("fin");
@@ -82,7 +66,7 @@ public class TestRestClientProgram extends TestCase {
 //          programToSendBe.setCruiseId("yvan");
         //   programToSendBe.setProgramId("yoyo");
         restClientProgram.postProgram(programToSend);
-   //    restClientProgram.postProgramByParamsVoid(programToSendBe);
+        //    restClientProgram.postProgramByParamsVoid(programToSendBe);
 
     }
 

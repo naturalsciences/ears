@@ -169,13 +169,13 @@ public final class InfoBar implements LookupListener {
 
         Timer t2 = new Timer(10000, (ActionEvent event) -> {
             try {
-                if (restNav != null && restNav.getLastNavXml() != null && restNav.getLastNavXml().getTimeStamp() != null) {
+                if (restNav != null && restNav.getLastNavXml() != null && restNav.getLastNavXml().getTimeStamp() != null && !restNav.getLastNavXml().getTimeStamp().equals("")) {
                     String lastCentralTime = restNav.getLastNavXml().getTimeStamp().replace(" ", "T");
                     LocalDateTime localDate = LocalDateTime.parse(lastCentralTime);
                     centralTimeLabel.setText("Latest (~10s) server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
                 }
             } catch (ConnectException ex) {
-               Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
+                Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
             }
         });
 

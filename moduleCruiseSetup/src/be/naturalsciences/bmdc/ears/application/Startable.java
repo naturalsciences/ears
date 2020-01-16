@@ -164,7 +164,7 @@ public class Startable implements Runnable, LookupListener {
                 } catch (IOException ex) {
                     Messaging.report("The latest ontology axiom file could not be synchronized.", ex, Startable.class, true);
                 }
-                OntologySynchronizer.synchronizeBaseOntology();
+                OntologySynchronizer.synchronizeBaseOntology(false);
                 //OntologyFileBrowser.open(OntologyFileBrowser.getBaseNode()); //ontology object and its individuals are now in global lookup
             }
         };
@@ -172,7 +172,7 @@ public class Startable implements Runnable, LookupListener {
 
         Thread thr2 = new Thread() {
             public void run() {
-                OntologySynchronizer.synchronizeVesselOntology();
+                OntologySynchronizer.synchronizeVesselOntology(false);
                 //  OntologyFileBrowser.open(OntologyFileBrowser.getVesselNode()); //ontology object and its individuals are now in global lookup
             }
         };
@@ -181,7 +181,7 @@ public class Startable implements Runnable, LookupListener {
         Thread thr3 = new Thread() {
             public void run() {
                 if (currentVessel != null) {
-                    OntologySynchronizer.synchronizeAllProgramOntologies(currentVessel.getConcept());
+                    OntologySynchronizer.synchronizeAllProgramOntologies(currentVessel.getConcept(), false);
                 }
             }
         };
@@ -320,8 +320,8 @@ public class Startable implements Runnable, LookupListener {
     public void resultChanged(LookupEvent le) {
         if (currentUrlResult.matches(le) && (currentUrlResult.getCurrent() == null ? null : currentUrlResult.getCurrent().getConcept()) != currentUrl) {
             currentUrl = currentUrlResult.getCurrent() != null ? currentUrlResult.getCurrent().getConcept() : null;
-            OntologySynchronizer.synchronizeVesselOntology();
-            OntologySynchronizer.synchronizeAllProgramOntologies(currentVessel.getConcept());
+            OntologySynchronizer.synchronizeVesselOntology(false);
+            OntologySynchronizer.synchronizeAllProgramOntologies(currentVessel.getConcept(), false);
         }
         if (currentVesselResult.matches(le)) {
             currentVessel = currentVesselResult.getCurrent();

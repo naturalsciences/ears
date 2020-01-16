@@ -1,5 +1,6 @@
 package be.naturalsciences.bmdc.ears.entities;
 
+import be.naturalsciences.be.linkeddata.LinkedDataTerm;
 import be.naturalsciences.bmdc.ears.comparator.EventPropertyComparator;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.IAction;
@@ -9,8 +10,13 @@ import be.naturalsciences.bmdc.ontology.entities.ITool;
 import be.naturalsciences.bmdc.ontology.entities.IToolCategory;
 import be.naturalsciences.bmdc.ontology.writer.JSONReader;
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
+import be.naturalsciences.bmdc.utils.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import gnu.trove.set.hash.THashSet;
 import java.io.Serializable;
@@ -35,6 +41,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -53,7 +60,7 @@ public class EventBean implements Serializable, EARSConcept {
 
     public static final String PROP_URI = "";
 
-    public static final String TOOL_DELIM = ", ";
+    public static final String TOOL_DELIM = ",";
 
     public static final Map<Enum, String> PROPERTY_URLS;
 
@@ -171,6 +178,7 @@ public class EventBean implements Serializable, EARSConcept {
      * Constructor for an event. Do not use when creating event from
      * webservices, only for event creation module. Implementation based on URI.
      *
+     * @param eventDefinitionId
      * @param program Must be provided
      * @param cruise Must be provided
      * @param toolCategory Must be provided
@@ -199,16 +207,7 @@ public class EventBean implements Serializable, EARSConcept {
         } else if (program == null) {
             throw new IllegalArgumentException("No program provided.");
         }
-
-        //this.toolCategory = toolCategory;
-        //this.tools = new HashSet();
-        //this.tools.addAll(tools);
-        //this.process = process;
-        //this.action = action;
-        //this.properties = properties;
         this.actor = actor;
-
-        // this.toolUris = new HashMap();
         this.toolSet = new LinkedHashSet(); //cannot be larger than 2!
 
         for (ITool tool : tools) {
@@ -243,11 +242,7 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     public String buildEventId() {
-        //return this.timeStampDt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + cruise.getCruiseName() + "-" + counter;
-
         return UUID.randomUUID().toString();
-
-        //  return (Long.toHexString(random.nextInt(1000000000)) + Long.toHexString(random.nextInt(1000000000))).substring(0, 9);
     }
 
     public String getEventDefinitionId() {
@@ -395,7 +390,7 @@ public class EventBean implements Serializable, EARSConcept {
 
     public String getProgramProperty() {
         Set<String> values = getPropertyValues(Prop.PROGRAM);
-        return values.toArray(new String[1])[0];
+        return StringUtils.join(values,",");
     }
 
     @XmlElementWrapper(namespace = "http://www.eurofleets.eu/", name = "tool")
@@ -409,70 +404,18 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     public Map<String, String> getToolUris() {
-        return deserializeTools(getToolSet());
+        return JsonUtils.deserializeConcepts(getToolSet());
     }
 
-    public String getTools() {
-        return StringUtils.concatString(getToolSet(), TOOL_DELIM);//serializeTools(toolUris);
-    }
+    public String getToolsJson() {
 
-    /**
-     * *
-     * Turns a Map of with keys String urls and String names into a complete
-     * String. The order provided by the LinkedHashSet will be kept.
-     *
-     * @param tools
-     * @return
-     */
-    public static String serializeTools(LinkedHashMap<String, String> tools) {
-        Set<String> result = new LinkedHashSet<>();
-        for (Map.Entry<String, String> entry : tools.entrySet()) {
-            SingletonMap toolMap = new SingletonMap(entry);
-            result.add(serializeConcept(toolMap));
+        if (getToolUris() != null && getToolUris().keySet() != null) {
+            return JsonUtils.serializeConcepts(getToolUris());
+        } else {
+            return null;
         }
-        return StringUtils.concatString(result, TOOL_DELIM);
-    }
-
-    /**
-     * *
-     * Convert a provided tool uri and tool name to a json tool representation
-     *
-     * @param uri
-     * @param name
-     * @return
-     */
-    public static String serializeTool(String uri, String name) {
-        Set<String> result = new THashSet<>();
-        SingletonMap toolMap = new SingletonMap(uri, name);
-        result.add(serializeConcept(toolMap));
-
-        return StringUtils.concatString(result, TOOL_DELIM);
-    }
-
-    /**
-     * *
-     * Convert a collection of json tool representations to a Map that maps the
-     * tool uri to the tool name. The Collection must retain insertion order and
-     * be of type List or LinkedHashSet! The output keeps the order provided in
-     * the Collection.
-     *
-     * @param toolJson
-     * @return
-     */
-    public static Map<String, String> deserializeTools(Collection<String> toolJson) {
-        Map<String, String> result = new LinkedHashMap<>();
-
-        for (String string : toolJson) {
-            String[] split = string.split(",\\+");
-            for (String string1 : split) {
-                SingletonMap<String, String> deserializeConcept = deserializeConcept(string1);
-                String toolUri = deserializeConcept.firstKey();
-                String toolName = deserializeConcept.get(deserializeConcept.firstKey());
-                result.put(toolUri, toolName);
-            }
-
-        }
-        return result;
+       
+        //return StringUtils.join(getToolSet(), TOOL_DELIM);//serializeTools(toolUris);
     }
 
     /**
@@ -482,20 +425,12 @@ public class EventBean implements Serializable, EARSConcept {
      * @return
      */
     public String getToolNames() {
-        return StringUtils.concatString(getToolUris().values(), ", ");
+        return StringUtils.join(getToolUris().values().stream().map(s -> s.replace("+", " ")).collect(Collectors.toList()), ", ");
     }
 
-    /*public static boolean isUrl(String url) {
-        try {
-            URL u = new URL(url);
-        } catch (MalformedURLException ex) {
-            return false;
-        }
-        return true;
-    }*/
     public void addTool(ITool tool) {
         if (this.getToolSet().size() < 2) {
-            this.getToolSet().add(serializeTool(AsConcept.getConceptUriString(tool), AsConcept.getConceptName(tool)));
+            this.getToolSet().add(JsonUtils.serializeConcept(AsConcept.getConceptUriString(tool), AsConcept.getConceptName(tool)));
         } else {
             throw new IllegalStateException("The toolSet may not contain more than 2 elements.");
         }
@@ -504,14 +439,14 @@ public class EventBean implements Serializable, EARSConcept {
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "subjectName")
     public String getToolCategoryJson() {
         if (toolCategoryUri != null && toolCategoryUri.keySet() != null) {
-            return serializeConcept(toolCategoryUri);
+            return JsonUtils.serializeConcept(toolCategoryUri);
         } else {
             return null;
         }
     }
 
     public void setToolCategoryJson(String toolcategoryJson) {
-        this.toolCategoryUri = deserializeConcept(toolcategoryJson);
+        this.toolCategoryUri = JsonUtils.deserializeConcept(toolcategoryJson);
     }
 
     public String getToolCategoryUri() {
@@ -543,14 +478,14 @@ public class EventBean implements Serializable, EARSConcept {
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "categoryName")
     public String getProcessJson() {
         if (processUri != null && processUri.keySet() != null) {
-            return serializeConcept(processUri);
+            return JsonUtils.serializeConcept(processUri);
         } else {
             return null;
         }
     }
 
     public void setProcessJson(String processJson) {
-        this.processUri = deserializeConcept(processJson);
+        this.processUri = JsonUtils.deserializeConcept(processJson);
     }
 
     public String getProcessUri() {
@@ -582,14 +517,14 @@ public class EventBean implements Serializable, EARSConcept {
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "name")
     public String getActionJson() {
         if (actionUri != null && actionUri.keySet() != null) {
-            return serializeConcept(actionUri);
+            return JsonUtils.serializeConcept(actionUri);
         } else {
             return null;
         }
     }
 
     public void setActionJson(String actionJson) {
-        this.actionUri = deserializeConcept(actionJson);
+        this.actionUri = JsonUtils.deserializeConcept(actionJson);
     }
 
     public String getActionUri() {
@@ -861,31 +796,6 @@ public class EventBean implements Serializable, EARSConcept {
         } else {
             return new THashSet<>();
         }
-    }
-
-    private static String serializeConcept(SingletonMap<String, String> concept) {
-        String json = gson.toJson(concept);
-        return json;
-    }
-
-    private static SingletonMap<String, String> deserializeConcept(String jsonConcept) {
-        Type type = new TypeToken<Map>() {
-        }.getType();
-        try {
-            Map fromJson = gson.fromJson(jsonConcept, type);
-            SingletonMap<String, String> r = new SingletonMap(fromJson);
-            String label = r.get(r.firstKey());
-            label = label.replaceAll("\\+", " ");
-            r.put(r.firstKey(), label);
-            return r;
-        } catch (Exception e) {
-            SingletonMap<String, String> r = new SingletonMap("pseudokey", jsonConcept);
-            String label = r.get(r.firstKey());
-            label = label.replaceAll("\\+", " ");
-            r.put(r.firstKey(), label);
-            return r;
-        }
-
     }
 
     /**

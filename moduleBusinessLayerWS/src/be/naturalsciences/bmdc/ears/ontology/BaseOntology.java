@@ -71,4 +71,14 @@ public class BaseOntology extends OntologyModel implements IBaseOntology {
         }
     }
 
+    @Override
+    public boolean isEditable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPasswordProtected() {
+        return true;
+    }
+
 }
