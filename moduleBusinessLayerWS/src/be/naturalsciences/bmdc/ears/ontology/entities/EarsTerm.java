@@ -27,7 +27,7 @@ public class EarsTerm implements IEarsTerm<Action, EarsTerm, ItemStatus, EarsTer
     public static int lastId;
 
     //private static final long serialVersionUID = 1L;
-    private transient Map<URI, Long> uriMap = new HashMap();
+    private transient Map<URI, Long> uriMap = new HashMap<>();
 
     @Id
     protected URI uri;

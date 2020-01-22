@@ -14,6 +14,7 @@ import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
 import be.naturalsciences.bmdc.ears.entities.VesselBean;
 import be.naturalsciences.bmdc.ears.entities.WeatherBean;
+import be.naturalsciences.bmdc.ears.rest.RestClient;
 import be.naturalsciences.bmdc.ears.rest.RestClientNav;
 import be.naturalsciences.bmdc.ears.rest.RestClientThermosal;
 import be.naturalsciences.bmdc.ears.rest.RestClientUnderway;
@@ -53,47 +54,6 @@ public class ExportEventActionListener implements EventListener {
     public static final String EXPORT_FILE_NAME = "EARS_export_events.csv";
 
     public boolean PRINT_PROPS_ONTO = false;
-    
-        public NavBean getNavigation(RestClientNav rest, OffsetDateTime ts) {
-        try {
-            NavBean bean = rest != null ? rest.getNearestNav(ts) : null;
-            return bean;
-        } catch (ConnectException ex) {
-            Messaging.report("Could not connect to the web service for navigation to get the data. Info not added.", ex, this.getClass(), true);
-        }
-        return null;
-    }
-
-    public WeatherBean getWeather(RestClientWeather rest, OffsetDateTime ts) {
-        try {
-            WeatherBean bean = rest != null ? rest.getNearestWeather(ts) : null;
-            return bean;
-        } catch (ConnectException ex) {
-            Messaging.report("Could not connect to the web service for weather to get the data. Info not added.", ex, this.getClass(), true);
-        }
-        return null;
-    }
-
-    public ThermosalBean getThermosal(RestClientThermosal rest, OffsetDateTime ts) {
-        try {
-            ThermosalBean bean = rest != null ? rest.getNearestThermosal(ts) : null;
-            return bean;
-        } catch (ConnectException ex) {
-            Messaging.report("Could not connect to the web service for thermosal to get the data. Info not added.", ex, this.getClass(), true);
-        }
-        return null;
-    }
-
-    public UnderwayBean getUnderway(RestClientUnderway rest, OffsetDateTime ts) {
-        try {
-            UnderwayBean bean = rest != null ? rest.getNearestUnderway(ts) : null;
-            return bean;
-        } catch (ConnectException ex) {
-            Messaging.report("Could not connect to the web service for underway to get the data. Info not added.", ex, this.getClass(), true);
-        }
-        return null;
-    }
-
 
     public void actionPerformed(ExportEventAction e) {
 
@@ -106,7 +66,7 @@ public class ExportEventActionListener implements EventListener {
 
                 RestClientNav restNav = null;
                 try {
-                    restNav = new RestClientNav();
+                    restNav = new RestClientNav(true);
                 } catch (ConnectException ex) {
                     Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), true);
                 } catch (EarsException ex) {
@@ -115,7 +75,7 @@ public class ExportEventActionListener implements EventListener {
 
                 RestClientWeather restWeather = null;
                 try {
-                    restWeather = new RestClientWeather();
+                    restWeather = new RestClientWeather(true);
                 } catch (ConnectException ex) {
                     Messaging.report("Can't connect to the weather web service", ex, this.getClass(), true);
                 } catch (EarsException ex) {
@@ -124,7 +84,7 @@ public class ExportEventActionListener implements EventListener {
 
                 RestClientThermosal restThermosal = null;
                 try {
-                    restThermosal = new RestClientThermosal();
+                    restThermosal = new RestClientThermosal(true);
                 } catch (ConnectException ex) {
                     Messaging.report("Can't connect to the thermosal web service", ex, this.getClass(), true);
                 } catch (EarsException ex) {
@@ -133,7 +93,7 @@ public class ExportEventActionListener implements EventListener {
 
                 RestClientUnderway restUnderway = null;
                 try {
-                    restUnderway = new RestClientUnderway();
+                    restUnderway = new RestClientUnderway(true);
                 } catch (ConnectException ex) {
                     Messaging.report("Can't connect to the underway web service", ex, this.getClass(), true);
                 } catch (EarsException ex) {
@@ -178,7 +138,7 @@ public class ExportEventActionListener implements EventListener {
                         FileWriter writer;
 
                         writer = new FileWriter(fileChooser.getSelectedFile().getPath());
-                        List<String> header = new ArrayList(Arrays.asList("Time stamp", "Actor", "Tool category", "Tool", "Process", "Action",
+                        List<String> header = new ArrayList<>(Arrays.asList("Time stamp", "Actor", "Tool category", "Tool", "Process", "Action",
                                 "Acquisition Timestamp", "Latitude", "Longitude", "Depth", "Surface water temperature"));
                         Map<String, String> properties = new TreeMap<>();
                         for (EventBean event : events) {
@@ -190,7 +150,6 @@ public class ExportEventActionListener implements EventListener {
                             String propertyName = entry.getValue();
                             header.add(propertyName);
                         }
-
                         header.addAll(Arrays.asList("Heading", "Course over Ground", "Speed over Ground",
                                 "Salinity", "Conductivity", "Sigma T", "Wind speed", "Wind direction",
                                 "Air temperature", "Air pressure", "Solar Radiation", "Turbidity L",
@@ -201,15 +160,19 @@ public class ExportEventActionListener implements EventListener {
                         entry = header.toArray(entry);
                         CSVWriter csvWriter = new CSVWriter(writer, '\t');
                         csvWriter.writeNext(entry, false);
+                        NavBean nav = null;
+                        WeatherBean wt = null;
+                        ThermosalBean th = null;
+                        UnderwayBean uw = null;
                         for (EventBean event : events) {
                             OffsetDateTime ts = event.getTimeStampDt();
 
-                            NavBean nav = getNavigation(restNav, ts);
-                            WeatherBean wt = getWeather(restWeather, ts);
-                            ThermosalBean th = getThermosal(restThermosal, ts);
-                            UnderwayBean uw = getUnderway(restUnderway, ts);
+                            nav = RestClient.getNavigation(restNav, ts);
+                            wt = RestClient.getWeather(restWeather, ts);
+                            th = RestClient.getThermosal(restThermosal, ts);
+                            uw = RestClient.getUnderway(restUnderway, ts);
 
-                            List<String> elements = new ArrayList(Arrays.asList(
+                            List<String> elements = new ArrayList<>(Arrays.asList(
                                     event.getTimeStampDt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
                                     event.getActor(),
                                     event.getToolCategoryName(),
@@ -262,6 +225,7 @@ public class ExportEventActionListener implements EventListener {
                             entry = elements.toArray(entry);
 
                             csvWriter.writeNext(entry, true);
+                            System.out.println("Saved event " + event.toString());
                         }
                         writer.flush();
                         writer.close();

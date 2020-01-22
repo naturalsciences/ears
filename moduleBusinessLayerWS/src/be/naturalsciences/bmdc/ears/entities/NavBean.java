@@ -1,6 +1,13 @@
 package be.naturalsciences.bmdc.ears.entities;//ys
 
+import be.naturalsciences.bmdc.utils.StringUtils;
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -96,6 +103,21 @@ public class NavBean implements Serializable {
 
     public void setFecha_telegrama(String pTimeStampUDPTelegram) {
         this.timeStampUDPTelegram = pTimeStampUDPTelegram;
+    }
+
+    /**
+     * Parse string dates of the form 2020-01-21T18:22:42+00 to an
+     * OffsetDateTime
+     *
+     * @return
+     */
+    public OffsetDateTime getOffsetDateTime() {
+        if (getTimeStamp() != null && !getTimeStamp().equals("")) {
+            LocalDateTime ld = LocalDateTime.parse(getTimeStamp(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            return ld.atOffset(ZoneOffset.UTC);
+        } else {
+            return null;
+        }
     }
 
     @Override

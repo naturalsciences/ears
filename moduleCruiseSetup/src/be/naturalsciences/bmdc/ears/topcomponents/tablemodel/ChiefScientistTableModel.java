@@ -40,7 +40,7 @@ public class ChiefScientistTableModel extends AbstractTableModel {
     //public static JComboBox chiefScientistCountryList;
     public ChiefScientistTableModel() {
         //this.parent = parent;
-        data = new ArrayList();
+        data = new ArrayList<>();
     }
 
     /*public SaveButtonDisablerOnValidationFailure getParent() {
@@ -118,7 +118,7 @@ public class ChiefScientistTableModel extends AbstractTableModel {
         //chiefScientistCountryList = new JComboBox();
         //chiefScientistOrganisationList = new JComboBox();
 
-        Map<String, Object> map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         for (int i = 0; i < rowData.length; i++) {
             if (rowData[i] != null) {
                 map.put(getColumnName(i), rowData[i]);
@@ -143,7 +143,7 @@ public class ChiefScientistTableModel extends AbstractTableModel {
     }
 
     public List<Person> getPersons() {
-        List<Person> r = new ArrayList(data.size());
+        List<Person> r = new ArrayList<>(data.size());
         for (Map<String, Object> map : data) {
             if (map.get(ORG) instanceof OrganisationBean) {
                 r.add(new Person((String) map.get(NAME), (OrganisationBean) map.get(ORG)));

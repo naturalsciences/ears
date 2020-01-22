@@ -4,6 +4,7 @@ import be.naturalsciences.bmdc.ears.entities.WeatherBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
+import gnu.trove.map.hash.THashMap;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,6 +12,7 @@ import java.security.GeneralSecurityException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
@@ -29,8 +31,8 @@ public class RestClientWeather extends RestClient {
 
     protected ResteasyWebTarget getNearestWeatherTarget;
 
-    public RestClientWeather() throws ConnectException, EarsException {
-        super();
+    public RestClientWeather(boolean cache) throws ConnectException, EarsException {
+        super(cache);
         if (!WebserviceUtils.testWS("ears2Nav/getLast24hMet")) {
             online = false;
             throw new ConnectException();
@@ -62,32 +64,43 @@ public class RestClientWeather extends RestClient {
     }
 
     public WeatherBean getLastWeather() throws ConnectException {
-        WeatherBean wt = new WeatherBean();
-
-        Response response = getLastWeatherXmlTarget.request().get();
-        // Check Status
-        if (response.getStatus() != 200) {
-           throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastWeatherXmlTarget.getUri().toString() + ")");
-        }
-        wt = response.readEntity(WeatherBean.class);
-
-        response.close();
-
-        return wt;
+        return readOneEntity(getLastWeatherXmlTarget, null);
     }
 
     public WeatherBean getNearestWeather(OffsetDateTime time) throws ConnectException {
-        WeatherBean wt = null;
+        ResteasyWebTarget target = getNearestWeatherTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        return readOneEntity(target, time);
+    }
 
-        Response response = getNearestWeatherTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
-        if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getNearestWeatherTarget.getUri().toString() + ")");
+    static Map<OffsetDateTime, WeatherBean> results = new THashMap();
+
+    /**
+     * Build one entity at a given time for the given url target
+     *
+     * @param response
+     * @param time The time at which the acquisition object is gathered. If
+     * null, is completed with the actual time of the acquisition object
+     * @return
+     */
+    public WeatherBean readOneEntity(ResteasyWebTarget target, OffsetDateTime time) throws ConnectException {
+        WeatherBean nav;
+        if (cache && time != null && results.containsKey(time)) {
+            nav = results.get(time);
+        } else {
+            Response response = target.request().get();
+            if (response.getStatus() != 200) {
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + target.getUri().toString() + ")");
+            }
+            nav = response.readEntity(WeatherBean.class);
+            response.close();
+            if (time == null) {
+                time = nav.getOffsetDateTime();
+            }
+            if (cache) {
+                results.put(time, nav);
+            }
         }
-        wt = response.readEntity(WeatherBean.class);
-
-        response.close();
-
-        return wt;
+        return nav;
     }
 
     public Collection<WeatherBean> getWeatherByDates(String fromDate, String toDate) throws ConnectException {

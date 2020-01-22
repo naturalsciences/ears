@@ -4,6 +4,7 @@ import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
+import gnu.trove.map.hash.THashMap;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,6 +12,7 @@ import java.security.GeneralSecurityException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
@@ -29,8 +31,8 @@ public class RestClientThermosal extends RestClient {
 
     protected ResteasyWebTarget getNearestThermosalTarget;
 
-    public RestClientThermosal() throws ConnectException, EarsException {
-        super();
+    public RestClientThermosal(boolean cache) throws ConnectException, EarsException {
+        super(cache);
         if (!WebserviceUtils.testWS("ears2Nav/getLast24hMet")) {
             online = false;
             throw new ConnectException();
@@ -54,7 +56,7 @@ public class RestClientThermosal extends RestClient {
             throw new EarsException("The base url for the web services is invalid. The thermosal web service won't work correctly.", ex);
         }
         if (uri != null) {
-            getLastThermosalXmlTarget = client.target(uri.resolve("ears2Nav/getLast24hMet"));
+            getLastThermosalXmlTarget = client.target(uri.resolve("ears2Nav/getLastTssSSR"));
             getNearestThermosalTarget = client.target(uri.resolve("ears2Nav/getNearestTss"));
         }
         /*else {
@@ -63,31 +65,44 @@ public class RestClientThermosal extends RestClient {
     }
 
     public ThermosalBean getLastThermosal() throws ConnectException {
-        ThermosalBean th = new ThermosalBean();
-
-        Response response = getLastThermosalXmlTarget.request().get();
-        // Check Status
-        if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastThermosalXmlTarget.getUri().toString() + ")");
-        }
-        th = response.readEntity(ThermosalBean.class);
-        response.close();
-
-        return th;
+        return readOneEntity(getLastThermosalXmlTarget, null);
     }
 
     public ThermosalBean getNearestThermosal(OffsetDateTime time) throws ConnectException {
-        ThermosalBean th = null;
+        ResteasyWebTarget target = getNearestThermosalTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        return readOneEntity(target, time);
+    }
 
-        Response response = getNearestThermosalTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
-        if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getNearestThermosalTarget.getUri().toString() + ")");
+    static Map<OffsetDateTime, ThermosalBean> results = new THashMap();
+
+    /**
+     * Build one entity at a given time for the given url target
+     *
+     * @param response
+     * @param time The time at which the acquisition object is gathered. If
+     * null, is completed with the actual time of the acquisition object
+     * @return
+     */
+    public ThermosalBean readOneEntity(ResteasyWebTarget target, OffsetDateTime time) throws ConnectException {
+        ThermosalBean nav;
+        if (cache && time != null && results.containsKey(time)) {
+            nav = results.get(time);
+        } else {
+            Response response = target.request().get();
+            if (response.getStatus() != 200) {
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + target.getUri().toString() + ")");
+            }
+            nav = response.readEntity(ThermosalBean.class);
+            response.close();
+            if (time == null) {
+                time = nav.getOffsetDateTime();
+            }
+            if (cache) {
+                results.put(time, nav);
+            }
         }
-        th = response.readEntity(ThermosalBean.class);
 
-        response.close();
-
-        return th;
+        return nav;
     }
 
     public Collection<ThermosalBean> getThermosalByDates(String fromDate, String toDate) throws ConnectException {

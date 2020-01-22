@@ -5,7 +5,11 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
+import be.naturalsciences.bmdc.utils.StringUtils;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,5 +155,14 @@ public class UnderwayBean {
 
     public void setPar(Double par) {
         this.par = par;
+    }
+
+    public OffsetDateTime getOffsetDateTime() {
+        if (getDate() != null && !getDate().equals("")) {
+            LocalDateTime ld = LocalDateTime.parse(getDate(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            return ld.atOffset(ZoneOffset.UTC);
+        } else {
+            return null;
+        }
     }
 }

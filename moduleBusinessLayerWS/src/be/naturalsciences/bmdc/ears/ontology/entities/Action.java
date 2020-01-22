@@ -59,8 +59,8 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
 
     @Override
     public void init() {
-        eventDefinition = new ArrayList();
-        processActionCollection = new ArrayList();
+        eventDefinition = new ArrayList<>();
+        processActionCollection = new ArrayList<>();
     }
 
     @Override
@@ -212,7 +212,7 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
 
     @Override
     public Set<Property> getChildren(ConceptHierarchy parents) {
-        Set<Property> propertyList = new TreeSet(new TermLabelComparator());
+        Set<Property> propertyList = new TreeSet<>(new TermLabelComparator());
         if (parents != null) {
             ITool tool = parents.getLowestToolInHierarchy();
             IProcess process = parents.getProcess();
@@ -246,7 +246,7 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
          }
          return lp;*/
         Collection<EventDefinition> eventList = getEventDefinition();
-        List<AsConcept> lp = new ArrayList();
+        List<AsConcept> lp = new ArrayList<>();
 
         for (EventDefinition e : eventList) {
             if (e instanceof SpecificEventDefinition) {

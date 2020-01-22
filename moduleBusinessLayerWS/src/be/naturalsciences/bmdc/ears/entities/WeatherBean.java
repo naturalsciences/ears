@@ -1,6 +1,10 @@
 package be.naturalsciences.bmdc.ears.entities;//ys
 
+import be.naturalsciences.bmdc.utils.StringUtils;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -19,31 +23,31 @@ public class WeatherBean implements Serializable {
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "date_time")
     private String date;
-    
+
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "wind_speed")
     private Double windSpeed;
-    
+
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "wind_gust")
     private Double windGust;
-    
+
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "wind_direction")
     private Double windDirection;
-    
+
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "air_temperature")
     private Double airTemperature;
-    
+
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = " humidity")
     private Double humidity;
-    
+
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "solar_radiation")
     private Double solarRadiation;
-    
+
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "air_preassure")
     private Double airPressure;
-    
+
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "surface_water_temperature")
     private Double surfaceWaterTemperature;
-    
+
     private Date instrumentTime;
 
     public String getDate() {
@@ -124,6 +128,21 @@ public class WeatherBean implements Serializable {
 
     public void setInstrumentTime(Date date) {
         this.instrumentTime = date;
+    }
+
+    /**
+     * Parse string dates of the form 2020-01-21T18:22:42+00 to an
+     * OffsetDateTime
+     *
+     * @return
+     */
+    public OffsetDateTime getOffsetDateTime() {
+        if (getInstrumentTime() != null && !getInstrumentTime().equals("")) {
+            LocalDateTime ld = LocalDateTime.parse(getInstrumentTime(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            return ld.atOffset(ZoneOffset.UTC);
+        } else {
+            return null;
+        }
     }
 
     @Override

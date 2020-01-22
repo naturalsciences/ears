@@ -7,7 +7,9 @@ package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
 import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
+import be.naturalsciences.bmdc.ears.rest.RestClient;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
+import be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
@@ -20,6 +22,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -147,6 +151,7 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                     if (oD != null) {
                         event.setTimeStampDt(oD);
                         IResponseMessage response = restClientEvent.modifyEvent(event);
+                        CreateEventTopComponent.getAssociatedAcquisitionInfo(event);
                         if (response.isBad()) {
                             Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
                             event.setTimeStampDt(originalDate);
@@ -158,8 +163,18 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                 if (value != null && !value.equals(originalValue)) {
                     OffsetDateTime originalDate = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE) + "T" + originalValue.toString() + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
                     OffsetDateTime oT = null;
+                    String valueString = value.toString();
+                    Pattern noSeconds = Pattern.compile("^\\d{2}:\\d{2}:?$"); //correct times that have no seconds to 0 seconds. Incorrect seconds remain invalid
+                    Matcher matcher = noSeconds.matcher(valueString);
+                    if (matcher.matches()) {
+                        if (valueString.endsWith(":")) {
+                            valueString = valueString + "00";
+                        } else {
+                            valueString = valueString + ":00";
+                        }
+                    }
                     try {
-                        oT = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE) + "T" + value.toString() + ".000" + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
+                        oT = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE) + "T" + valueString + ".000" + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
                     } catch (java.time.format.DateTimeParseException ex) {
                         Messaging.report("Date format incorrect", ex, this.getClass(), true);
                     }
@@ -233,7 +248,6 @@ public class EventTableModel extends EntityTableModel<EventBean> {
     @Override
     public void addEntity(EventBean e) {
         e.setEventId(e.buildEventId());
-
         IResponseMessage response = restClientEvent.postEvent(e);
         if (!response.isBad()) {
 

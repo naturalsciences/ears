@@ -24,6 +24,10 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.openide.util.Exceptions;
 
+/**
+ * A class that will probably not be further developed. The ontology rest client is RestClientOntology.
+ * @author thomas
+ */
 public class RestClientOntology extends RestClient {
 
     protected ResteasyClient client;// = new ResteasyClientBuilder().build();
@@ -38,7 +42,7 @@ public class RestClientOntology extends RestClient {
     protected ResteasyWebTarget getCategoryListTarget;
 
     public RestClientOntology() throws ConnectException, EarsException {
-        super();
+        super(false);
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
             try {

@@ -88,7 +88,7 @@ public class RestClientOnt extends RestClient {
     }
 
     public RestClientOnt() throws ConnectException, EarsException {
-        super();
+        super(false);
         init();
     }
 

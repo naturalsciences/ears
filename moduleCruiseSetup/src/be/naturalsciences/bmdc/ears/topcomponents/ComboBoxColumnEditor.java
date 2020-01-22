@@ -46,7 +46,7 @@ public class ComboBoxColumnEditor<E extends EARSConcept> extends AbstractCellEdi
     SaveButtonDisablerOnValidationFailure parent;
 
     public ComboBoxColumnEditor(Collection<E> set, JTable table, int column, String tooltip, SaveButtonDisablerOnValidationFailure parent) {
-        lists = new ArrayList();
+        lists = new ArrayList<>();
 
         this.set = set;
         this.table = table;

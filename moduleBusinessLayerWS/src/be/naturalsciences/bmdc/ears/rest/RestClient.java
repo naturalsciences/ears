@@ -9,6 +9,10 @@ import be.naturalsciences.bmdc.ears.entities.CurrentURL;
 import be.naturalsciences.bmdc.ears.entities.ExceptionMessage;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.MessageBean;
+import be.naturalsciences.bmdc.ears.entities.NavBean;
+import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
+import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
+import be.naturalsciences.bmdc.ears.entities.WeatherBean;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
@@ -24,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,13 +54,58 @@ public abstract class RestClient implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static UnderwayBean getUnderway(RestClientUnderway rest, OffsetDateTime ts) {
+        try {
+            UnderwayBean bean = rest != null ? rest.getNearestUnderway(ts) : null;
+            return bean;
+        } catch (ConnectException ex) {
+            Messaging.report("Could not connect to the web service for underway to get the data. Info not added.", ex, RestClient.class, true);
+        }
+        return null;
+    }
+
+    public static ThermosalBean getThermosal(RestClientThermosal rest, OffsetDateTime ts) {
+        try {
+            ThermosalBean bean = rest != null ? rest.getNearestThermosal(ts) : null;
+            return bean;
+        } catch (ConnectException ex) {
+            Messaging.report("Could not connect to the web service for thermosal to get the data. Info not added.", ex, RestClient.class, true);
+        }
+        return null;
+    }
+
+    public static NavBean getNavigation(RestClientNav rest, OffsetDateTime ts) {
+        try {
+            NavBean bean = rest != null ? rest.getNearestNav(ts) : null;
+            return bean;
+        } catch (ConnectException ex) {
+            Messaging.report("Could not connect to the web service for navigation to get the data. Info not added.", ex, RestClient.class, true);
+        }
+        return null;
+    }
+
+    public static WeatherBean getWeather(RestClientWeather rest, OffsetDateTime ts) {
+        try {
+            WeatherBean bean = rest != null ? rest.getNearestWeather(ts) : null;
+            return bean;
+        } catch (ConnectException ex) {
+            Messaging.report("Could not connect to the web service for weather to get the data. Info not added.", ex, RestClient.class, true);
+        }
+        return null;
+    }
+
     protected boolean online = true;
 
     protected static URL baseURL;
 
     protected boolean isHttps = false;
 
-    public RestClient() throws ConnectException, EarsException {
+    /**
+     * Cache all incoming results for later use
+     */
+    protected boolean cache;
+
+    public RestClient(boolean cache) throws ConnectException, EarsException {
         if (getBaseURL() == null) {
             online = false;
             throw new EarsException("The base url for the EARS web services is null. The application won't work correctly.");
@@ -71,6 +121,7 @@ public abstract class RestClient implements Serializable {
             online = false;
             throw new ConnectException();
         }
+        this.cache = cache;
     }
 
     protected static HttpClient createAllTrustingClient() throws GeneralSecurityException {

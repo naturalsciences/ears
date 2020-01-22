@@ -38,7 +38,7 @@ public class RestClientEvent extends RestClient {
     protected ResteasyWebTarget removeTarget;
 
     public RestClientEvent() throws ConnectException, EarsException {
-        super();
+        super(false);
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
             try {

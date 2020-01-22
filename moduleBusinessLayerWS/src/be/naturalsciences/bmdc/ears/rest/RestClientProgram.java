@@ -38,7 +38,7 @@ public class RestClientProgram extends RestClient {
     protected ResteasyWebTarget postTarget;
 
     public RestClientProgram() throws ConnectException, EarsException {
-        super();
+        super(false);
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
             try {

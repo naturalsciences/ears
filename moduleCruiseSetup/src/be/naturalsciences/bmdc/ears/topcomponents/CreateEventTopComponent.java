@@ -18,7 +18,12 @@ import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.IProgram;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
+import be.naturalsciences.bmdc.ears.entities.NavBean;
 import be.naturalsciences.bmdc.ears.entities.PropertyBean;
+import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
+import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
+import be.naturalsciences.bmdc.ears.entities.WeatherBean;
+import static be.naturalsciences.bmdc.ears.listeners.ExportEventActionListener.EXPORT_FILE_NAME;
 import be.naturalsciences.bmdc.ears.listeners.SelectOnClickPopupMenuListener;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
@@ -28,7 +33,12 @@ import be.naturalsciences.bmdc.ears.ontology.VesselOntology;
 import be.naturalsciences.bmdc.ears.ontology.entities.Property;
 import be.naturalsciences.bmdc.ears.ontology.entities.SpecificEventDefinition;
 import be.naturalsciences.bmdc.ears.properties.Configs;
+import be.naturalsciences.bmdc.ears.rest.RestClient;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
+import be.naturalsciences.bmdc.ears.rest.RestClientNav;
+import be.naturalsciences.bmdc.ears.rest.RestClientThermosal;
+import be.naturalsciences.bmdc.ears.rest.RestClientUnderway;
+import be.naturalsciences.bmdc.ears.rest.RestClientWeather;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.SwingUtils;
@@ -38,6 +48,7 @@ import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import com.github.lgooddatepicker.tableeditors.DateTableEditor;
 import com.github.lgooddatepicker.tableeditors.TimeTableEditor;
 import com.github.lgooddatepicker.zinternaltools.InternalUtilities;
+import com.opencsv.CSVWriter;
 import gnu.trove.map.hash.THashMap;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -47,6 +58,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -55,17 +69,22 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import static javax.swing.JFileChooser.SAVE_DIALOG;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -148,6 +167,10 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private final Action editPropertyEventAction;
 
     private static RestClientEvent restClientEvent;
+    private RestClientNav restNav;
+    private RestClientWeather restWeather;
+    private RestClientThermosal restThermosal;
+    private RestClientUnderway restUnderway;
 
     private EventTableModel model;
     JPopupMenu popupMenu = new JPopupMenu();
@@ -163,6 +186,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         } catch (EarsException ex) {
             Messaging.report(ex.getMessage(), ex, this.getClass(), true);
         }
+
         associateLookup(new AbstractLookup(content));
         setName(Bundle.CTL_CreateEventTopComponent());
         setToolTipText(Bundle.HINT_CreateEventTopComponent());
@@ -319,6 +343,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
         filler8 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
         exportEventButton = new javax.swing.JButton();
+        filler9 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
 
         setPreferredSize(new java.awt.Dimension(1535, 1135));
 
@@ -488,9 +513,12 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         jToolBar1.add(filler4);
         jToolBar1.add(filler8);
 
+        exportEventButton.setMnemonic('E');
         org.openide.awt.Mnemonics.setLocalizedText(exportEventButton, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.exportEventButton.text")); // NOI18N
+        exportEventButton.setToolTipText(org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.exportEventButton.toolTipText")); // NOI18N
         exportEventButton.setFocusable(false);
         exportEventButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        exportEventButton.setPreferredSize(new java.awt.Dimension(180, 27));
         exportEventButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         exportEventButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -498,6 +526,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             }
         });
         jToolBar1.add(exportEventButton);
+        jToolBar1.add(filler9);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -660,6 +689,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private javax.swing.Box.Filler filler6;
     private javax.swing.Box.Filler filler7;
     private javax.swing.Box.Filler filler8;
+    private javax.swing.Box.Filler filler9;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JToolBar jToolBar1;
@@ -728,7 +758,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     protected void componentShowing() {
     }
 
-    private void updateEventModel() {
+    private void populateEventModelFromScratch() {
         if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
             CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
             List<EventBean> events = null;
@@ -740,6 +770,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             if (events != null) {
                 Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
                 for (EventBean event : events) {
+                    getAssociatedAcquisitionInfo(event);
                     if (event.getProperties() != null) {
                         for (PropertyBean property : event.getProperties()) {
                             try {
@@ -806,7 +837,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
         if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
 
-            updateEventModel();
+            populateEventModelFromScratch();
 
             TableColumnModel tableColumnModel = eventTable.getColumnModel();
 
@@ -876,7 +907,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             //add action column
             actionColumn.setCellRenderer(new DropdownTableCellRenderer());
             actionColumn.setCellEditor(new ActionCellEditor());
-            
+
             //add properties button
             ButtonColumn editPropertyButtonColumn = new ButtonColumn(eventTable, editPropertyEventAction, propertyColumnId, "Edit properties");
 
@@ -951,6 +982,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                 previousEvent = c1;
                 EventBean currentEvent = (EventBean) c1;
                 this.getModel().addEntity(currentEvent);
+                getAssociatedAcquisitionInfo(currentEvent);
                 if (eventTable.getHeight() < eventTable.getModel().getRowCount() * DEFAULT_ROW_HEIGHT) {
                     int newHeight = eventTable.getHeight() + DEFAULT_ROW_HEIGHT;
                     Dimension dim = new Dimension(eventTable.getWidth(), newHeight);
@@ -967,5 +999,52 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                 componentOpened();
             }
         }
+    }
+
+    public static void getAssociatedAcquisitionInfo(final EventBean event) {
+        Thread thr = new Thread() {
+            public void run() {
+                RestClientNav restNav = null;
+                RestClientWeather restWeather = null;
+                RestClientThermosal restThermosal = null;
+                RestClientUnderway restUnderway = null;
+                try {
+                    restNav = new RestClientNav(true);
+                } catch (ConnectException ex) {
+                    Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), true);
+                } catch (EarsException ex) {
+                    Messaging.report("Problem with the navigation web service", ex, this.getClass(), true);;
+                }
+
+                try {
+                    restWeather = new RestClientWeather(true);
+                } catch (ConnectException ex) {
+                    Messaging.report("Can't connect to the weather web service", ex, this.getClass(), true);
+                } catch (EarsException ex) {
+                    Messaging.report("Problem with the weather web service", ex, this.getClass(), true);
+                }
+                try {
+                    restThermosal = new RestClientThermosal(true);
+                } catch (ConnectException ex) {
+                    Messaging.report("Can't connect to the thermosal web service", ex, this.getClass(), true);
+                } catch (EarsException ex) {
+                    Messaging.report("Problem with the thermosal web service", ex, this.getClass(), true);
+                }
+                try {
+                    restUnderway = new RestClientUnderway(true);
+                } catch (ConnectException ex) {
+                    Messaging.report("Can't connect to the underway web service", ex, this.getClass(), true);
+                } catch (EarsException ex) {
+                    Messaging.report("Problem with the underway web service", ex, this.getClass(), true);
+                }
+                OffsetDateTime time= event.getTimeStampDt();
+                RestClient.getNavigation(restNav, event.getTimeStampDt());
+                RestClient.getThermosal(restThermosal, time);
+                RestClient.getWeather(restWeather, time);
+                RestClient.getUnderway(restUnderway, time);
+                System.out.println("Fetched acquisition info for " + event.toString());
+            }
+        };
+        thr.start();
     }
 }

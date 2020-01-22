@@ -1806,6 +1806,11 @@ public class EARSOntologyCreator {
         }
     }
 
+    /***
+     * Store all the EDMERP projects in the ontology
+     * @param onto
+     * @throws OWLOntologyCreationException 
+     */
     private void saveProjects(OWLOntology onto) throws OWLOntologyCreationException {
         if (onto != null) {
             if (projectCollection != null) {
@@ -1873,9 +1878,6 @@ public class EARSOntologyCreator {
         } else {
             log.log(Level.SEVERE, message);
         }
-
-        //throw new Exception(e);
-        //ExceptionHelper.reportError(message, e, this.getClass());
     }
 
     /**
@@ -1883,13 +1885,13 @@ public class EARSOntologyCreator {
      * Null-config method. Create an rdf-based ontology file for the path, group
      * and permissions. Uses RDF serialization.
      *
-     * @param importOrPaste
-     * @param axiomaFile
-     * @param owner
-     * @param fullPath
-     * @param perm
-     * @param group
-     * @return
+     * @param importOrPaste whether to paste the owl individuals or to inlude them as an owl:imports header
+     * @param axiomaFile the ontology that contains the rdf schema without any individuals
+     * @param owner the unix owner 
+     * @param fullPath the full path where the ontology will be stored
+     * @param perm the unix rwx permissions 
+     * @param group the unix group
+     * @return 
      * @throws OWLOntologyCreationException
      */
     public BufferedOutputStream createOntoFile(LoadOnto importOrPaste, File axiomaFile, int newVersion, Path fullPath, String owner, String perm, String group, boolean overwriteIfExists) throws OWLOntologyCreationException {
@@ -1909,11 +1911,16 @@ public class EARSOntologyCreator {
         }
     }
 
+    /**
+     * Combine two owl ontologies and provide them using a new name
+     * @param oo1 The first ontology
+     * @param oo2 The second ontology
+     * @param name The new name of the new ontology
+     * @return
+     * @throws OWLOntologyCreationException 
+     */
     public OWLOntology mergeOntology(OWLOntology oo1, OWLOntology oo2, String name) throws OWLOntologyCreationException {
         OWLOntologyManager m = OWLManager.createOWLOntologyManager();
-
-        //OWLOntology o1 = m.loadOntology(IRI.create(f1));
-        //OWLOntology o2 = m.loadOntology(IRI.create(f2));
         OWLOntology o1 = m.copyOntology(oo1, OntologyCopy.DEEP);
         OWLOntology o2 = m.copyOntology(oo2, OntologyCopy.DEEP);
 

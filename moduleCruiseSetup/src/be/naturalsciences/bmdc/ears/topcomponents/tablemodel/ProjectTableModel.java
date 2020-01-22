@@ -165,7 +165,7 @@ public class ProjectTableModel extends EntityTableModel<ProjectBean> {
     }
 
     private void setValueAtBase(Object value, int row, int column) {
-        ProjectBean proj = (ProjectBean) getEntityAt(row);
+        ProjectBean proj = getEntityAt(row);
 
         if (value != null) {
             switch (getColumnName(column)) {

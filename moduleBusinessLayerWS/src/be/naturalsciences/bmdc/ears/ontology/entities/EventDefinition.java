@@ -30,7 +30,7 @@ public class EventDefinition implements IEventDefinition<EarsTerm, Property, Eve
     private Collection<EventDefinition> triggerCollection;
 
     public EventDefinition() {
-        this.propertyCollection = new ArrayList();
+        this.propertyCollection = new ArrayList<>();
     }
 
     public EventDefinition(Long id) {

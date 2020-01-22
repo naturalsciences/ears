@@ -1,6 +1,10 @@
 package be.naturalsciences.bmdc.ears.entities;//ys
 
+import be.naturalsciences.bmdc.utils.StringUtils;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -98,6 +102,15 @@ public class ThermosalBean implements Serializable {
         StringBuilder sb = new StringBuilder("Thermosalinity data for: ");
         sb.append(getDate());
         return sb.toString();
+    }
+
+    public OffsetDateTime getOffsetDateTime() {
+        if (getInstrumentTime() != null && !getInstrumentTime().equals("")) {
+            LocalDateTime ld = LocalDateTime.parse(getInstrumentTime(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            return ld.atOffset(ZoneOffset.UTC);
+        } else {
+            return null;
+        }
     }
 
 }

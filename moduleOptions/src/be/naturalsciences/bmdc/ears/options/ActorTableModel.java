@@ -28,7 +28,7 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
 
     public static final int ERROR = -42;
 
-    private List<Actor> datalist = new ArrayList();
+    private List<Actor> datalist = new ArrayList<>();
 
     private static final String INDEX = "Index";
     private static final String FIRSTNAME = "firstname";
@@ -180,7 +180,7 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
         if (datalist.isEmpty()) {
             return null;
         } else {
-            return (Actor) datalist.get(row);
+            return datalist.get(row);
         }
     }
 

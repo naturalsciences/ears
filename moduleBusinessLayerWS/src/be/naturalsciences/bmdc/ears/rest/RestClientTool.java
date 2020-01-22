@@ -6,7 +6,7 @@ import java.net.ConnectException;
 public class RestClientTool extends RestClient {
 
     public RestClientTool() throws  ConnectException, EarsException {
-        super();
+        super(false);
     }
 
 }

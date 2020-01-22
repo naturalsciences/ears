@@ -4,15 +4,19 @@ import be.naturalsciences.bmdc.ears.entities.NavBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
+import gnu.trove.map.hash.THashMap;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -29,8 +33,8 @@ public class RestClientNav extends RestClient {
 
     protected ResteasyWebTarget getNearestNavTarget;
 
-    public RestClientNav() throws ConnectException, EarsException {
-        super();
+    public RestClientNav(boolean cache) throws ConnectException, EarsException {
+        super(cache);
         if (!WebserviceUtils.testWS("ears2Nav/getLastNavXml")) {
             online = false;
             throw new ConnectException();
@@ -62,37 +66,45 @@ public class RestClientNav extends RestClient {
         }*/
     }
 
-    public NavBean getLastNavXml() throws ConnectException {
+    static Map<OffsetDateTime, NavBean> results = new THashMap();
 
-        // Nav Using RESTEasy API
-        NavBean nav = new NavBean();
-
-        //ResteasyClient client = new ResteasyClientBuilder().build();
-        //ResteasyWebTarget target = client.target(getBaseURL().resolve("getLastNavXml"));
-        Response response = getLastNavXmlTarget.request().get();
-        // Check Status
-        if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastNavXmlTarget.getUri().toString() + ")");
+    /**
+     * Build one entity at a given time for the given url target
+     *
+     * @param response
+     * @param time The time at which the acquisition object is gathered. If
+     * null, is completed with the actual time of the acquisition object
+     * @return
+     */
+    public NavBean readOneEntity(ResteasyWebTarget target, OffsetDateTime time) throws ConnectException {
+        NavBean nav;
+        if (cache && time != null && results.containsKey(time)) {
+            nav = results.get(time);
+        } else {
+            Response response = target.request().get();
+            if (response.getStatus() != 200) {
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + target.getUri().toString() + ")");
+            }
+            nav = response.readEntity(NavBean.class);
+            response.close();
+            if (time == null) {
+                time = nav.getOffsetDateTime();
+            }
+            if (cache) {
+                results.put(time, nav);
+            }
         }
-        nav = response.readEntity(NavBean.class);
-
-        response.close();
 
         return nav;
     }
 
+    public NavBean getLastNavXml() throws ConnectException {
+        return readOneEntity(getLastNavXmlTarget, null);
+    }
+
     public NavBean getNearestNav(OffsetDateTime time) throws ConnectException {
-        NavBean nav = null;
-
-        Response response = getNearestNavTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
-        if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getNearestNavTarget.getUri().toString() + ")");
-        }
-        nav = response.readEntity(NavBean.class);
-
-        response.close();
-
-        return nav;
+        ResteasyWebTarget target = getNearestNavTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        return readOneEntity(target, time);
     }
 
     public Collection<NavBean> getNavByDatesXml(String fromDate, String toDate) throws ConnectException {

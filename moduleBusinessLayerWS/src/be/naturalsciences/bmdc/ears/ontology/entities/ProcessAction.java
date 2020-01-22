@@ -43,8 +43,8 @@ public class ProcessAction implements IProcessAction<EarsTerm, Process, Action, 
     public ProcessAction(Process process, Action action) {
         this.process = process;
         this.action = action;
-        this.genericEventDefinitionCollection = new ArrayList();
-        this.specificEventDefinitionCollection = new ArrayList();
+        this.genericEventDefinitionCollection = new ArrayList<>();
+        this.specificEventDefinitionCollection = new ArrayList<>();
         if (process.getId() != null & action.getId() != null) {
             this.processActionPK = new ProcessActionPK(process.getId().longValue(), action.getId().longValue());
         }
@@ -132,7 +132,7 @@ public class ProcessAction implements IProcessAction<EarsTerm, Process, Action, 
 
     @Override
     public Collection<EventDefinition> getEvents() {
-        Collection<EventDefinition> cev = new ArrayList();
+        Collection<EventDefinition> cev = new ArrayList<>();
         cev.addAll(getSpecificEventDefinitionCollection());
         cev.addAll(getGenericEventDefinitionCollection());
         return cev;
@@ -168,7 +168,7 @@ public class ProcessAction implements IProcessAction<EarsTerm, Process, Action, 
 
     @Override
     public List<Tool> getTools() {
-        List<Tool> join = new ArrayList();
+        List<Tool> join = new ArrayList<>();
         for (EventDefinition e : this.getEvents()) {
             if (e instanceof GenericEventDefinition) {
                 GenericEventDefinition ge = (GenericEventDefinition) e;

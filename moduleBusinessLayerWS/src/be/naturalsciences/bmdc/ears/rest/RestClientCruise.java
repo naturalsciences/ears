@@ -57,7 +57,7 @@ public class RestClientCruise extends RestClient {
         removeTarget = client.target(getBaseURI().resolve("ears2/removeCruise"));
     }*/
     public RestClientCruise() throws ConnectException, EarsException {
-        super();
+        super(false);
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
             try {

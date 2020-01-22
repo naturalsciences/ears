@@ -333,7 +333,7 @@ public final class ConceptListTopComponent extends TopComponent implements Looku
         if (le.getSource().equals(currentOntologyModels)) {
             CurrentOntologyModels result = getOneResult(currentOntologyModels);
             if (result != null) {
-                Set ontologyFilesBefore = new THashSet(ontologyFiles);
+                Set<File> ontologyFilesBefore = new THashSet<>(ontologyFiles);
                 ontologyFiles.clear();
 
                 for (OntologyModel ontologyModel : result.getConcept()) {

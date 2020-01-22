@@ -137,7 +137,6 @@ public final class InfoBar implements LookupListener {
         imgDisabled = new ImageIcon(
                 ImageUtilities.loadImage(
                         "images/disabled.gif"));
-
         imgWarning = new ImageIcon(
                 ImageUtilities.loadImage(
                         "images/warning.png"));
@@ -148,7 +147,7 @@ public final class InfoBar implements LookupListener {
         messageResult = Utilities.actionsGlobalContext().lookupResult(Message.class);
 
         try {
-            restNav = new RestClientNav();
+            restNav = new RestClientNav(false);
         } catch (ConnectException ex) {
             Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), true);
         } catch (EarsException ex) {
@@ -165,14 +164,14 @@ public final class InfoBar implements LookupListener {
             OffsetTime localTimeInUtc = OffsetTime.now(Clock.systemUTC());
             OffsetTime localTime = OffsetTime.now(Clock.systemDefaultZone());
             timeLabel.setText("Computer UTC: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTimeInUtc) + SEPARATOR + "Computer local: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTime) + " ");
-        });
+            /*    });
 
-        Timer t2 = new Timer(10000, (ActionEvent event) -> {
+        Timer t2 = new Timer(1000, (ActionEvent event) -> {*/
             try {
                 if (restNav != null && restNav.getLastNavXml() != null && restNav.getLastNavXml().getTimeStamp() != null && !restNav.getLastNavXml().getTimeStamp().equals("")) {
-                    String lastCentralTime = restNav.getLastNavXml().getTimeStamp().replace(" ", "T");
-                    LocalDateTime localDate = LocalDateTime.parse(lastCentralTime);
-                    centralTimeLabel.setText("Latest (~10s) server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
+                    String lastCentralTime = restNav.getLastNavXml().getTimeStamp();
+                    LocalDateTime localDate = LocalDateTime.parse(lastCentralTime, StringUtils.DTF_ISO_DATETIME_ZONE);
+                    centralTimeLabel.setText("Server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
                 }
             } catch (ConnectException ex) {
                 Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
@@ -180,7 +179,7 @@ public final class InfoBar implements LookupListener {
         });
 
         t.start();
-        t2.start();
+        //  t2.start();
 
         JLabel separator = new JLabel(SEPARATOR);
         this.timeLabel = new JLabel();

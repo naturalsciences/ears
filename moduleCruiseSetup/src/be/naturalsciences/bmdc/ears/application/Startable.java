@@ -44,7 +44,7 @@ import org.openide.util.LookupListener;
 
 /**
  *
- * @author Yvan Stojanov
+ * @author Thomas Vandenberghe, Yvan Stojanov
  */
 @OnStart
 public class Startable implements Runnable, LookupListener {

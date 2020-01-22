@@ -1,10 +1,13 @@
 package be.naturalsciences.bmdc.ears.rest;//ys
 
 import be.naturalsciences.bmdc.ears.entities.NavBean;
+import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
+import be.naturalsciences.bmdc.ears.entities.WeatherBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
+import gnu.trove.map.hash.THashMap;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,6 +17,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
@@ -39,8 +43,8 @@ public class RestClientUnderway extends RestClient {
 
     protected ResteasyWebTarget getNearestUndTarget;
 
-    public RestClientUnderway() throws ConnectException, EarsException {
-        super();
+    public RestClientUnderway(boolean cache) throws ConnectException, EarsException {
+        super(cache);
         if (!WebserviceUtils.testWS("ears2Nav/getLastUndXml")) {
             online = false;
             throw new ConnectException();
@@ -73,20 +77,45 @@ public class RestClientUnderway extends RestClient {
     }
 
     public UnderwayBean getNearestUnderway(OffsetDateTime time) throws ConnectException {
-        UnderwayBean und = null;
-
-        Response response = getNearestUndTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))).request().get();
-        if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getNearestUndTarget.getUri().toString() + ")");
-        }
-        und = response.readEntity(UnderwayBean.class);
-
-        response.close();
-
-        return und;
+        ResteasyWebTarget target = getNearestUndTarget.queryParam("date", encodeUrl(time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        return readOneEntity(target, time);
     }
 
-    public Collection<NavBean> getNavByDatesXml(String fromDate, String toDate) {
+    static Map<OffsetDateTime, UnderwayBean> results = new THashMap();
+
+    /**
+     * Build one entity at a given time for the given url target
+     *
+     * @param response
+     * @param time The time at which the acquisition object is gathered. If
+     * null, is completed with the actual time of the acquisition object
+     * @return
+     */
+    public UnderwayBean readOneEntity(ResteasyWebTarget target, OffsetDateTime time) throws ConnectException {
+        UnderwayBean nav;
+        if (cache && time != null && results.containsKey(time)) {
+            nav = results.get(time);
+        } else {
+            Response response = target.request().get();
+            if (response.getStatus() != 200) {
+                response.close();
+                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + target.getUri().toString() + ")");
+                
+            }
+            nav = response.readEntity(UnderwayBean.class);
+
+            response.close();
+            if (time == null) {
+                time = nav.getOffsetDateTime();
+            }
+            if (cache) {
+                results.put(time, nav);
+            }
+        }
+        return nav;
+    }
+
+    public Collection<UnderwayBean> getUndByDatesXml(String fromDate, String toDate) {
         throw new NotImplementedException();
     }
 
