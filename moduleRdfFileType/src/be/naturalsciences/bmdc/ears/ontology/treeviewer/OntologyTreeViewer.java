@@ -52,7 +52,7 @@ import org.openide.windows.TopComponent;
 //@ActionReference(path = "Menu/Window/Trees")
 //@TopComponent.OpenActionRegistration(displayName = "#CTL_OntologyTreeViewerAction")
 @NbBundle.Messages({"CTL_OntologyTreeViewerAction=Browse tree",
-    "CTL_OntologyTreeViewer=Browse individuals",
+    "CTL_OntologyTreeViewer=Browse terms",
     "HINT_OntologyTreeViewer=Open and browse a tree"})
 public class OntologyTreeViewer extends TopComponent implements LookupListener, ExplorerManager.Provider, ChangeListener, NodeDonor {
 

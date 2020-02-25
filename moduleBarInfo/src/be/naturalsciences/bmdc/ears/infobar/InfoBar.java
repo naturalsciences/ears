@@ -5,13 +5,16 @@
  */
 package be.naturalsciences.bmdc.ears.infobar;
 
+import be.naturalsciences.bmdc.ears.entities.NavBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.rest.RestClientNav;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.net.ConnectException;
 import java.text.DateFormat;
@@ -35,7 +38,10 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.Timer;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.util.Exceptions;
@@ -53,8 +59,6 @@ import org.openide.windows.InputOutput;
  * @author Yvan Stojanov
  */
 public final class InfoBar implements LookupListener {
-
-    private Lookup.Result<Message> messageResult;
 
     /**
      *
@@ -110,6 +114,9 @@ public final class InfoBar implements LookupListener {
 
     private JPanel panel = new JPanel();
     // private final JLabel connectionLabel;
+
+    private Lookup.Result<Message> messageResult;
+    private JLabel locationLabel;
     private JLabel timeLabel;
     private JLabel centralTimeLabel;
 
@@ -164,14 +171,13 @@ public final class InfoBar implements LookupListener {
             OffsetTime localTimeInUtc = OffsetTime.now(Clock.systemUTC());
             OffsetTime localTime = OffsetTime.now(Clock.systemDefaultZone());
             timeLabel.setText("Computer UTC: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTimeInUtc) + SEPARATOR + "Computer local: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTime) + " ");
-            /*    });
-
-        Timer t2 = new Timer(1000, (ActionEvent event) -> {*/
             try {
                 if (restNav != null && restNav.getLastNavXml() != null && restNav.getLastNavXml().getTimeStamp() != null && !restNav.getLastNavXml().getTimeStamp().equals("")) {
-                    String lastCentralTime = restNav.getLastNavXml().getTimeStamp();
+                    NavBean lastNav = restNav.getLastNavXml();
+                    String lastCentralTime = lastNav.getTimeStamp();
                     LocalDateTime localDate = LocalDateTime.parse(lastCentralTime, StringUtils.DTF_ISO_DATETIME_ZONE);
                     centralTimeLabel.setText("Server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
+                    locationLabel.setText("Location: " + lastNav.getLatitudeDMS(false) + " " + lastNav.getLongitudeDMS(false));
                 }
             } catch (ConnectException ex) {
                 Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
@@ -179,17 +185,25 @@ public final class InfoBar implements LookupListener {
         });
 
         t.start();
-        //  t2.start();
-
-        JLabel separator = new JLabel(SEPARATOR);
         this.timeLabel = new JLabel();
         this.centralTimeLabel = new JLabel();
-        // this.connectionLabel = new JLabel(imgNoConnection);
-        panel.add(separator);
-        panel.add(this.centralTimeLabel);
-        panel.add(separator);
-        panel.add(this.timeLabel);
+        this.locationLabel = new JLabel();
 
+        Border border = new LineBorder(Color.BLUE);
+        
+        JPanel locationLabelPanel = new JPanel();
+        locationLabelPanel.setBorder(border);
+        JPanel centralTimeLabelPanel = new JPanel();
+        centralTimeLabelPanel.setBorder(border);
+        JPanel timeLabelPanel = new JPanel();
+        timeLabelPanel.setBorder(border);
+
+        locationLabelPanel.add(locationLabel);
+        centralTimeLabelPanel.add(this.centralTimeLabel);
+        timeLabelPanel.add(this.timeLabel);
+        panel.add(locationLabelPanel);
+        panel.add(centralTimeLabelPanel);
+        panel.add(timeLabelPanel);
     }
 
     /**

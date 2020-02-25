@@ -13,6 +13,7 @@ import be.naturalsciences.bmdc.ears.utils.TaskListener;
 import be.naturalsciences.bmdc.ontology.writer.ScopeMap;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import javax.activation.DataContentHandler;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.awt.ActionID;
@@ -27,6 +28,7 @@ import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
 import org.openide.util.RequestProcessor;
 import org.openide.windows.TopComponent;
+import javax.activation.DataContentHandlerFactory;
 
 /**
  *
@@ -55,7 +57,7 @@ public final class OntologyFileBrowser extends TopComponent implements ExplorerM
     public class OntologyRetriever extends NotificationThread {
 
         ProgressHandle progr;
-   
+
         ScopeNode node;
 
         public OntologyRetriever(ProgressHandle progr, ScopeNode node) {
@@ -89,7 +91,6 @@ public final class OntologyFileBrowser extends TopComponent implements ExplorerM
 
         //ExplorerUtils.createLookup(mgr, getActionMap());
         setLayout(new BorderLayout());
-
         BeanTreeView treeView = new BeanTreeView();
         treeView.setRootVisible(false);
         treeView.setQuickSearchAllowed(true);
@@ -147,7 +148,6 @@ public final class OntologyFileBrowser extends TopComponent implements ExplorerM
         //node.populateNode();
         return node.getOntologyModels();
     }*/
-
     @Override
     public void threadComplete(Runnable runner) {
         //progr.finish();

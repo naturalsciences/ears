@@ -508,9 +508,13 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
             actions = this.getIndividuals(Action.class, null); //sorting is irrelevant and must include individuals even having the same uri.
             properties = this.getIndividuals(Property.class, null); //sorting is irrelevant and must include individuals even having the same uri.
             for (Tool tool : tools) {
-                specificEventDefinitions.addAll(tool.getSpecificEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
                 try {
-                    genericEventDefinitions.addAll(tool.getGenericEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
+                    if (tool.getSpecificEventDefinitionCollection() != null) {
+                        specificEventDefinitions.addAll(tool.getSpecificEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
+                    }
+                    if (tool.getGenericEventDefinitionCollection() != null) {
+                        genericEventDefinitions.addAll(tool.getGenericEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
+                    }
                 } catch (Exception e) {
                     Messaging.report("A problem occured during saving the tree at " + destPath + " for the tool" + tool.getUri(), e, this.getClass(), false);
                 }

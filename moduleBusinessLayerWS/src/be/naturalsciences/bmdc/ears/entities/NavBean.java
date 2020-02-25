@@ -2,6 +2,8 @@ package be.naturalsciences.bmdc.ears.entities;//ys
 
 import be.naturalsciences.bmdc.utils.StringUtils;
 import java.io.Serializable;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -118,6 +120,51 @@ public class NavBean implements Serializable {
         } else {
             return null;
         }
+    }
+
+    public String getLatitudeDMS(boolean useSeconds) {
+        double latitude = Double.valueOf(getLat());
+        return toDMS(latitude, LatOrLon.LAT, useSeconds);
+
+    }
+
+    public enum LatOrLon {
+        LAT, LON
+    }
+
+    private String toDMS(double number, LatOrLon latOrLon, boolean useSeconds) {
+        String suffix = null;
+        if (latOrLon == LatOrLon.LAT) {
+            if (number < 0) {
+                suffix = "S";
+            } else {
+                suffix = "N";
+            }
+        } else if (latOrLon == LatOrLon.LON) {
+            if (number < 0) {
+                suffix = "W";
+            } else {
+                suffix = "E";
+            }
+        }
+        number = Math.abs(number);
+        long degrees = (long) Math.floor(number);
+        double minutesAndSeconds = (number - degrees) * 60;
+        long minutes = (long) Math.floor(minutesAndSeconds);
+        double seconds = (minutesAndSeconds - minutes) * 60;
+        DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.CEILING);
+        df.setMinimumFractionDigits(5);
+        if (useSeconds) {
+            return Long.toString(degrees) + "°" + suffix + " " + Long.toString(minutes) + "' " + df.format(seconds) + "''";
+        } else {
+            return Long.toString(degrees) + "°" + suffix + " " + df.format(minutesAndSeconds) + "'";
+        }
+    }
+
+    public String getLongitudeDMS(boolean useSeconds) {
+        double longitude = Double.valueOf(getLon());
+        return toDMS(longitude, LatOrLon.LON, useSeconds);
     }
 
     @Override
