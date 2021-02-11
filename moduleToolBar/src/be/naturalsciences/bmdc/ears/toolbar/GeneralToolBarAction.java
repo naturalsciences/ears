@@ -150,7 +150,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         currentProgram = getCurrentProgram();
         //initialiseStaticMetadata(true);
 
-        if (WebserviceUtils.testWS("ears2/getCruise")) {
+        if (WebserviceUtils.testWS("ears3/alive")) {
             try {
                 cruiseClient = new RestClientCruise();
 
@@ -158,7 +158,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
                 eventClient = new RestClientEvent();
             } catch (ConnectException ex) {
                 //can't happen
-                Messaging.report("Note that the webservices are offline. The tool won't function properly.", Message.State.BAD, this.getClass(), true);
+                Messaging.report("The webservices are offline. The tool won't function properly.", Message.State.BAD, this.getClass(), true);
             } catch (EarsException ex) {
                 Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }
@@ -166,7 +166,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
                 try {
                     cruises = new TreeSet<>(cruiseClient.getCruiseByPlatform(currentVessel.getConcept()));
                 } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of cruises can't be retrieved.", ex, this.getClass(), true);
+                    Messaging.report("The webservices are offline. The list of cruises can't be retrieved.", ex, this.getClass(), true);
                 }
                 currentCruise = CurrentCruise.getInstance(CruiseBean.getCruiseByDate(cruises, OffsetDateTime.now()));
                 // currentCruise = CurrentCruise.getInstance(cruiseClient.getCruiseByDate(OffsetDateTime.now(), currentVessel.getConcept()));
@@ -186,7 +186,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
                 try {
                     currentPrograms = programClient.getProgramByCruise(currentCruise.getConcept());
                 } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
+                    Messaging.report("The webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
                 }
 
                 if (currentProgram == null || currentProgram.getConcept() == null) {
@@ -340,8 +340,9 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         jPanel.add(o_editCruise);
         jPanel.add(o_editProgram);
         jPanel.add(o_createEvent);
-        jPanel.add(new JLabel("Set current program by selecting a cruise:"));
+        jPanel.add(new JLabel("cruise:"));
         jPanel.add(cruiseComboBox);
+        jPanel.add(new JLabel("program:"));
         jPanel.add(programComboBox);
         return jPanel;
     }
@@ -365,11 +366,11 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
                     Messaging.report(ex.getMessage(), ex, this.getClass(), false);
                 }
             }
-            if (cruiseClient != null && currentVessel != null && WebserviceUtils.testWS("ears2/getCruise")) {
+            if (cruiseClient != null && currentVessel != null && WebserviceUtils.testWS("ears3/alive")) {
                 try {
                     cruises = new TreeSet<>(cruiseClient.getCruiseByPlatform(currentVessel.getConcept()));
                 } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+                    Messaging.report("The webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
                 }
             } else {
                 cruises = new TreeSet<>();
@@ -386,19 +387,19 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
                 }
                 List<CruiseBean> list = new ArrayList(cruises);
 
-                if (programClient != null && WebserviceUtils.testWS("ears2/getProgram")) {
+                if (programClient != null && WebserviceUtils.testWS("ears3/alive")) {
                     currentCruise = currentCruiseResult.getCurrent();
                     if (currentCruise != null) {
                         try {
                             currentPrograms = programClient.getProgramByCruise(currentCruise.getConcept()); //get the programs of the current cruise
                         } catch (ConnectException ex) {
-                            Messaging.report("Note that the webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
+                            Messaging.report("The webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
                         }
                     } else {
                         try {
                             currentPrograms = programClient.getProgramByCruise(list.get(0)); //get the programs of the first cruise in the list
                         } catch (ConnectException ex) {
-                            Messaging.report("Note that the webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
+                            Messaging.report("The webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
                         }
 
                     }
@@ -417,11 +418,11 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         if (currentCruiseResult.matches(ev)) {
             currentCruise = currentCruiseResult.getCurrent();
-            if (programClient != null && currentCruise != null && WebserviceUtils.testWS("ears2/getProgram")) {
+            if (programClient != null && currentCruise != null && WebserviceUtils.testWS("ears3/alive")) {
                 try {
                     currentPrograms = new TreeSet<>(programClient.getProgramByCruise(currentCruise.getConcept()));
                 } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
+                    Messaging.report("The webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
                 }
             } else {
                 currentPrograms = new TreeSet<>();
