@@ -108,9 +108,9 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
             switch (getColumnName(column)) {
                 case FIRSTNAME:
                     if (!string.isEmpty()) {
-                        if (!string.equals(actor.getFirstNameOfActor())) {
-                            actor.setFirstNameOfActor(string);
-                            if (!actor.getLastNameOfActor().isEmpty()) {
+                        if (!string.equals(actor.getFirstName())) {
+                            actor.setFirstName(string);
+                            if (!actor.getLastName().isEmpty()) {
                                 clearErrors(actor, FIRSTNAME);
                                 clearErrors(actor, LASTNAME);
                                 fireTableChanged(new TableModelEvent(this, row, row, column));
@@ -128,9 +128,9 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
                     break;
                 case LASTNAME:
                     if (!string.isEmpty()) {
-                        if (!string.equals(actor.getLastNameOfActor())) {
-                            actor.setLastNameOfActor(string);
-                            if (!actor.getFirstNameOfActor().isEmpty()) {
+                        if (!string.equals(actor.getLastName())) {
+                            actor.setLastName(string);
+                            if (!actor.getFirstName().isEmpty()) {
                                 clearErrors(actor, FIRSTNAME);
                                 clearErrors(actor, LASTNAME);
                                 fireTableChanged(new TableModelEvent(this, row, row, column));
@@ -195,9 +195,9 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
         Actor actor = datalist.get(row);
         switch ((getColumnName(column))) {
             case FIRSTNAME:
-                return actor.getFirstNameOfActor();
+                return actor.getFirstName();
             case LASTNAME:
-                return actor.getLastNameOfActor();
+                return actor.getLastName();
             case INDEX:
                 return actor.getId();
             default:
