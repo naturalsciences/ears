@@ -20,6 +20,7 @@ import javax.swing.table.TableRowSorter;
 /**
  *
  * @author Yvan Stojanov
+ * @param <E>
  */
 public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTableModel {
 
@@ -114,9 +115,11 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
 
     public abstract void addRow();
 
+    public abstract E getEntityWithName(String name);
+
     public void addEntity(E entity) {
         getEntities().add(entity);
-     fireTableDataChanged();
+        fireTableDataChanged();
     }
 
     public void addEntities(Collection<E> entities) {
@@ -127,7 +130,12 @@ public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTa
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return getValueAt(getEntities().get(rowIndex), columnIndex);
+        if (!getEntities().isEmpty()) {
+            return getValueAt(getEntities().get(rowIndex), columnIndex);
+        } else {
+            return null;
+        }
+
     }
 
     abstract public Object getValueAt(E entity, int columnIndex);

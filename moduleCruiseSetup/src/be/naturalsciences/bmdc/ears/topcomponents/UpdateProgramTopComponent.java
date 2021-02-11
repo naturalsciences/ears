@@ -9,6 +9,7 @@ import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.FilterableTableMode
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
+import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
@@ -32,6 +33,7 @@ import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
@@ -68,11 +70,13 @@ import org.openide.windows.WindowManager;
 })
 public final class UpdateProgramTopComponent extends TopComponent implements LookupListener {
 
+        private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
+        
     ProgramTableModel model;
     private InputOutput io;
     private static UpdateProgramTopComponent instance;
 
-    private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
+    //private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
 
     RestClientProgram restClientProgram;
 
@@ -81,7 +85,7 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
         try {
             restClientProgram = new RestClientProgram();
         } catch (ConnectException ex) {
-            Messaging.report("Note that the webservices are offline. The programs can't be retrieved.", ex, this.getClass(), true);
+            Messaging.report("The webservices are offline. The programs can't be retrieved.", ex, this.getClass(), true);
         } catch (EarsException ex) {
             Messaging.report(ex.getMessage(), ex, this.getClass(), true);
         }
@@ -227,15 +231,21 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
     }//GEN-LAST:event_o_editProgramActionPerformed
 
     private void o_refreshListProgramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_o_refreshListProgramActionPerformed
-        if (currentVesselResult.getCurrent() != null) {
+            /*    if (currentVesselResult.getCurrent() != null) {
             try {
-                model.refresh(restClientProgram.getProgramByVessel(currentVesselResult.getCurrent().getConcept()));
+            model.refresh(restClientProgram.getProgramByVessel(currentVesselResult.getCurrent().getConcept()));
             } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+            Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             } catch (ConnectException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+            Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }
             o_Program.repaint();
+            }*/
+        try {
+            model.refresh(restClientProgram.getAllPrograms());
+            o_Program.repaint();
+        } catch (ConnectException ex) {
+           Messaging.report(ex.getMessage(), ex, this.getClass(), true);
         }
     }//GEN-LAST:event_o_refreshListProgramActionPerformed
 
@@ -267,24 +277,10 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        // TODO add custom code on component opening
-
-        /*if (EditCruiseSetupTopComponent.getInstance() instanceof EditCruiseSetupTopComponent) {//ys01
-         EditCruiseSetupTopComponent currentCruiseTopComponent = EditCruiseSetupTopComponent.getInstance();//ys01
-         currentCruiseTopComponent.close();//ys01
-         }*/
- /*if (UpdateCruiseTopComponent.getInstance() instanceof UpdateCruiseTopComponent) {
-         UpdateCruiseTopComponent currentUpdateCruiseTopComponent = UpdateCruiseTopComponent.getInstance();
-         currentUpdateCruiseTopComponent.close();//ys01
-         }*/
-        //Create a table with a sorter.
-        //client = new RestClientProgram();
         List list = null;
-        if (currentVesselResult.getCurrent() != null && restClientProgram != null) {
+        if (restClientProgram != null) {
             try {
-                list = new ArrayList(restClientProgram.getProgramByVessel(currentVesselResult.getCurrent().getConcept()));
-            } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+                list = new ArrayList(restClientProgram.getAllPrograms());
             } catch (ConnectException ex) {
                 Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }
@@ -378,11 +374,10 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
 
     @Override
     public void resultChanged(LookupEvent le) {
+        
         if (currentVesselResult.getCurrent() != null) {
             try {
-                model.refresh(restClientProgram.getProgramByVessel(currentVesselResult.getCurrent().getConcept()));
-            } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+                model.refresh(restClientProgram.getAllPrograms());
             } catch (ConnectException ex) {
                 Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }
@@ -406,14 +401,15 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
         }
     }
 
-    private final static String[] columnNames = {ProgramTableModel.CRUISE,
-        ProgramTableModel.PROGRAM_NAME, ProgramTableModel.PI};
+    private final static String[] columnNames = {
+        ProgramTableModel.PROGRAM_NAME, ProgramTableModel.PI_FIRST_NAME,ProgramTableModel.PI_LAST_NAME};
 
     public class ProgramTableModel extends EntityTableModel<ProgramBean> implements FilterableTableModel {
 
-        public final static String CRUISE = "Cruise name (code)";
+      //  public final static String CRUISE = "Cruise name (code)";
         public final static String PROGRAM_NAME = "Program name";
-        public final static String PI = "Principal investigator";
+        public final static String PI_FIRST_NAME = "Principal investigator first name";
+        public final static String PI_LAST_NAME = "Principal investigator last name";
 
         public ProgramTableModel() {
             super(null, null);
@@ -435,17 +431,26 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
 
         @Override
         public Object getValueAt(ProgramBean entity, int columnIndex) {
-
+            Person pi = entity.getPrincipalInvestigators().get(0);
             switch (getColumnName(columnIndex)) {
-                case CRUISE:
-                    return entity.getCruiseId();
+             /* case CRUISE:
+                    return entity.getCruiseId();*/
                 case PROGRAM_NAME:
                     return entity.getProgramId();
-                case PI:
-                    return entity.getPiName();
+                case PI_FIRST_NAME:
+                    return pi.firstName;
+                case PI_LAST_NAME:
+                    return pi.lastName;
                 default:
                     return null;
             }
+        }
+        
+        public ProgramBean getEntityWithName(String name) {
+            for (ProgramBean e : entities) {
+                if(e.getProgramId().equals(name)){return e;}
+            }
+            return null;
         }
 
         @Override

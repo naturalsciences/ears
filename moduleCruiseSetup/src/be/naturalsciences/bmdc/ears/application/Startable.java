@@ -123,14 +123,11 @@ public class Startable implements Runnable, LookupListener {
                 GlobalActionContextProxy.getInstance().add(currentUrl2);
                 currentUrl = configUrl;
 
-                if (!WebserviceUtils.testWS("ears2/getCruise")) {
-                    Messaging.report("Note that the ears2 webservices are offline. This application won't function properly.", Message.State.BAD, this.getClass(), true);
+                if (!WebserviceUtils.testWS("ears3/alive")) {
+                    Messaging.report("Note that the ears3 webservices are offline. This application won't function properly.", Message.State.BAD, this.getClass(), true);
                 }
-                if (!WebserviceUtils.testWS("ears2Nav/getLastNavXml")) {
-                    Messaging.report("Note that the ears2Nav webservices are offline. This doesn't impact the application.", Message.State.BAD, this.getClass(), true);
-                }
-                if (!WebserviceUtils.testWS("ears2Ont/authenticate")) { //works even if there is no vessel ontology stored
-                    Messaging.report("Note that the ears2Ont webservices are offline. You will not be able to edit any tree and will be using possibly outdated ones.", Message.State.BAD, this.getClass(), true);
+                if (!WebserviceUtils.testWS("ears3Nav/nav/getLast/datagram")) {
+                    Messaging.report("Note that the ears3Nav webservices are offline. This doesn't impact the application.", Message.State.BAD, this.getClass(), true);
                 }
             } else {
                 Messaging.report("The web service URL is not set in the settings.", Message.State.BAD, Startable.class, true);

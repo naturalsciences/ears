@@ -8,6 +8,7 @@ package be.naturalsciences.bmdc.ears.topcomponents;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProjectTableModel;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
+import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.infobar.InfoBar;
 import be.naturalsciences.bmdc.ears.utils.Message;
@@ -18,6 +19,7 @@ import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import org.openide.util.lookup.Lookups;
@@ -67,27 +69,26 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
 
         super.addProject = addProject;
 
-        super.collateCentreListPrincipal = originatorListPrincipal;
-        super.collateCentreListSecondary = originatorListSecondary;
-        super.cruiseComboBox = o_cruiseId;
+        super.piOrganisationCountry = originatorListPrincipal;
+        super.piOrganisationSecondary = piOrganisationCombobox;
+        // super.cruiseComboBox = o_cruiseId;
         super.jPanel1 = jPanel1;
-        super.jPanel2 = jPanel2;
-        super.jPanelCollateCentre = jPanelCollateCentre;
+        super.jPanel2 = programProjectPanel;
+        super.jPanelCollateCentre = piOrganisationPanel;
         super.jScrollPane1 = jScrollPane1;
         super.jScrollPane2 = jScrollPane2;
         super.jScrollPane3 = jScrollPane3;
-        super.o_collateCentreResult = o_originatorCode;
-        super.o_description = o_description;
-        super.o_piName = o_principalInvestigator;
-        super.o_programId_Attribut = o_programId;
+        super.o_collateCentreResult = piOrganisationGreyTextField;
+        super.descriptionTextField = descriptionTextField;
+        super.piFirstNameTextField = firstNameTextbox;
+        super.piLastNameTextField = lastNameTextbox;
+        super.programIdTextField = o_programId;
         super.programIdentifier = programIdentifier;
-        super.programIdentifier1 = programIdentifier1;
-        super.programIdentifier3 = programIdentifier3;
-        super.programIdentifier4 = programIdentifier4;
+        super.programIdentifier1 = programNamePanel;
+        super.programIdentifier3 = piNamePanel;
+        super.programIdentifier4 = programDescriptionPanel;
         super.projectEdmerpTable = projectEdmerpTable;
         super.removeProject = removeProject;
-
-        populateCruiseCombobox();
         instance = this;
     }
 
@@ -115,30 +116,30 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        programProjectPanel = new javax.swing.JPanel();
         addProject = new javax.swing.JButton();
         removeProject = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         projectEdmerpTable = new javax.swing.JTable();
-        programIdentifier1 = new javax.swing.JPanel();
+        programNamePanel = new javax.swing.JPanel();
         o_programId = new javax.swing.JTextField();
-        programIdentifier = new javax.swing.JPanel();
-        o_cruiseId = new javax.swing.JComboBox();
-        jPanelCollateCentre = new javax.swing.JPanel();
+        piOrganisationPanel = new javax.swing.JPanel();
         originatorListPrincipal = new javax.swing.JComboBox();
-        originatorListSecondary = new javax.swing.JComboBox();
-        o_originatorCode = new javax.swing.JTextField();
-        programIdentifier3 = new javax.swing.JPanel();
-        o_principalInvestigator = new javax.swing.JTextField();
-        programIdentifier4 = new javax.swing.JPanel();
+        piOrganisationCombobox = new javax.swing.JComboBox();
+        piOrganisationGreyTextField = new javax.swing.JTextField();
+        piNamePanel = new javax.swing.JPanel();
+        firstNameTextbox = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        lastNameTextbox = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        programDescriptionPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        o_description = new javax.swing.JTextArea();
+        descriptionTextField = new javax.swing.JTextArea();
         bt_editCruise = new javax.swing.JButton();
         validationPanel1 = new org.netbeans.validation.api.ui.swing.ValidationPanel();
-        jLabel1 = new javax.swing.JLabel();
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.jPanel2.border.title"))); // NOI18N
+        programProjectPanel.setBackground(new java.awt.Color(255, 255, 255));
+        programProjectPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.programProjectPanel.border.title"))); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(addProject, org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.addProject.text")); // NOI18N
         addProject.addActionListener(new java.awt.event.ActionListener() {
@@ -163,34 +164,34 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
         });
         jScrollPane3.setViewportView(projectEdmerpTable);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout programProjectPanelLayout = new javax.swing.GroupLayout(programProjectPanel);
+        programProjectPanel.setLayout(programProjectPanelLayout);
+        programProjectPanelLayout.setHorizontalGroup(
+            programProjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(programProjectPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 845, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(programProjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(addProject, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(removeProject))
-                .addGap(8, 8, 8))
+                .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+        programProjectPanelLayout.setVerticalGroup(
+            programProjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(programProjectPanelLayout.createSequentialGroup()
+                .addGroup(programProjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(programProjectPanelLayout.createSequentialGroup()
                         .addComponent(addProject)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(removeProject)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(removeProject))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 12, Short.MAX_VALUE))
         );
 
-        programIdentifier1.setBackground(new java.awt.Color(255, 255, 255));
-        programIdentifier1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.programIdentifier1.border.title"))); // NOI18N
+        programNamePanel.setBackground(new java.awt.Color(255, 255, 255));
+        programNamePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.programNamePanel.border.title"))); // NOI18N
+        programNamePanel.setPreferredSize(new java.awt.Dimension(695, 45));
 
         o_programId.setText(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.o_programId.text")); // NOI18N
         o_programId.setEnabled(false);
@@ -200,48 +201,24 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
             }
         });
 
-        javax.swing.GroupLayout programIdentifier1Layout = new javax.swing.GroupLayout(programIdentifier1);
-        programIdentifier1.setLayout(programIdentifier1Layout);
-        programIdentifier1Layout.setHorizontalGroup(
-            programIdentifier1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(programIdentifier1Layout.createSequentialGroup()
+        javax.swing.GroupLayout programNamePanelLayout = new javax.swing.GroupLayout(programNamePanel);
+        programNamePanel.setLayout(programNamePanelLayout);
+        programNamePanelLayout.setHorizontalGroup(
+            programNamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(programNamePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(o_programId, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(399, Short.MAX_VALUE))
         );
-        programIdentifier1Layout.setVerticalGroup(
-            programIdentifier1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, programIdentifier1Layout.createSequentialGroup()
+        programNamePanelLayout.setVerticalGroup(
+            programNamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, programNamePanelLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(o_programId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        programIdentifier.setBackground(new java.awt.Color(255, 255, 255));
-        programIdentifier.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.programIdentifier.border.title"))); // NOI18N
-
-        o_cruiseId.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                o_cruiseIdActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout programIdentifierLayout = new javax.swing.GroupLayout(programIdentifier);
-        programIdentifier.setLayout(programIdentifierLayout);
-        programIdentifierLayout.setHorizontalGroup(
-            programIdentifierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(programIdentifierLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(o_cruiseId, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        programIdentifierLayout.setVerticalGroup(
-            programIdentifierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, programIdentifierLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(o_cruiseId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        jPanelCollateCentre.setBackground(new java.awt.Color(255, 255, 255));
-        jPanelCollateCentre.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.jPanelCollateCentre.border.title"))); // NOI18N
+        piOrganisationPanel.setBackground(new java.awt.Color(255, 255, 255));
+        piOrganisationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.piOrganisationPanel.border.title"))); // NOI18N
 
         originatorListPrincipal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -249,84 +226,109 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
             }
         });
 
-        originatorListSecondary.addActionListener(new java.awt.event.ActionListener() {
+        piOrganisationCombobox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                originatorListSecondaryActionPerformed(evt);
+                piOrganisationComboboxActionPerformed(evt);
             }
         });
 
-        o_originatorCode.setText(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.o_originatorCode.text")); // NOI18N
-        o_originatorCode.setEnabled(false);
-        o_originatorCode.addActionListener(new java.awt.event.ActionListener() {
+        piOrganisationGreyTextField.setText(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.piOrganisationGreyTextField.text")); // NOI18N
+        piOrganisationGreyTextField.setEnabled(false);
+        piOrganisationGreyTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                o_originatorCodeActionPerformed(evt);
+                piOrganisationGreyTextFieldActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanelCollateCentreLayout = new javax.swing.GroupLayout(jPanelCollateCentre);
-        jPanelCollateCentre.setLayout(jPanelCollateCentreLayout);
-        jPanelCollateCentreLayout.setHorizontalGroup(
-            jPanelCollateCentreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelCollateCentreLayout.createSequentialGroup()
+        javax.swing.GroupLayout piOrganisationPanelLayout = new javax.swing.GroupLayout(piOrganisationPanel);
+        piOrganisationPanel.setLayout(piOrganisationPanelLayout);
+        piOrganisationPanelLayout.setHorizontalGroup(
+            piOrganisationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(piOrganisationPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(originatorListPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(originatorListSecondary, javax.swing.GroupLayout.PREFERRED_SIZE, 523, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(o_originatorCode, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanelCollateCentreLayout.setVerticalGroup(
-            jPanelCollateCentreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelCollateCentreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(originatorListPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(originatorListSecondary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(o_originatorCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        programIdentifier3.setBackground(new java.awt.Color(255, 255, 255));
-        programIdentifier3.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.programIdentifier3.border.title"))); // NOI18N
-
-        o_principalInvestigator.setText(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.o_principalInvestigator.text")); // NOI18N
-        o_principalInvestigator.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                o_principalInvestigatorActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout programIdentifier3Layout = new javax.swing.GroupLayout(programIdentifier3);
-        programIdentifier3.setLayout(programIdentifier3Layout);
-        programIdentifier3Layout.setHorizontalGroup(
-            programIdentifier3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(programIdentifier3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(o_principalInvestigator, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(piOrganisationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(originatorListPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(piOrganisationCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 523, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(piOrganisationGreyTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        programIdentifier3Layout.setVerticalGroup(
-            programIdentifier3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, programIdentifier3Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(o_principalInvestigator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        piOrganisationPanelLayout.setVerticalGroup(
+            piOrganisationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(piOrganisationPanelLayout.createSequentialGroup()
+                .addComponent(originatorListPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(piOrganisationCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(piOrganisationGreyTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        programIdentifier4.setBackground(new java.awt.Color(255, 255, 255));
-        programIdentifier4.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.programIdentifier4.border.title"))); // NOI18N
+        piNamePanel.setBackground(new java.awt.Color(255, 255, 255));
+        piNamePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.piNamePanel.border.title"))); // NOI18N
+        piNamePanel.setPreferredSize(new java.awt.Dimension(695, 45));
 
-        o_description.setColumns(20);
-        o_description.setRows(5);
-        jScrollPane2.setViewportView(o_description);
+        firstNameTextbox.setText(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.firstNameTextbox.text")); // NOI18N
+        firstNameTextbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                firstNameTextboxActionPerformed(evt);
+            }
+        });
 
-        javax.swing.GroupLayout programIdentifier4Layout = new javax.swing.GroupLayout(programIdentifier4);
-        programIdentifier4.setLayout(programIdentifier4Layout);
-        programIdentifier4Layout.setHorizontalGroup(
-            programIdentifier4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(programIdentifier4Layout.createSequentialGroup()
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.jLabel1.text")); // NOI18N
+
+        lastNameTextbox.setText(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.lastNameTextbox.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.jLabel2.text")); // NOI18N
+
+        javax.swing.GroupLayout piNamePanelLayout = new javax.swing.GroupLayout(piNamePanel);
+        piNamePanel.setLayout(piNamePanelLayout);
+        piNamePanelLayout.setHorizontalGroup(
+            piNamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(piNamePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2))
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(firstNameTextbox, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lastNameTextbox, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
-        programIdentifier4Layout.setVerticalGroup(
-            programIdentifier4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        piNamePanelLayout.setVerticalGroup(
+            piNamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(piNamePanelLayout.createSequentialGroup()
+                .addComponent(jLabel1)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, piNamePanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(piNamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, piNamePanelLayout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(6, 6, 6))
+                    .addComponent(lastNameTextbox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(firstNameTextbox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+
+        programDescriptionPanel.setBackground(new java.awt.Color(255, 255, 255));
+        programDescriptionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.programDescriptionPanel.border.title"))); // NOI18N
+        programDescriptionPanel.setPreferredSize(new java.awt.Dimension(695, 109));
+
+        descriptionTextField.setColumns(20);
+        descriptionTextField.setRows(5);
+        jScrollPane2.setViewportView(descriptionTextField);
+
+        javax.swing.GroupLayout programDescriptionPanelLayout = new javax.swing.GroupLayout(programDescriptionPanel);
+        programDescriptionPanel.setLayout(programDescriptionPanelLayout);
+        programDescriptionPanelLayout.setHorizontalGroup(
+            programDescriptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(programDescriptionPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2)
+                .addContainerGap())
+        );
+        programDescriptionPanelLayout.setVerticalGroup(
+            programDescriptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane2)
         );
 
@@ -337,55 +339,45 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.jLabel1.text")); // NOI18N
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(programIdentifier1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(programIdentifier4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(programIdentifier3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(programIdentifier, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(3, 3, 3))
-                    .addComponent(jPanelCollateCentre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 361, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(validationPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bt_editCruise, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(bt_editCruise))
+                    .addComponent(piNamePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(programNamePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(programProjectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(programDescriptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(piOrganisationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(551, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel1)
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(validationPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bt_editCruise, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(bt_editCruise)
-                    .addComponent(validationPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(programNamePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(programIdentifier, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(programIdentifier1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addComponent(programIdentifier3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanelCollateCentre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(piNamePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(programIdentifier4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(935, Short.MAX_VALUE))
+                .addComponent(piOrganisationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(programDescriptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(programProjectPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(904, Short.MAX_VALUE))
         );
+
+        piOrganisationPanel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(EditProgramSetupTopComponent.class, "EditProgramSetupTopComponent.piOrganisationPanel.AccessibleContext.accessibleName")); // NOI18N
 
         jScrollPane1.setViewportView(jPanel1);
 
@@ -401,79 +393,72 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void o_cruiseIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_o_cruiseIdActionPerformed
-        // TODO add your handling code here:
-        super.cruiseComboBoxActionPerformedP(evt);
-
-    }//GEN-LAST:event_o_cruiseIdActionPerformed
-
-    private void o_principalInvestigatorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_o_principalInvestigatorActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_o_principalInvestigatorActionPerformed
-
-    private void projectEdmerpTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_projectEdmerpTableFocusLost
-        // TODO add your handling code here:
-        super.projectEdmerpTableFocusLostP(evt);
-
-    }//GEN-LAST:event_projectEdmerpTableFocusLost
-
-    private void addProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addProjectActionPerformed
-        // TODO add your handling code here:
-        super.addProjectActionPerformedP(evt);
-    }//GEN-LAST:event_addProjectActionPerformed
-
-    private void removeProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeProjectActionPerformed
-        // TODO add your handling code here:
-        super.removeProjectActionPerformedP(evt);
-    }//GEN-LAST:event_removeProjectActionPerformed
-
-    private void originatorListPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_originatorListPrincipalActionPerformed
-        // TODO add your handling code here:
-        super.collateCentreListPrincipalActionPerformedP(evt);
-    }//GEN-LAST:event_originatorListPrincipalActionPerformed
-
-
-    private void originatorListSecondaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_originatorListSecondaryActionPerformed
-        // TODO add your handling code here:
-        super.collateCentreListSecondaryActionPerformedP(evt);
-    }//GEN-LAST:event_originatorListSecondaryActionPerformed
-
-    private void o_originatorCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_o_originatorCodeActionPerformed
-        // TODO add your handling code here:
-        super.o_collateCentreResultActionPerformedP(evt);
-    }//GEN-LAST:event_o_originatorCodeActionPerformed
-
     private void bt_editCruiseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_editCruiseActionPerformed
         // TODO add your handling code here:
         // Show Dialog...
         postProgram();
     }//GEN-LAST:event_bt_editCruiseActionPerformed
 
+    private void firstNameTextboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameTextboxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_firstNameTextboxActionPerformed
+
+    private void piOrganisationGreyTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_piOrganisationGreyTextFieldActionPerformed
+        // TODO add your handling code here:
+        super.o_collateCentreResultActionPerformedP(evt);
+    }//GEN-LAST:event_piOrganisationGreyTextFieldActionPerformed
+
+    private void piOrganisationComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_piOrganisationComboboxActionPerformed
+        // TODO add your handling code here:
+        super.collateCentreListSecondaryActionPerformedP(evt);
+    }//GEN-LAST:event_piOrganisationComboboxActionPerformed
+
+    private void originatorListPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_originatorListPrincipalActionPerformed
+        // TODO add your handling code here:
+        super.collateCentreListPrincipalActionPerformedP(evt);
+    }//GEN-LAST:event_originatorListPrincipalActionPerformed
+
     private void o_programIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_o_programIdActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_o_programIdActionPerformed
 
+    private void projectEdmerpTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_projectEdmerpTableFocusLost
+        // TODO add your handling code here:
+        super.projectEdmerpTableFocusLostP(evt);
+    }//GEN-LAST:event_projectEdmerpTableFocusLost
+
+    private void removeProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeProjectActionPerformed
+        // TODO add your handling code here:
+        super.removeProjectActionPerformedP(evt);
+    }//GEN-LAST:event_removeProjectActionPerformed
+
+    private void addProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addProjectActionPerformed
+        // TODO add your handling code here:
+        super.addProjectActionPerformedP(evt);
+    }//GEN-LAST:event_addProjectActionPerformed
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addProject;
     private javax.swing.JButton bt_editCruise;
+    private javax.swing.JTextArea descriptionTextField;
+    private javax.swing.JTextField firstNameTextbox;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanelCollateCentre;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JComboBox o_cruiseId;
-    private javax.swing.JTextArea o_description;
-    private javax.swing.JTextField o_originatorCode;
-    private javax.swing.JTextField o_principalInvestigator;
+    private javax.swing.JTextField lastNameTextbox;
     private javax.swing.JTextField o_programId;
     private javax.swing.JComboBox originatorListPrincipal;
-    private javax.swing.JComboBox originatorListSecondary;
-    private javax.swing.JPanel programIdentifier;
-    private javax.swing.JPanel programIdentifier1;
-    private javax.swing.JPanel programIdentifier3;
-    private javax.swing.JPanel programIdentifier4;
+    private javax.swing.JPanel piNamePanel;
+    private javax.swing.JComboBox piOrganisationCombobox;
+    private javax.swing.JTextField piOrganisationGreyTextField;
+    private javax.swing.JPanel piOrganisationPanel;
+    private javax.swing.JPanel programDescriptionPanel;
+    private javax.swing.JPanel programNamePanel;
+    private javax.swing.JPanel programProjectPanel;
     private javax.swing.JTable projectEdmerpTable;
     private javax.swing.JButton removeProject;
     private org.netbeans.validation.api.ui.swing.ValidationPanel validationPanel1;
@@ -483,22 +468,21 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
     public void componentOpened() {
         group = validationPanel1.getValidationGroup();
         super.componentOpened();
-
+        programProjectPanel.setOpaque(false);
+        piOrganisationPanel.setOpaque(false);
+        programNamePanel.setOpaque(false);
+        piNamePanel.setOpaque(false);
+        programDescriptionPanel.setOpaque(false);
         bt_editCruise.setEnabled(false);
-
-        for (int i = 0; i < o_cruiseId.getItemCount(); i++) {
-            CruiseBean cruise = (CruiseBean) o_cruiseId.getItemAt(i);
-            if (cruise.getRealId().equals(actualProgram.getCruiseId())) {
-                o_cruiseId.setSelectedIndex(i);
-            }
-        }
-
         o_programId.setText(actualProgram.getProgramId());
         // originatorListPrincipal.setSelectedItem(actualProgram.getOriginatorCode());
-        originatorListSecondary.setSelectedItem(actualProgram.getOriginatorCode());
-        o_principalInvestigator.setText(actualProgram.getPiName());
-        o_description.setText(actualProgram.getDescription());
-        o_collateCentreResult.setText(actualProgram.getOriginatorCode());
+        Person pi = actualProgram.getPrincipalInvestigators().get(0);
+
+        piOrganisationCombobox.setSelectedItem(pi.organisationCode);
+        firstNameTextbox.setText(pi.firstName);
+        lastNameTextbox.setText(pi.lastName);
+        descriptionTextField.setText(actualProgram.getDescription());
+        o_collateCentreResult.setText(pi.organisationCode);
         projectTableModel.addEntities(actualProgram.getProjects());
     }
 
@@ -527,7 +511,7 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
             if (actualProgram != null) {
                 progr = ProgressHandleFactory.createHandle("Sending program info...");
                 IResponseMessage response = null;
-                AbstractProgramTopComponent.ProgramPoster tsk = new CreateProgramSetupTopComponent.ProgramPoster(progr, response);
+                AbstractProgramTopComponent.ProgramModifier tsk = new CreateProgramSetupTopComponent.ProgramModifier(progr, response);
                 tsk.addListener(this);
 
                 RequestProcessor.getDefault().post(tsk);
@@ -550,13 +534,10 @@ public final class EditProgramSetupTopComponent extends AbstractProgramTopCompon
 
     @Override
     public void threadComplete(Runnable runner) {
-        try {
-            progr.finish();
-            if (InfoBar.getInstance().getLatestState() == Message.State.GOOD) {
-                this.close();
-            }
-        } catch (AssertionError | IllegalStateException e) {
-            int a = 5;
-        }
+        progr.finish();
+    }
+
+    @Override
+    public void resultChanged(LookupEvent arg0) {
     }
 }

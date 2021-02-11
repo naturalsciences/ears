@@ -60,8 +60,6 @@
             
             <file name="org-netbeans-modules-openfile-OpenFileAction.shadow_hidden"/>
             <file name="org-netbeans-modules-openfile-RecentFileAction.shadow_hidden"/>
-            <file name="org-netbeans-modules-print-action-PageSetupAction.shadow_hidden"/>
-            <file name="org-netbeans-modules-print-action-PrintAction.shadow_hidden"/>
             <file name="Separator2.instance"> 
                 <attr name="position" intvalue="1900"/>
             </file>

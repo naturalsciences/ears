@@ -90,9 +90,9 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
         try {
             restClientCruise = new RestClientCruise();
         } catch (ConnectException ex) {
-            Messaging.report("Note that the webservices are offline. The cruises can't be retrieved.", ex, this.getClass(), true);
+            Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
         } catch (EarsException ex) {
-            Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+            Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
         }
         setName(Bundle.CTL_UpdateCruiseTopComponent());
         setToolTipText(Bundle.HINT_UpdateCruiseTopComponent());
@@ -230,7 +230,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
             try {
                 model.refreshModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));
             } catch (ConnectException ex) {
-                Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
             }
             o_cruiseJtable.repaint();
         }
@@ -238,20 +238,6 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
 
     private void o_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_o_editActionPerformed
         editCruise();
-
-        /*if (EditCruiseSetupTopComponent.getInstance() instanceof EditCruiseSetupTopComponent) {//ys01
-         EditCruiseSetupTopComponent currentCruiseTopComponent = EditCruiseSetupTopComponent.getInstance();//ys01
-         currentCruiseTopComponent.close();//ys01
-         }
-         if (o_cruiseJtable.getSelectedRowCount() == 1) {
-         CruiseBean currentlyEditedCruise = model.getCruise(o_cruiseJtable.getSelectedRow());
-
-         EditCruiseSetupTopComponent editCruise = new EditCruiseSetupTopComponent();
-         editCruise.open();
-         editCruise.componentShowing();
-         editCruise.setDisplayName("Editing " + currentlyEditedCruise.getCruiseName());
-         }*/
-
     }//GEN-LAST:event_o_editActionPerformed
 
     private void cruiseNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cruiseNameTextFieldActionPerformed
@@ -291,7 +277,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
             try {
                 model = new CruiseTableModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()), this);
             } catch (ConnectException ex) {
-                Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+                Messaging.report("The webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
             }
         }
         if (model != null) {
@@ -377,7 +363,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
                 tc.open();
             }
             tc.requestActive();
-            tc.setDisplayName("Editing " + currentlyEditedCruise.getCruiseName());
+            tc.setDisplayName("Editing " + currentlyEditedCruise.getName());
         }
     }
 
@@ -399,11 +385,11 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
                 try {
                     model.refreshModel(restClientCruise.getCruiseByPlatform(currentVessel.getConcept()));
                 } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+                    Messaging.report("The webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
                 }
                 o_cruiseJtable.repaint();
             }
-            GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
+          //  GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
         }
     }
 
@@ -415,7 +401,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
          try {
                 model.refreshModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));
             } catch (ConnectException ex) {
-                Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+                Messaging.report("The webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
             }
             model.fireTableDataChanged();
             o_cruiseJtable.repaint();
@@ -425,7 +411,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
             try {
                 model.refreshModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));
             } catch (ConnectException ex) {
-                Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+                Messaging.report("The webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
             }
             o_cruiseJtable.repaint();
         }

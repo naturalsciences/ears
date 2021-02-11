@@ -9,21 +9,28 @@ import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.SeaAreaTableModel;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ChiefScientistTableModel;
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
 import be.naturalsciences.bmdc.ears.comparator.CountryComparator;
+import be.naturalsciences.bmdc.ears.comparator.OrganisationNameComparator;
 import be.naturalsciences.bmdc.ears.entities.CountryBean;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.HarbourBean;
 import be.naturalsciences.bmdc.ears.entities.ICountry;
+import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.IHarbour;
 import be.naturalsciences.bmdc.ears.entities.IOrganisation;
+import be.naturalsciences.bmdc.ears.entities.IProgram;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
 import be.naturalsciences.bmdc.ears.entities.OrganisationBean;
+import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
 import be.naturalsciences.bmdc.ears.entities.VesselBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
 import be.naturalsciences.bmdc.ears.rest.RestClientCruise;
+import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProgramTableModel;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.NotificationThread;
@@ -40,6 +47,8 @@ import java.net.ConnectException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -73,13 +82,19 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
 
     protected SeaAreaTableModel seaAreaModel;
     protected ChiefScientistTableModel chiefScientistModel;
+    protected ProgramTableModel programModel;
 
     ComboBoxColumnEditor<CountryBean> countryList;
     ComboBoxColumnEditor<OrganisationBean> organisationList;
     ComboBoxColumnEditor<SeaAreaBean> seaAreaList;
+    ComboBoxColumnEditor<ProgramBean> programList;
+
+    Set<? extends IProgram> programs;
     //protected List<JComboBox> chiefScientistOrganisationEditors;
     //static List<JComboBox<Country>> countryLists;
     //static List<JComboBox<OrganizationBean>> organisationLists;
+
+    RestClientProgram programClient;
 
     @Override
     public ValidationGroup getValidationGroup() {
@@ -89,8 +104,28 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
     public AbstractCruiseTopComponent() {
         __initComponents();
         currentVesselResult = new SingletonResult<>(CurrentVessel.class, this);
-        //countryLists = new ArrayList();
-        //organisationLists = new ArrayList();
+
+        try {
+            programClient = new RestClientProgram();
+        } catch (ConnectException ex) {
+            Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
+        } catch (EarsException ex) {
+            Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
+        }
+        if (getCurrentVessel() != null && programClient != null) {
+            try {
+                programs = new TreeSet(programClient.getAllPrograms());
+            } catch (ConnectException ex) {
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
+            }
+        }
+    }
+
+    protected CurrentVessel getCurrentVessel() {
+        if (currentVesselResult.allInstances().size() > 0) {
+            return ((CurrentVessel) new ArrayList(currentVesselResult.allInstances()).get(0));
+        }
+        return null;
     }
 
     protected abstract void __initComponents();
@@ -105,7 +140,7 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
     protected void collateCentreListPrincipalActionPerformedP(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         collateCentreListSecondary.removeAllItems();
-        collateCentreListSecondary.addItem("Choose organisation");
+        collateCentreListSecondary.addItem(ChiefScientistTableModel.BASE_ACTION);
         Object o = collateCentreListPrincipal.getSelectedItem();
         if (o != null && o instanceof CountryBean) {
             CountryBean selectedCountry = (CountryBean) o;
@@ -199,12 +234,11 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
 
     protected void addSeaAreaActionPerformedP(java.awt.event.ActionEvent evt) {
         seaAreaModel.addRow();
-        seaAreaTable.setEditingRow(seaAreaModel.getRowCount() - 1);
+        JComboBox box = seaAreaList.addComboBox("Sea area"); //add a combobox with a validator, and select no item
 
-        JComboBox box = seaAreaList.addComboBox("Sea area"); //add a combobox with a validator
         group.add(box, new SeaAreaValidator());
-        enableThatButtonGreysOutOnValidationFailure((JTextComponent) box.getEditor().getEditorComponent(), group);
-
+        seaAreaTable.setEditingRow(seaAreaModel.getRowCount() - 1);
+        seaAreaTable.repaint();
     }
 
     protected void removeSeaAreaActionPerformedP(java.awt.event.ActionEvent evt) {
@@ -220,17 +254,34 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         chiefScientistModel.addRow();
         chiefScientistTable.setEditingRow(chiefScientistModel.getRowCount() - 1);
 
-        organisationList.addComboBox("Chief scientist organisation name");
-        countryList.addComboBox("Chief scientist country name");
-
+        JComboBox orgComboBox = organisationList.addComboBox("Chief scientist organisation name");
+        JComboBox countryComboBox = countryList.addComboBox("Chief scientist country name");
+        enableThatButtonGreysOutOnValidationFailure((JTextComponent) orgComboBox.getEditor().getEditorComponent(), group);
+        enableThatButtonGreysOutOnValidationFailure((JTextComponent) countryComboBox.getEditor().getEditorComponent(), group);
     }
 
     protected void removeChiefScientistActionPerformedP(java.awt.event.ActionEvent evt) {
-        if (chiefScientistTable.getSelectedRow() > -1) {
+        if (chiefScientistTable.getSelectedRow() > -1 && chiefScientistModel.getRowCount() > 0) {
             int selectedRow = chiefScientistTable.getSelectedRow();
             chiefScientistModel.removeRow(selectedRow);
             countryList.removeComboBox(selectedRow);
             organisationList.removeComboBox(selectedRow);
+        }
+    }
+
+    protected void addProgramActionPerformedP(java.awt.event.ActionEvent evt) {
+        programModel.addRow();
+        programTable.setEditingRow(programModel.getRowCount() - 1);
+
+        JComboBox programComboBox = programList.addComboBox("Program");
+        enableThatButtonGreysOutOnValidationFailure((JTextComponent) programComboBox.getEditor().getEditorComponent(), group);
+    }
+
+    protected void removeProgramActionPerformedP(java.awt.event.ActionEvent evt) {
+        if (programTable.getSelectedRow() > -1 && programModel.getRowCount() > 0) {
+            int selectedRow = programTable.getSelectedRow();
+            programModel.removeRow(selectedRow);
+            programList.removeComboBox(selectedRow);
         }
     }
 
@@ -260,20 +311,6 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
     protected void cruiseNameValueKeyTypedP(java.awt.event.KeyEvent evt) {
         // TODO add your handling code here:
         //   System.out.println(cruiseNameValue.getText());
-    }
-
-    protected void cruiseNameValueKeyReleasedP(java.awt.event.KeyEvent evt) {
-        // TODO add your handling code here:
-        JFormattedTextField getDateTimeStartDate = inputStartDate.getEditor();
-
-        if (inputStartDate.getDate() != null) {
-
-            cruiseIdentifierValue.setText(cruiseNameValue.getText());
-            //  cruiseIdentifierValue.setText(getDateTimeStartDate.getText() + "_" + cruiseNameValue.getText());
-        } else {
-            cruiseIdentifierValue.setText(cruiseNameValue.getText() + " Please fill the start date");
-        }
-
     }
 
     protected void inputStartDateKeyPressedP(java.awt.event.KeyEvent evt) {
@@ -363,11 +400,11 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
     protected javax.swing.JScrollPane jScrollPane6;
     protected javax.swing.JScrollPane jScrollPane7;
     protected javax.swing.JTable chiefScientistTable;
+    protected javax.swing.JTable programTable;
     protected javax.swing.JTable seaAreaTable;
     protected javax.swing.JTextArea o_objectiveValue;
     protected javax.swing.JTextField arrivalHarborResult;
     protected javax.swing.JTextField collateCentreResult;
-    protected javax.swing.JTextField cruiseIdentifierValue;
     protected javax.swing.JTextField cruiseNameValue;
     protected javax.swing.JTextField platformCodeResult;
     protected javax.swing.JTextField startingHarborResult;
@@ -395,18 +432,20 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
             try {
                 client = new RestClientCruise();
             } catch (ConnectException ex) {
-                Messaging.report("Posting the new cruise to the webservice failed because it is offline or its url is incorrect.", ex, this.getClass(), true);
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
             } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
             }
             if (client != null) {
                 response = client.postCruise(actualCruise);
                 progr.progress("Cruise info sent");
 
                 if (response.isBad()) {
-                    Messaging.report("Posting the new cruise to the webservice failed: " + response.getSummary(), Message.State.BAD, this.getClass(), true);
+                    Messaging.report("Posting the new cruise to the webservice failed: " + response.getMessage(), Message.State.BAD, this.getClass(), true);
                 } else {
-                    Messaging.report(response.getSummary(), Message.State.GOOD, this.getClass(), true);
+                    Messaging.report(response.getMessage(), Message.State.GOOD, this.getClass(), true);
+                    GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
+                    progr.finish();
                 }
             }
         }
@@ -429,18 +468,18 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
             try {
                 client = new RestClientCruise();
             } catch (ConnectException ex) {
-                Messaging.report("Posting the modified cruise to the webservice failed because it is offline or its url is incorrect.", ex, this.getClass(), true);
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
             } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
             }
             if (client != null) {
                 response = client.modifyCruise(actualCruise);
                 progr.progress("Cruise info sent");
 
                 if (response.isBad()) {
-                    Messaging.report("Posting the changed cruise to the webservice failed: " + response.getSummary(), Message.State.BAD, this.getClass(), true);
+                    Messaging.report("Posting the changed cruise to the webservice failed: " + response.getMessage(), Message.State.BAD, this.getClass(), true);
                 } else {
-                    Messaging.report(response.getSummary(), Message.State.GOOD, this.getClass(), true);
+                    Messaging.report(response.getMessage(), Message.State.GOOD, this.getClass(), true);
                     GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
                     progr.finish();
                 }
@@ -509,11 +548,12 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
 
         chiefScientistModel = (ChiefScientistTableModel) chiefScientistTable.getModel();
         chiefScientistModel.setTable(chiefScientistTable);
-        setUpChiefScientistColumn();
+
+        programModel = (ProgramTableModel) programTable.getModel();
+        programModel.setTable(programTable);
 
         seaAreaModel = (SeaAreaTableModel) seaAreaTable.getModel();
         seaAreaModel.setTable(seaAreaTable);
-        setUpSeaAreaColumn();
 
         cruiseNameValue.setName("Cruise name (identifier)");
         inputStartDate.getEditor().setName("Start date of cruise");
@@ -612,19 +652,34 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         }
     }
 
-    protected void setUpSeaAreaColumn() {
-        seaAreaList = new ComboBoxColumnEditor(StaticMetadataSearcher.getInstance().getSeaAreas(true), seaAreaTable, 0, "Choose a sea", this);
+    protected void setUpSeaAreaList() {
+        seaAreaList = new ComboBoxColumnEditor("Sea area", StaticMetadataSearcher.getInstance().getSeaAreas(true), seaAreaTable, 0, "Choose a sea", this);
 
         //addSeaAreaActionPerformedP(null); //add a first sea area.
     }
 
-    protected void setUpChiefScientistColumn() {
+    protected void setUpChiefScientistList() {
         Set<ICountry> countries = new TreeSet<>(new CountryComparator());
         StaticMetadataSearcher.getInstance().getOrganisations(true).forEach((org) -> {
             countries.add(org.getCountryObject());
         });
-        countryList = new ComboBoxColumnEditor(countries, chiefScientistTable, 0, "You can choose a country to narrow down organisations.", this);
-        organisationList = new ComboBoxColumnEditor(null, chiefScientistTable, 1, "Choose an organisation.", this);
+        Collection<OrganisationBean> organisations = StaticMetadataSearcher.getInstance().getOrganisations(true);
+        countryList = new ComboBoxColumnEditor("Country", countries, chiefScientistTable, 0, "You can choose a country to narrow down organisations.", this);
+        organisationList = new ComboBoxColumnEditor("Organisation", organisations, chiefScientistTable, 1, "Choose an organisation.", this);
+    }
+
+    protected void setUpProgramList() {
+        Set<ProgramBean> programs = new TreeSet<>();
+        RestClientProgram programClient = null;
+        try {
+            programClient = new RestClientProgram();
+            programs.addAll(programClient.getAllPrograms());
+        } catch (ConnectException ex) {
+            Messaging.report("Getting the program list failed.", ex, this.getClass(), true);
+        } catch (EarsException ex) {
+            Messaging.report("Getting the program list failed.", ex, this.getClass(), true);
+        }
+        programList = new ComboBoxColumnEditor("Program", programs, programTable, 0, "Select the program", this);
     }
 
     /**
@@ -635,7 +690,7 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
      */
     protected CruiseBean createCruiseFromInput() {
         CruiseBean newCruise = new CruiseBean();
-        newCruise.setCruiseName(cruiseNameValue.getText());
+        newCruise.setName(cruiseNameValue.getText());
 
         try {
             newCruise.setdStartDate(inputStartDate.getDate());
@@ -643,19 +698,18 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
         } catch (ParseException ex) {
             //cannot occur
         }
-
-        if (newCruise.getRealId() == null) { //if it already has a real identifier (ie. if we're editing), don't assign a new one.
-            newCruise.assignRealId();
+        if (newCruise.getIdentifier() == null) { //if it already has a real identifier (ie. if we're editing), don't assign a new one.
+            newCruise.assignIdentifier();
         }
         return createCruiseFromInput(newCruise);
 
     }
 
     protected CruiseBean createCruiseFromInput(CruiseBean cruise) {
-        if (cruise.getRealId() == null) {
+        if (cruise.getIdentifier() == null) {
             throw new IllegalArgumentException("The provided cruise has no identifier, and so cannot be edited");
         } else {
-            cruise.setCruiseName(cruiseNameValue.getText());
+            cruise.setName(cruiseNameValue.getText());
 
             try {
                 //Date start = inputStartDate.getDate(); //doesn't provide the correct date!!
@@ -676,12 +730,13 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
             } catch (ParseException ex) {
                 //cannot occur
             }
-
+            cruise.setPrograms(new ArrayList<>());
+            cruise.getPrograms().addAll(programModel.getEntities());
             cruise.setChiefScientists(chiefScientistModel.getPersons());
-            cruise.setPlatformCode(platformCodeResult.getText());
+            cruise.setPlatform(platformCodeResult.getText());
             cruise.setObjectives(o_objectiveValue.getText());
-            cruise.setCollateCenter(collateCentreResult.getText());
-            cruise.setStartingHarbor(startingHarborResult.getText());
+            cruise.setCollateCentre(collateCentreResult.getText());
+            cruise.setDepartureHarbour(startingHarborResult.getText());
             cruise.setArrivalHarbor(arrivalHarborResult.getText());
 
             Set<SeaAreaBean> seas = seaAreaModel.getEntitiesSet();

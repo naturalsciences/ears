@@ -16,6 +16,7 @@ import be.naturalsciences.bmdc.ears.entities.ISeaArea;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
 import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
 import be.naturalsciences.bmdc.ears.infobar.InfoBar;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProgramTableModel;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.TaskListener;
@@ -92,11 +93,11 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
         super.arrivalHarborListSecondary = arrivalHarborListSecondary;
         super.arrivalHarborResult = arrivalHarborResult;
         super.chiefScientistTable = chiefScientistTable;
+        super.programTable = programTable;
         super.collateCentreListPrincipal = collateCentreListPrincipal;
         super.collateCentreListSecondary = collateCentreListSecondary;
         super.collateCentreResult = collateCentreResult;
         super.cruiseIdentifier = cruiseIdentifier;
-        super.cruiseIdentifierValue = cruiseIdentifierValue;
         super.cruiseNameValue = cruiseNameValue;
         super.inputEndDate = inputEndDate;
         super.inputStartDate = inputStartDate;
@@ -158,7 +159,6 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
         jPanel1 = new javax.swing.JPanel();
         jPanelInformation = new javax.swing.JPanel();
         cruiseNameValue = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         jPanelArrivalHarbor = new javax.swing.JPanel();
         arrivalHarborListPrincipal = new javax.swing.JComboBox();
         arrivalHarborListSecondary = new javax.swing.JComboBox();
@@ -168,15 +168,13 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
         o_objectiveValue = new javax.swing.JTextArea();
         jPanelDate = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         inputStartDate = new be.naturalsciences.bmdc.ears.topcomponents.DateTimePicker();
+        jLabel10 = new javax.swing.JLabel();
         inputEndDate = new be.naturalsciences.bmdc.ears.topcomponents.DateTimePicker();
         jPanelPlatform = new javax.swing.JPanel();
         platformCodeListPrincipal = new javax.swing.JComboBox();
         jLabel7 = new javax.swing.JLabel();
         platformCodeResult = new javax.swing.JTextField();
-        cruiseIdentifier = new javax.swing.JPanel();
-        cruiseIdentifierValue = new javax.swing.JTextField();
         jPanelStartingHarbor = new javax.swing.JPanel();
         startingHarborListPrincipal = new javax.swing.JComboBox();
         startingHarborListSecondary = new javax.swing.JComboBox();
@@ -197,14 +195,22 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
         collateCentreResult = new javax.swing.JTextField();
         bt_editCruise = new javax.swing.JButton();
         validationPanel1 = new org.netbeans.validation.api.ui.swing.ValidationPanel();
+        programPanel = new javax.swing.JPanel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        programTable = new javax.swing.JTable();
+        addProgramBtn = new javax.swing.JButton();
+        removeProgramBtn = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
         setAutoscrolls(true);
         setLayout(new java.awt.CardLayout());
 
+        jPanel1.setPreferredSize(new java.awt.Dimension(1000, 1366));
+
         jPanelInformation.setBackground(new java.awt.Color(255, 255, 255));
         jPanelInformation.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanelInformation.border.title"))); // NOI18N
+        jPanelInformation.setOpaque(false);
 
         cruiseNameValue.setEditable(false);
         cruiseNameValue.setText(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.cruiseNameValue.text")); // NOI18N
@@ -227,27 +233,22 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jLabel2.text")); // NOI18N
-
         javax.swing.GroupLayout jPanelInformationLayout = new javax.swing.GroupLayout(jPanelInformation);
         jPanelInformation.setLayout(jPanelInformationLayout);
         jPanelInformationLayout.setHorizontalGroup(
             jPanelInformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelInformationLayout.createSequentialGroup()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cruiseNameValue, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 510, Short.MAX_VALUE))
         );
         jPanelInformationLayout.setVerticalGroup(
             jPanelInformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelInformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(cruiseNameValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel2))
+            .addComponent(cruiseNameValue, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         jPanelArrivalHarbor.setBackground(new java.awt.Color(255, 255, 255));
         jPanelArrivalHarbor.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanelArrivalHarbor.border.title"))); // NOI18N
+        jPanelArrivalHarbor.setOpaque(false);
 
         arrivalHarborListPrincipal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -279,8 +280,8 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
                 .addGap(50, 50, 50)
                 .addComponent(arrivalHarborListSecondary, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(arrivalHarborResult, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(arrivalHarborResult, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanelArrivalHarborLayout.setVerticalGroup(
             jPanelArrivalHarborLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -294,6 +295,7 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
 
         jPanelObjectives.setBackground(new java.awt.Color(255, 255, 255));
         jPanelObjectives.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanelObjectives.border.title"))); // NOI18N
+        jPanelObjectives.setOpaque(false);
 
         o_objectiveValue.setColumns(20);
         o_objectiveValue.setRows(5);
@@ -305,7 +307,7 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
             jPanelObjectivesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelObjectivesLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 718, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelObjectivesLayout.setVerticalGroup(
@@ -317,11 +319,11 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
 
         jPanelDate.setBackground(new java.awt.Color(255, 255, 255));
         jPanelDate.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanelDate.border.title"))); // NOI18N
+        jPanelDate.setOpaque(false);
         jPanelDate.setPreferredSize(new java.awt.Dimension(740, 45));
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel9, org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jLabel9.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel10, org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jLabel10.text")); // NOI18N
+        jPanelDate.add(jLabel9);
 
         inputStartDate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -333,39 +335,21 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
                 inputStartDatePropertyChange(evt);
             }
         });
+        jPanelDate.add(inputStartDate);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel10, org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jLabel10.text")); // NOI18N
+        jPanelDate.add(jLabel10);
 
         inputEndDate.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 inputEndDatePropertyChange(evt);
             }
         });
-
-        javax.swing.GroupLayout jPanelDateLayout = new javax.swing.GroupLayout(jPanelDate);
-        jPanelDate.setLayout(jPanelDateLayout);
-        jPanelDateLayout.setHorizontalGroup(
-            jPanelDateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelDateLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel9)
-                .addGap(9, 9, 9)
-                .addComponent(inputStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(93, 93, 93)
-                .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(inputEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanelDateLayout.setVerticalGroup(
-            jPanelDateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelDateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel9)
-                .addComponent(jLabel10)
-                .addComponent(inputStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(inputEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        jPanelDate.add(inputEndDate);
 
         jPanelPlatform.setBackground(new java.awt.Color(255, 255, 255));
         jPanelPlatform.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanelPlatform.border.title"))); // NOI18N
+        jPanelPlatform.setOpaque(false);
         jPanelPlatform.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 jPanelPlatformComponentShown(evt);
@@ -405,7 +389,7 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
                 .addComponent(platformCodeListPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(platformCodeResult, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(266, Short.MAX_VALUE))
         );
         jPanelPlatformLayout.setVerticalGroup(
             jPanelPlatformLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -417,36 +401,10 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
-        cruiseIdentifier.setBackground(new java.awt.Color(255, 255, 255));
-        cruiseIdentifier.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.cruiseIdentifier.border.title"))); // NOI18N
-
-        cruiseIdentifierValue.setBackground(new java.awt.Color(240, 240, 240));
-        cruiseIdentifierValue.setText(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.cruiseIdentifierValue.text")); // NOI18N
-        cruiseIdentifierValue.setEnabled(false);
-        cruiseIdentifierValue.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cruiseIdentifierValueActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout cruiseIdentifierLayout = new javax.swing.GroupLayout(cruiseIdentifier);
-        cruiseIdentifier.setLayout(cruiseIdentifierLayout);
-        cruiseIdentifierLayout.setHorizontalGroup(
-            cruiseIdentifierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(cruiseIdentifierLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(cruiseIdentifierValue, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(76, Short.MAX_VALUE))
-        );
-        cruiseIdentifierLayout.setVerticalGroup(
-            cruiseIdentifierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cruiseIdentifierLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(cruiseIdentifierValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
         jPanelStartingHarbor.setBackground(new java.awt.Color(255, 255, 255));
         jPanelStartingHarbor.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanelStartingHarbor.border.title"))); // NOI18N
+        jPanelStartingHarbor.setOpaque(false);
+        jPanelStartingHarbor.setPreferredSize(new java.awt.Dimension(740, 65));
 
         startingHarborListPrincipal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -473,8 +431,8 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
                 .addGap(50, 50, 50)
                 .addComponent(startingHarborListSecondary, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(startingHarborResult, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(11, Short.MAX_VALUE))
+                .addComponent(startingHarborResult)
+                .addContainerGap())
         );
         jPanelStartingHarborLayout.setVerticalGroup(
             jPanelStartingHarborLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -488,6 +446,7 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanel4.border.title"))); // NOI18N
+        jPanel4.setOpaque(false);
 
         org.openide.awt.Mnemonics.setLocalizedText(addSeaArea, org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.addSeaArea.text")); // NOI18N
         addSeaArea.addActionListener(new java.awt.event.ActionListener() {
@@ -515,27 +474,29 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(42, 42, 42)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(removeSeaArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(addSeaArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 238, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(addSeaArea, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(removeSeaArea, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(addSeaArea)
-                        .addGap(18, 18, 18)
-                        .addComponent(removeSeaArea))
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(25, Short.MAX_VALUE))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(addSeaArea)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(removeSeaArea)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanel5.border.title"))); // NOI18N
+        jPanel5.setOpaque(false);
+        jPanel5.setPreferredSize(new java.awt.Dimension(740, 249));
 
         chiefScientistTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         chiefScientistTable.setModel(new ChiefScientistTableModel());
@@ -566,28 +527,29 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(46, 46, 46)
+                .addComponent(jScrollPane7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(removeChiefScientist, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(addChiefScientist, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 12, Short.MAX_VALUE))
+                    .addComponent(addChiefScientist, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(addChiefScientist)
                         .addGap(18, 18, 18)
-                        .addComponent(removeChiefScientist)))
-                .addContainerGap(31, Short.MAX_VALUE))
+                        .addComponent(removeChiefScientist))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         jPanelCollateCentre.setBackground(new java.awt.Color(255, 255, 255));
         jPanelCollateCentre.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanelCollateCentre.border.title"))); // NOI18N
+        jPanelCollateCentre.setOpaque(false);
+        jPanelCollateCentre.setPreferredSize(new java.awt.Dimension(740, 107));
 
         collateCentreListPrincipal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -616,22 +578,23 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
             .addGroup(jPanelCollateCentreLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelCollateCentreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(collateCentreListPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(collateCentreListSecondary, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanelCollateCentreLayout.createSequentialGroup()
-                        .addComponent(collateCentreListSecondary, javax.swing.GroupLayout.PREFERRED_SIZE, 770, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(collateCentreResult, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanelCollateCentreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(collateCentreListPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(collateCentreResult, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanelCollateCentreLayout.setVerticalGroup(
             jPanelCollateCentreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelCollateCentreLayout.createSequentialGroup()
                 .addComponent(collateCentreListPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanelCollateCentreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(collateCentreListSecondary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(collateCentreResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addComponent(collateCentreListSecondary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(collateCentreResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         org.openide.awt.Mnemonics.setLocalizedText(bt_editCruise, org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.bt_editCruise.text")); // NOI18N
@@ -642,64 +605,122 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
             }
         });
 
+        programPanel.setBackground(new java.awt.Color(255, 255, 255));
+        programPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.programPanel.border.title"))); // NOI18N
+        programPanel.setOpaque(false);
+        programPanel.setPreferredSize(new java.awt.Dimension(740, 257));
+
+        chiefScientistTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        programTable.setModel(new ProgramTableModel());
+        programTable.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                programTableFocusLost(evt);
+            }
+        });
+        jScrollPane8.setViewportView(programTable);
+
+        org.openide.awt.Mnemonics.setLocalizedText(addProgramBtn, org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.addProgramBtn.text")); // NOI18N
+        addProgramBtn.setActionCommand(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.addProgramBtn.actionCommand")); // NOI18N
+        addProgramBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addProgramBtnActionPerformed(evt);
+            }
+        });
+
+        org.openide.awt.Mnemonics.setLocalizedText(removeProgramBtn, org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.removeProgramBtn.text")); // NOI18N
+        removeProgramBtn.setActionCommand(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.removeProgramBtn.actionCommand")); // NOI18N
+        removeProgramBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeProgramBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout programPanelLayout = new javax.swing.GroupLayout(programPanel);
+        programPanel.setLayout(programPanelLayout);
+        programPanelLayout.setHorizontalGroup(
+            programPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(programPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(programPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(addProgramBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(removeProgramBtn))
+                .addContainerGap())
+        );
+        programPanelLayout.setVerticalGroup(
+            programPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(programPanelLayout.createSequentialGroup()
+                .addGroup(programPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(programPanelLayout.createSequentialGroup()
+                        .addComponent(addProgramBtn)
+                        .addGap(18, 18, 18)
+                        .addComponent(removeProgramBtn))
+                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 36, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(validationPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(80, 80, 80)
-                        .addComponent(bt_editCruise, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addComponent(cruiseIdentifier, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jPanelInformation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanelDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jPanelStartingHarbor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanelArrivalHarbor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanelObjectives, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanelPlatform, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanelCollateCentre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanelArrivalHarbor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanelObjectives, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanelPlatform, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(8, 8, 8)
+                            .addComponent(validationPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(bt_editCruise, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jPanelInformation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jPanelDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanelStartingHarbor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(programPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanelCollateCentre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap(254, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(bt_editCruise)
                     .addComponent(validationPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanelInformation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanelInformation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cruiseIdentifier, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(4, 4, 4)
+                .addGap(18, 18, 18)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
+                .addComponent(programPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jPanelCollateCentre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jPanelStartingHarbor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
+                .addGap(18, 18, 18)
                 .addComponent(jPanelArrivalHarbor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jPanelPlatform, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jPanelObjectives, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         jPanel4.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.jPanel4.AccessibleContext.accessibleName")); // NOI18N
+        programPanel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(EditCruiseSetupTopComponent.class, "EditCruiseSetupTopComponent.programPanel.AccessibleContext.accessibleName")); // NOI18N
 
         jScrollPane1.setViewportView(jPanel1);
 
@@ -726,121 +747,40 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
 
     private void collateCentreListPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collateCentreListPrincipalActionPerformed
         super.collateCentreListPrincipalActionPerformedP(evt);
-        /*collateCentreListSecondary.removeAllItems();
-         collateCentreListSecondary.addItem("Choose organisation");
-         for (String key : mapCountryOrgName.keySet()) {
-         //  if (key == null ? chiefScientistOrganisation.getSelectedItem().toString() == null : key.equals(chiefScientistOrganisation.getSelectedItem().toString()) ) {
-         if (collateCentreListPrincipal.getSelectedItem().toString().equals(mapCountryOrgName.get(key))) {
-         //   System.out.println(key + " :: " + mapCountryOrgName.get(key));
-         collateCentreListSecondary.addItem(key);
-         }
-
-         //}
-         }*/
     }//GEN-LAST:event_collateCentreListPrincipalActionPerformed
 
     private void collateCentreListSecondaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collateCentreListSecondaryActionPerformed
         super.collateCentreListSecondaryActionPerformedP(evt);
-
-        /*if (collateCentreListSecondary.getSelectedIndex() >= 0) {
-         for (String key : mapOrgNameKey.keySet()) {
-         if (collateCentreListSecondary.getSelectedItem().toString().equals(key)) {
-         //  System.out.println(key + " :: " + mapOrgNameKey.get(key));
-         collateCentreResult.setText(mapOrgNameKey.get(key));
-         }
-                
-         }
-         }*/
     }//GEN-LAST:event_collateCentreListSecondaryActionPerformed
 
     private void startingHarborListPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startingHarborListPrincipalActionPerformed
         super.startingHarborListPrincipalActionPerformedP(evt);
-        /*startingHarborListSecondary.removeAllItems();
-         startingHarborListSecondary.addItem("Choose harbour");
-         for (String key : mapLabelGroupC38.keySet()) {
-         //  if (key == null ? chiefScientistOrganisation.getSelectedItem().toString() == null : key.equals(chiefScientistOrganisation.getSelectedItem().toString()) ) {
-         if (startingHarborListPrincipal.getSelectedItem().toString().equals(mapLabelGroupC38.get(key))) {
-         //   System.out.println(key + " :: " + mapCountryOrgName.get(key));
-         startingHarborListSecondary.addItem(key);
-                
-         startingHarborListPrincipal.setSelectedIndex(startingHarborListPrincipal.getSelectedIndex());//rl
-         }
-            
-         }*/
-
     }//GEN-LAST:event_startingHarborListPrincipalActionPerformed
 
     private void startingHarborListSecondaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startingHarborListSecondaryActionPerformed
         super.startingHarborListSecondaryActionPerformedP(evt);
-
-        /*if (startingHarborListSecondary.getSelectedIndex() >= 0) {
-         for (String key : mapLabelKeyC38.keySet()) {
-         if (startingHarborListSecondary.getSelectedItem().toString().equals(key)) {
-         //  System.out.println(key + " :: " + mapOrgNameKey.get(key));
-         startingHarborResult.setText(mapLabelKeyC38.get(key));
-         }
-
-         }
-         }*/
-
     }//GEN-LAST:event_startingHarborListSecondaryActionPerformed
 
     private void arrivalHarborListPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arrivalHarborListPrincipalActionPerformed
         super.arrivalHarborListPrincipalActionPerformedP(evt);
-        /*arrivalHarborListSecondary.removeAllItems();
-         arrivalHarborListSecondary.addItem("Choose harbour");
-         for (String key : mapLabelGroupC38.keySet()) {
-         //  if (key == null ? chiefScientistOrganisation.getSelectedItem().toString() == null : key.equals(chiefScientistOrganisation.getSelectedItem().toString()) ) {
-         if (arrivalHarborListPrincipal.getSelectedItem().toString().equals(mapLabelGroupC38.get(key))) {
-         //   System.out.println(key + " :: " + mapCountryOrgName.get(key));
-         arrivalHarborListSecondary.addItem(key);
-         }
-
-         //}
-         }*/
     }//GEN-LAST:event_arrivalHarborListPrincipalActionPerformed
 
     private void addSeaAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSeaAreaActionPerformed
         super.addSeaAreaActionPerformedP(evt);
-        /*Object[] rowData = {"", ""};
-         DefaultTableModel tableModelSeaArea = (DefaultTableModel) seaAreaTable.getModel();
-         tableModelSeaArea.addRow(rowData);*/
     }//GEN-LAST:event_addSeaAreaActionPerformed
 
     private void removeSeaAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSeaAreaActionPerformed
         super.removeSeaAreaActionPerformedP(evt);
-        /*DefaultTableModel tableModelSeaArea = (DefaultTableModel) seaAreaTable.getModel();
-         if (seaAreaTable.getSelectedRow() > -1) {
-         tableModelSeaArea.removeRow(seaAreaTable.getSelectedRow());
-         } *//*else {
-
-         System.out.println("Nothing Selected");
-         }*/
     }//GEN-LAST:event_removeSeaAreaActionPerformed
 
     private void addChiefScientistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addChiefScientistActionPerformed
         super.addChiefScientistActionPerformedP(evt);
-        /*if (chiefScientistTable.getModel().getRowCount() == 1) {
-         io.getOut().println("Only one chief scientist");
-         } else {
-         Object[] rowData = {"", "", "", ""};
-         DefaultTableModel tableModelChiefScientist = (DefaultTableModel) chiefScientistTable.getModel();
-         tableModelChiefScientist.addRow(rowData);
-         }*/
     }//GEN-LAST:event_addChiefScientistActionPerformed
 
     private void removeChiefScientistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeChiefScientistActionPerformed
         super.removeChiefScientistActionPerformedP(evt);
-        /*DefaultTableModel tableModelChiefScientist = (DefaultTableModel) chiefScientistTable.getModel();
-         if (chiefScientistTable.getSelectedRow() > -1) {
-         tableModelChiefScientist.removeRow(chiefScientistTable.getSelectedRow());
-         }*/
 
     }//GEN-LAST:event_removeChiefScientistActionPerformed
-
-    private void cruiseIdentifierValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cruiseIdentifierValueActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cruiseIdentifierValueActionPerformed
 
     private void collateCentreResultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collateCentreResultActionPerformed
         // TODO add your handling code here:
@@ -855,84 +795,12 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
     }//GEN-LAST:event_cruiseNameValueKeyTyped
 
     private void cruiseNameValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cruiseNameValueKeyReleased
-        super.cruiseNameValueKeyReleasedP(evt);
-        /*JFormattedTextField getDateTimeStartDate = inputStartDate.getEditor();
 
-         if (inputStartDate.getDate() != null) {
-
-         cruiseIdentifierValue.setText(getDateTimeStartDate.getText() + "_" + cruiseNameValue.getText());
-         } else {
-         cruiseIdentifierValue.setText(cruiseNameValue.getText() + " Please fill the start date");
-         }*/
     }//GEN-LAST:event_cruiseNameValueKeyReleased
 
     private void bt_editCruiseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_editCruiseActionPerformed
         // TODO add your handling code here:
         postCruise();
-        /*String dateStart;
-         String dateEnd;
-         JFormattedTextField getDateTimeStartDate = inputStartDate.getEditor();
-         JFormattedTextField getDateTimeEndDate = inputEndDate.getEditor();
-         CruiseBean currentEntity = new CruiseBean(); //create a bean for persist modify value
-         if (cruiseNameValue.getText().trim().length() != 0 && inputStartDate.getEditor().getText().trim().length() != 0 && inputEndDate.getDate() != null) {
-         jPanelInformation.setBackground(Color.white);
-         jPanelDate.setBackground(Color.white);
-         currentEntity.setRealId(cruiseNameValue.getText()); // Error Que peut on mettre dans CruiseId ???
-         currentEntity.setCruiseName(cruiseNameValue.getText());
-         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-         dateStart = sdf.format(inputStartDate.getDate());
-         currentEntity.setStartDate(dateStart);
-         dateEnd = sdf.format(inputEndDate.getDate());
-         currentEntity.setEndDate(dateEnd);
-         if (chiefScientistTable.getModel().getRowCount() == 1) {
-         currentEntity.setChiefScientist(chiefScientistTable.getModel().getValueAt(0, 3).toString());
-         currentEntity.setChiefScientistOrganisation(chiefScientistTable.getModel().getValueAt(0, 2).toString());
-         } else {
-         currentEntity.setChiefScientist("");
-         currentEntity.setChiefScientistOrganisation("");
-         }
-
-         currentEntity.setPlatformCode(platformCodeResult.getText());
-         currentEntity.setPlatformClass(platformClassResult.getText());
-         currentEntity.setObjectives(o_objectiveValue.getText());
-         currentEntity.setCollateCenter(collateCentreResult.getText());
-         currentEntity.setStartingHarbor(startingHarborResult.getText());
-         currentEntity.setArrivalHarbor(arrivalHarborResult.getText());
-
-         Set<SeaAreaBean> seaAreas = new HashSet<>();
-
-         DefaultTableModel dtmSeaArea = (DefaultTableModel) seaAreaTable.getModel();
-         int nRowSeaArea = dtmSeaArea.getRowCount();
-         for (int i = 0; i < nRowSeaArea; i++) {
-         //   seaAreas.add(new SeaAreaBean(dtmSeaArea.getValueAt(i, 1).toString(), dtmSeaArea.getValueAt(i, 1).toString()));//ok  TODO
-         }
-         currentEntity.setSeaAreas(seaAreas);
-
-         try {
-         RestClientCruise client = new RestClientCruise();
-         client.modifyCruise(currentEntity);
-         //le serveur renvoie le message 200 ok mais un probleme avec seaarea ?? : voir le debug il me renvoie une erreur 500 ??? internal server error => Oscar for more
-
-         this.close();// close TopComponent IF no exception
-         //io.getOut().println("Record modify via WS \n See result on ");
-         } catch (Exception e) {
-         //io.getOut().println("exception" + e.toString());
-         }
-
-         //   io.getOut().println("Cruise has been modify \n See result on ");
-         } else {
-
-         //io.getOut().println("Please fill [cruise Name and Start Date] mandatory field");
-         if (cruiseNameValue.getText().trim().length() == 0) {
-         jPanelInformation.setBackground(Color.red);
-         }
-         if (inputStartDate.getEditor().getText().trim().length() == 0) {
-         jPanelDate.setBackground(Color.red);
-         }
-
-         }*/
-
-
     }//GEN-LAST:event_bt_editCruiseActionPerformed
 
     private void chiefScientistTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_chiefScientistTableFocusLost
@@ -955,17 +823,6 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
 
     private void platformCodeListPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_platformCodeListPrincipalActionPerformed
         super.platformCodeListPrincipalActionPerformedP(evt);
-
-        /*for (String key : mapKeyLabelC17.keySet()) {
-
-            if (platformCodeListPrincipal.getSelectedItem().toString().equals(mapKeyLabelC17.get(key))) {
-                // System.out.println(key + " :: " + mapKeyLabelC17.get(key));
-                //05042016   conf.writeVesselPropertiesFile(platformCodeResult.getText(), platformCodeListPrincipal.getSelectedItem().toString());
-                //05042016  setName(Bundle.CTL_CreateCruiseSetupTopComponent() + vesselProperties.getVesselInformation());
-
-                platformCodeResult.setText(key);
-            }
-        }*/
     }//GEN-LAST:event_platformCodeListPrincipalActionPerformed
 
     private void platformCodeListPrincipalItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_platformCodeListPrincipalItemStateChanged
@@ -986,8 +843,23 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
         super.inputEndDatePropertyChangeP(evt);
     }//GEN-LAST:event_inputEndDatePropertyChange
 
+    private void programTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_programTableFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_programTableFocusLost
+
+    private void addProgramBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addProgramBtnActionPerformed
+        // TODO add your handling code here:
+        super.addProgramActionPerformedP(evt);
+    }//GEN-LAST:event_addProgramBtnActionPerformed
+
+    private void removeProgramBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeProgramBtnActionPerformed
+        // TODO add your handling code here:
+        super.removeProgramActionPerformedP(evt);
+    }//GEN-LAST:event_removeProgramBtnActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addChiefScientist;
+    private javax.swing.JButton addProgramBtn;
     private javax.swing.JButton addSeaArea;
     private javax.swing.JComboBox arrivalHarborListPrincipal;
     private javax.swing.JComboBox arrivalHarborListSecondary;
@@ -997,13 +869,10 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
     private javax.swing.JComboBox collateCentreListPrincipal;
     private javax.swing.JComboBox collateCentreListSecondary;
     private javax.swing.JTextField collateCentreResult;
-    private javax.swing.JPanel cruiseIdentifier;
-    private javax.swing.JTextField cruiseIdentifierValue;
     private javax.swing.JTextField cruiseNameValue;
     private be.naturalsciences.bmdc.ears.topcomponents.DateTimePicker inputEndDate;
     private be.naturalsciences.bmdc.ears.topcomponents.DateTimePicker inputStartDate;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -1020,10 +889,14 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JTextArea o_objectiveValue;
     private javax.swing.JComboBox platformCodeListPrincipal;
     private javax.swing.JTextField platformCodeResult;
+    private javax.swing.JPanel programPanel;
+    private javax.swing.JTable programTable;
     private javax.swing.JButton removeChiefScientist;
+    private javax.swing.JButton removeProgramBtn;
     private javax.swing.JButton removeSeaArea;
     private javax.swing.JTable seaAreaTable;
     private javax.swing.JComboBox startingHarborListPrincipal;
@@ -1047,25 +920,25 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
         super.componentOpened();
 
         bt_editCruise.setEnabled(false);
-        cruiseIdentifierValue.setText(actualCruise.getRealId());
+        //   cruiseIdentifierValue.setText(actualCruise.getIdentifier());
         cruiseNameValue.setEditable(false);
-        cruiseNameValue.setText(actualCruise.getCruiseName());
+        cruiseNameValue.setText(actualCruise.getName());
         inputStartDate.setFormats(StringUtils.SDF_ISO_DATETIME);
         inputEndDate.setFormats(StringUtils.SDF_ISO_DATETIME);
         inputStartDate.setDate(actualCruise.getdStartDate());
         inputEndDate.setDate(actualCruise.getdEndDate());
 
-        collateCentreResult.setText(actualCruise.getCollateCenter());
-        startingHarborResult.setText(actualCruise.getStartingHarbor());
+        collateCentreResult.setText(actualCruise.getCollateCentre());
+        startingHarborResult.setText(actualCruise.getDepartureHarbour());
         arrivalHarborResult.setText(actualCruise.getArrivalHarbor());
 
-        platformCodeResult.setText(actualCruise.getPlatformCode());
+        platformCodeResult.setText(actualCruise.getPlatform());
         o_objectiveValue.setText(actualCruise.getObjectives());
 
-        IOrganisation organisation = StaticMetadataSearcher.getInstance().getOrganisation(actualCruise.getCollateCenter());
-        IHarbour startingHarbour = StaticMetadataSearcher.getInstance().getHarbour(actualCruise.getStartingHarbor());
+        IOrganisation organisation = StaticMetadataSearcher.getInstance().getOrganisation(actualCruise.getCollateCentre());
+        IHarbour startingHarbour = StaticMetadataSearcher.getInstance().getHarbour(actualCruise.getDepartureHarbour());
         IHarbour arrivalHarbour = StaticMetadataSearcher.getInstance().getHarbour(actualCruise.getArrivalHarbor());
-        IVessel vessel = StaticMetadataSearcher.getInstance().getVessel(actualCruise.getPlatformCode());
+        IVessel vessel = StaticMetadataSearcher.getInstance().getVessel(actualCruise.getPlatform());
 
         if (organisation != null) {
             collateCentreListPrincipal.setSelectedItem(organisation.getCountryObject());
@@ -1086,6 +959,10 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
 
         chiefScientistModel.addPersons(actualCruise.getChiefScientists());
         seaAreaModel.addEntities(actualCruise.getSeaAreas());
+        programModel.addEntities(actualCruise.getPrograms());
+        setUpChiefScientistList();
+        setUpSeaAreaList();
+        setUpProgramList();
     }
 
     @Override
@@ -1133,14 +1010,7 @@ public final class EditCruiseSetupTopComponent extends AbstractCruiseTopComponen
 
     @Override
     public void threadComplete(Runnable runner) {
-        try {
-            progr.finish();
-            if (InfoBar.getInstance().getLatestState() == Message.State.GOOD) {
-                //this.close();
-            }
-        } catch (AssertionError | IllegalStateException e) {
-            int a = 5;
-        }
+        progr.finish();
     }
 
 }

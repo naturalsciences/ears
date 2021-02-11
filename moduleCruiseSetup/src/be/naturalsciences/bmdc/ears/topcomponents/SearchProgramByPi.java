@@ -18,6 +18,6 @@ public class SearchProgramByPi extends SearchTextVisitor {
 
     public SearchProgramByPi(SearchTextField field, FilterableTableModel model, JTable table, TableRowSorter<ProgramTableModel> sorter) {
         super(field, model, table, sorter);
-        this.column = UpdateProgramTopComponent.ProgramTableModel.PI;
+        this.column = UpdateProgramTopComponent.ProgramTableModel.PI_LAST_NAME;
     }
 }

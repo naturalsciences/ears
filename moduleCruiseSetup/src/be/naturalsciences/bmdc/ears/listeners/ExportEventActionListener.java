@@ -174,9 +174,9 @@ public class ExportEventActionListener implements EventListener {
 
                             List<String> elements = new ArrayList<>(Arrays.asList(
                                     event.getTimeStampDt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
-                                    event.getActor(),
+                                    event.getActor().getLastNameFirstName(),
                                     event.getToolCategoryName(),
-                                    event.getToolNames(),
+                                    event.getTool().fullName(),
                                     event.getProcessName(),
                                     event.getActionName(),
                                     (nav != null) ? nav.getTimeStamp() : "",

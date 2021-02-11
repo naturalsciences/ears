@@ -81,7 +81,7 @@ public class ProjectTableModel extends EntityTableModel<ProjectBean> {
 
                 case COUNTRY:
                     organisationList.removeAllItems();
-                    organisationList.addItem("Choose organisation");
+                    organisationList.addItem(ChiefScientistTableModel.BASE_ACTION);
                     Object c = getValueAt(updatedRow, findColumn(COUNTRY));
 
                     if (c != null && c instanceof CountryBean) {
@@ -153,6 +153,13 @@ public class ProjectTableModel extends EntityTableModel<ProjectBean> {
                 return null;
         }
     }
+    
+        public ProjectBean getEntityWithName(String name) {
+        for (ProjectBean e : entities) {
+                if(e.getAcronym().equals(name)){return e;}
+        }
+            return null;
+    }
 
     @Override
     public void addRow() {
@@ -180,7 +187,7 @@ public class ProjectTableModel extends EntityTableModel<ProjectBean> {
                         proj.setOrganisation(null);
                         proj.setCode(null);
                         proj.setAcronym(null);
-                        proj.setFullName(null);
+                        proj.setName(null);
                         proj.setId(null);
 
                     }
@@ -196,20 +203,20 @@ public class ProjectTableModel extends EntityTableModel<ProjectBean> {
                         proj.setOrganisation(organisation.getName());
                         proj.setCode(null);
                         proj.setAcronym(null);
-                        proj.setFullName(null);
+                        proj.setName(null);
                         proj.setId(null);
                     }
                     break;
                 case NAME:
                     if (value instanceof String) {
-                        proj.setFullName(null);
+                        proj.setName(null);
                         proj.setId(null);
                         proj.setCode(null);
                     } else {
                         ProjectBean selectedProj = (ProjectBean) value;
                         proj.setCode(selectedProj.getCode());
                         proj.setAcronym(selectedProj.getAcronym());
-                        proj.setFullName(selectedProj.getFullName());
+                        proj.setName(selectedProj.getName());
                         proj.setId(selectedProj.getId());
                     }
                     break;

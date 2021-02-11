@@ -5,8 +5,9 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
-import be.naturalsciences.bmdc.ears.entities.EventBean;
+import be.naturalsciences.bmdc.ears.entities.Actor;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
+import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
 import be.naturalsciences.bmdc.ears.rest.RestClient;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
 import be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent;
@@ -14,6 +15,8 @@ import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
+import eu.eurofleets.ears3.dto.EventDTO;
+import eu.eurofleets.ears3.dto.PersonDTO;
 import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -34,7 +37,7 @@ import javax.swing.JTable;
  * @author Yvan Stojanov, Thomas Vandenberghe
  * @param <E>
  */
-public class EventTableModel extends EntityTableModel<EventBean> {
+public class EventTableModel extends EntityTableModel<EventDTO> {
 
     private RestClientEvent restClientEvent;
 
@@ -55,12 +58,12 @@ public class EventTableModel extends EntityTableModel<EventBean> {
 
     public static final String[] COLUMN_NAMES = {DATE, TIME, TIMEZONE, TOOL_CATEGORY, TOOL, PROCESS, ACTION, ACTOR, PROGRAM, LABEL,/* DELETE,*/ PROPERTIES};
 
-    public EventTableModel(JTable table, List<EventBean> entities) {
+    public EventTableModel(JTable table, List<EventDTO> entities) {
         super(table, entities);
         try {
             restClientEvent = new RestClientEvent();
         } catch (ConnectException ex) {
-            Messaging.report("Note that the webservices are offline. The events can't be retrieved, saved or edited.", ex, this.getClass(), true);
+            Messaging.report("The webservices are offline. The events can't be retrieved, saved or edited.", ex, this.getClass(), true);
         } catch (EarsException ex) {
             Messaging.report(ex.getMessage(), ex, this.getClass(), true);
         }
@@ -136,7 +139,7 @@ public class EventTableModel extends EntityTableModel<EventBean> {
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         Object originalValue = getValueAt(rowIndex, columnIndex);
-        EventBean event = getEntities().get(rowIndex);
+        EventDTO event = getEntities().get(rowIndex);
         String colName = getColumnName(columnIndex);
         switch (colName) {
             case DATE:
@@ -149,12 +152,12 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                         Messaging.report("Date format incorrect", ex, this.getClass(), true);
                     }
                     if (oD != null) {
-                        event.setTimeStampDt(oD);
+                        event.setTimeStamp(oD);
                         IResponseMessage response = restClientEvent.modifyEvent(event);
-                        CreateEventTopComponent.getAssociatedAcquisitionInfo(event);
+                       // CreateEventTopComponent.getAssociatedAcquisitionInfo(event);
                         if (response.isBad()) {
-                            Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
-                            event.setTimeStampDt(originalDate);
+                            Messaging.report("Event "+response.getIdentifier()+" wasn't modified because of http error " + response.getMessage(), Message.State.BAD, this.getClass(), true);
+                            event.setTimeStamp(originalDate);
                         }
                     }
                 }
@@ -179,11 +182,11 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                         Messaging.report("Date format incorrect", ex, this.getClass(), true);
                     }
                     if (oT != null) {
-                        event.setTimeStampDt(oT);
+                        event.setTimeStamp(oT);
                         IResponseMessage response = restClientEvent.modifyEvent(event);
                         if (response.isBad()) {
-                            Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
-                            event.setTimeStampDt(originalDate);
+                            Messaging.report("Event "+response.getIdentifier()+" wasn't modified because of http error " + response.getMessage(), Message.State.BAD, this.getClass(), true);
+                            event.setTimeStamp(originalDate);
                         }
                     }
 
@@ -199,22 +202,24 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                         Messaging.report("Date format incorrect", ex, this.getClass(), true);
                     }
                     if (oZ != null) {
-                        event.setTimeStampDt(oZ);
+                        event.setTimeStamp(oZ);
                         IResponseMessage response = restClientEvent.modifyEvent(event);
                         if (response.isBad()) {
-                            Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
-                            event.setTimeStampDt(originalDate);
+                            Messaging.report("Event "+response.getIdentifier()+" wasn't modified because of http error " + response.getMessage(), Message.State.BAD, this.getClass(), true);
+                            event.setTimeStamp(originalDate);
                         }
                     }
                 }
                 break;
             case ACTOR:
                 if (value != null && !value.equals(originalValue)) {
-                    event.setActor((String) value);
+                    PersonDTO actor = new PersonDTO((Actor)value);
+                    event.setActor(actor);
                     IResponseMessage response = restClientEvent.modifyEvent(event);
                     if (response.isBad()) {
-                        Messaging.report("Event wasn't modified" + response.getSummary(), Message.State.BAD, this.getClass(), true);
-                        event.setActor((String) originalValue);
+                        Messaging.report("Event wasn't modified" + response.getMessage(), Message.State.BAD, this.getClass(), true);
+                        PersonDTO originalActor = new PersonDTO((Actor)originalValue);
+                        event.setActor(originalActor);
                     }
                 }
                 break;
@@ -223,67 +228,62 @@ public class EventTableModel extends EntityTableModel<EventBean> {
 
     @Override
     public void removeRow(int row) {
-        IResponseMessage response = restClientEvent.removeEvent(entities.get(row).getEventId().trim());
-        if (!response.isBad()) {
-            entities.remove(row);
-            fireTableDataChanged();
-
-        } else {
-            Messaging.report("Event wasn't deleted from the web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
-        }
+        EventDTO event = (EventDTO)entities.get(row);
+        removeEntity(event);
     }
 
     @Override
-    public void removeEntity(EventBean event) {
-        IResponseMessage response = restClientEvent.removeEvent(event.getEventId().trim());
+    public void removeEntity(EventDTO event) {
+        IResponseMessage response = restClientEvent.removeEvent(event.getIdentifier());
         if (!response.isBad()) {
             entities.remove(event);
             fireTableDataChanged();
-
         } else {
-            Messaging.report("Event wasn't deleted from the web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
+            Messaging.report("Event wasn't deleted from the web services" + response.getMessage(), Message.State.BAD, this.getClass(), true);
         }
     }
 
     @Override
-    public void addEntity(EventBean e) {
-        e.setEventId(e.buildEventId());
-        IResponseMessage response = restClientEvent.postEvent(e);
+    public void addEntity(EventDTO e) {
+        IResponseMessage<EventDTO> response = restClientEvent.postEvent(e);
         if (!response.isBad()) {
-
+            String identifier = response.getIdentifier();
+            e.setIdentifier(identifier);
+            OffsetDateTime timeStamp = response.getEntity().getTimeStamp();
+            e.setTimeStamp(timeStamp);
             entities.add(e);
             fireTableRowsInserted(entities.size() - 1, entities.size() - 1);
             fireTableDataChanged();
         } else {
-            Messaging.report("Event wasn't saved to web services" + response.getSummary(), Message.State.BAD, this.getClass(), true);
+            Messaging.report("Event wasn't saved to web services: " + response.getMessage(), Message.State.BAD, this.getClass(), true);
         }
 
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        EventBean event = entities.get(rowIndex);
+        EventDTO event = (EventDTO)entities.get(rowIndex);
 
         String colName = getColumnName(columnIndex);
         switch (colName) {
             case DATE:
-                return event.getTimeStampDt().format(DateTimeFormatter.ISO_LOCAL_DATE);
+                return event.getTimeStamp().format(DateTimeFormatter.ISO_LOCAL_DATE);
             case TIME:
-                return event.getTimeStampDt().format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS);
+                return event.getTimeStamp().format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS);
             case TIMEZONE:
-                return event.getTimeStampDt().getOffset().toString();
+                return event.getTimeStamp().getOffset().toString();
             case TOOL_CATEGORY:
-                return event.getToolCategoryName();
+                return event.getToolCategory().name;
             case TOOL:
-                return event.getToolNames();
+                return event.getTool().fullName();
             case PROCESS:
-                return event.getProcessName();
+                return event.getProcess().name;
             case ACTION:
-                return event.getActionName();
+                return event.getAction().name;
             case ACTOR:
-                return event.getActor();
+                return event.getActor().getLastNameFirstName();
             case PROGRAM:
-                return event.getProgramProperty();
+                return event.getProgram();
             case LABEL:
                 return event.getLabel();
             case PROPERTIES:
@@ -292,6 +292,13 @@ public class EventTableModel extends EntityTableModel<EventBean> {
                 return null;
         }
     }
+    
+        public EventDTO getEntityWithName(String name) {
+        for (EventDTO e : entities) {
+                if(e.getIdentifier().equals(name)){return e;}
+        }
+            return null;
+    }
 
     @Override
     public void addRow() {
@@ -299,7 +306,7 @@ public class EventTableModel extends EntityTableModel<EventBean> {
     }
 
     @Override
-    public Object getValueAt(EventBean entity, int columnIndex) {
+    public Object getValueAt(EventDTO entity, int columnIndex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

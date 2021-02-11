@@ -32,9 +32,10 @@ public class ChiefScientistTableModel extends AbstractTableModel {
     public static final String COUNTRY = "Country";
     public static final String ORG = "Organisation";
     public static final String ORG_CODE = "Code";
-    public static final String NAME = "Name";
+    public static final String FIRST_NAME = "First name";
+    public static final String LAST_NAME = "Last name";
     //private SaveButtonDisablerOnValidationFailure parent;
-    public static final String[] COLUMN_NAMES = {COUNTRY, ORG, ORG_CODE, NAME};
+    public static final String[] COLUMN_NAMES = {COUNTRY, ORG, ORG_CODE, FIRST_NAME,LAST_NAME};
 
     //public static JComboBox chiefScientistOrganisationList;
     //public static JComboBox chiefScientistCountryList;
@@ -70,6 +71,8 @@ public class ChiefScientistTableModel extends AbstractTableModel {
             case 2:
                 return false;
             case 3:
+                return true;
+            case 4:
                 return true;
             default:
                 return false;
@@ -110,7 +113,7 @@ public class ChiefScientistTableModel extends AbstractTableModel {
     }
 
     public void addRow() {
-        String[] rowData = {"", "", "", ""};
+        String[] rowData = {"", "", "", "", ""};
         addRow(rowData);
     }
 
@@ -146,9 +149,9 @@ public class ChiefScientistTableModel extends AbstractTableModel {
         List<Person> r = new ArrayList<>(data.size());
         for (Map<String, Object> map : data) {
             if (map.get(ORG) instanceof OrganisationBean) {
-                r.add(new Person((String) map.get(NAME), (OrganisationBean) map.get(ORG)));
+                r.add(new Person((String) map.get(FIRST_NAME), (String) map.get(LAST_NAME),(OrganisationBean) map.get(ORG)));
             } else if (map.get(ORG) instanceof String) {
-                r.add(new Person((String) map.get(NAME), (String) map.get(ORG_CODE), (String) map.get(ORG), (String) map.get(COUNTRY)));
+                r.add(new Person((String) map.get(FIRST_NAME), (String) map.get(LAST_NAME), (String) map.get(ORG_CODE), (String) map.get(ORG), (String) map.get(COUNTRY)));
             }
 
         }
@@ -157,7 +160,7 @@ public class ChiefScientistTableModel extends AbstractTableModel {
 
     public void addPersons(List<Person> persons) {
         for (Person person : persons) {
-            String[] rowData = {person.country, person.organisationName, person.organisationCode, person.name};
+            String[] rowData = {person.country, person.organisationName, person.organisationCode, person.firstName,person.lastName};
             addRow(rowData);
         }
 
@@ -216,9 +219,8 @@ public class ChiefScientistTableModel extends AbstractTableModel {
     }
 
     public boolean performValidation() {
-
         for (Map<String, Object> map : data) {
-            if (map.get(COUNTRY).equals("") || map.get(ORG).equals(BASE_ACTION) || map.get(ORG_CODE).equals("") || map.get(COUNTRY) == null || map.get(ORG) == null || map.get(ORG_CODE) == null || map.get(NAME) == null) {
+            if ("".equals(map.get(COUNTRY)) || BASE_ACTION.equals(map.get(ORG)) || "".equals(map.get(ORG_CODE)) || map.get(COUNTRY) == null || map.get(ORG) == null || map.get(ORG_CODE) == null || map.get(FIRST_NAME) == null|| map.get(LAST_NAME) == null) {
                 return false;
             }
         }
