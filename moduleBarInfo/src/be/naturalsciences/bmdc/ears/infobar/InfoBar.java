@@ -167,17 +167,19 @@ public final class InfoBar implements LookupListener {
             }
         }
         messageResult.addLookupListener(this);
-        Timer t = new Timer(1000, (ActionEvent event) -> {
+        Timer t = new Timer(60 * 1000, (ActionEvent event) -> {
             OffsetTime localTimeInUtc = OffsetTime.now(Clock.systemUTC());
             OffsetTime localTime = OffsetTime.now(Clock.systemDefaultZone());
             timeLabel.setText("Computer UTC: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTimeInUtc) + SEPARATOR + "Computer local: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTime) + " ");
             try {
-                if (restNav != null && restNav.getLastNavXml() != null && restNav.getLastNavXml().getTimeStamp() != null && !restNav.getLastNavXml().getTimeStamp().equals("")) {
+                if (restNav != null) {
                     NavBean lastNav = restNav.getLastNavXml();
-                    String lastCentralTime = lastNav.getTimeStamp();
-                    LocalDateTime localDate = LocalDateTime.parse(lastCentralTime, StringUtils.DTF_ISO_DATETIME_ZONE);
-                    centralTimeLabel.setText("Server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
-                    locationLabel.setText("Location: " + lastNav.getLatitudeDMS(false) + " " + lastNav.getLongitudeDMS(false));
+                    if (lastNav != null && lastNav.getTimeStamp() != null && !lastNav.getTimeStamp().equals("")) {
+                        String lastCentralTime = lastNav.getTimeStamp();
+                        LocalDateTime localDate = LocalDateTime.parse(lastCentralTime, StringUtils.DTF_ISO_DATETIME_ZONE);
+                        centralTimeLabel.setText("Server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
+                        locationLabel.setText("Location: " + lastNav.getLatitudeDMS(false) + " " + lastNav.getLongitudeDMS(false));
+                    }
                 }
             } catch (ConnectException ex) {
                 Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
@@ -190,7 +192,7 @@ public final class InfoBar implements LookupListener {
         this.locationLabel = new JLabel();
 
         Border border = new LineBorder(Color.BLUE);
-        
+
         JPanel locationLabelPanel = new JPanel();
         locationLabelPanel.setBorder(border);
         JPanel centralTimeLabelPanel = new JPanel();
