@@ -119,7 +119,7 @@ public class OntologyNode extends DataNode implements Comparable<OntologyNode> {
         if (act.equals(EDIT_ONTOLOGY)) {
             if (ontModel.getCurrentActions().contains(IOntologyModel.ActionEnum.EDITING)) {
                 return false;
-            } else if (ontModel.isPasswordProtected() && !WebserviceUtils.testWS("ears2Ont/authenticate")) { //if password protection is required and the earsOnt service is offline
+            } else if (ontModel.isPasswordProtected() && !WebserviceUtils.testWS("ears3/alive")) { //if password protection is required and the earsOnt service is offline
                 return false;
             } else if (ontModel.isEditable()) {
                 return true;
