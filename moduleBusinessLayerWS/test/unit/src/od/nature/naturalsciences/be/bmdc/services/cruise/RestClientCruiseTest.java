@@ -52,37 +52,6 @@ public class RestClientCruiseTest {
     }
 
     /**
-     * Test of getAllCruises method, of class RestClientCruise.
-     */
-    @Test
-    @Ignore
-    public void testGetAllCruises() throws ConnectException, EarsException, MalformedURLException {
-        System.out.println("getAllCruises");
-        RestClientCruise instance = new RestClientCruise();
-        Collection<CruiseBean> expResult = null;
-        Collection<CruiseBean> result = instance.getAllCruises();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getCruise method, of class RestClientCruise.
-     */
-    @Test
-    @Ignore
-    public void testGetCruise() throws ConnectException, EarsException, MalformedURLException {
-        System.out.println("getCruise");
-        String cruiseId = "";
-        RestClientCruise instance = new RestClientCruise();
-        CruiseBean expResult = null;
-        CruiseBean result = instance.getCruise(cruiseId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of getCruiseByJson method, of class RestClientCruise.
      */
     /*@Test
@@ -117,13 +86,13 @@ public class RestClientCruiseTest {
         // pCruise.setAttributId("");
         pCruise.setChiefScientist("Charles Darwin");
         pCruise.setChiefScientistOrganisation("Royal Society");
-        pCruise.setCollateCenter("Royal Society");
-        pCruise.setCruiseName("Second voyage of the HMS Beagle");
+        pCruise.setCollateCentre("Royal Society");
+        pCruise.setName("Second voyage of the HMS Beagle");
         pCruise.setEndDate("1836-10-02T18:00:00Z");
-        pCruise.setInternalId("Beagle2");
+        pCruise.setId("Beagle2");
         pCruise.setObjectives("Conduct a hydrographic survey of the coasts of the southern part of South America");
         pCruise.setPlatformClass("Brig-Sloop");
-        pCruise.setPlatformCode("HMS Beagle");
+        pCruise.setPlatform("HMS Beagle");
         SeaAreaBean sea1 = new SeaAreaBean("S1", "test:S1", "Atlantic Ocean");
         SeaAreaBean sea2 = new SeaAreaBean("S2", "test:S2", "Pacific Ocean");
         SeaAreaBean sea3 = new SeaAreaBean("S3", "test:S3", "Southern Ocean");
@@ -131,7 +100,7 @@ public class RestClientCruiseTest {
         Set<SeaAreaBean> seas = new HashSet();
         pCruise.setSeaAreas(seas);
         pCruise.setStartDate("1831-12-27T18:00:00Z");
-        pCruise.setStartingHarbor("Plymouth");
+        pCruise.setDepartureHarbour("Plymouth");
         //pCruise.setdEndDate(Date);
         //pCruise.setdStartDate(Date);
 

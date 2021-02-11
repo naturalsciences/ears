@@ -1,6 +1,6 @@
 package be.naturalsciences.bmdc.ears.entities;//ys
 
-import be.naturalsciences.bmdc.utils.StringUtils;
+import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "navigation")
+@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "nav")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NavBean implements Serializable {
 
@@ -25,11 +25,11 @@ public class NavBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "time")
     private String timestamp;
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "lon")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "longitude")
     private String lon;
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "lat")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "latitude")
     private String lat;
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "heading")
     private String heading;

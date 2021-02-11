@@ -44,9 +44,9 @@ public interface ICruise extends EARSConcept {
 
     public void setChiefScientists(List<Person> chiefScientists);
 
-    public String getPlatformCode();
+    public String getPlatform();
 
-    public void setPlatformCode(String platformCode);
+    public void setPlatform(String platformCode);
 
     public String getPlatformClass();
 
@@ -56,13 +56,13 @@ public interface ICruise extends EARSConcept {
 
     public void setObjectives(String objectives);
 
-    public String getCollateCenter();
+    public String getCollateCentre();
 
-    public void setCollateCenter(String collateCenter);
+    public void setCollateCentre(String collateCenter);
 
-    public String getStartingHarbor();
+    public String getDepartureHarbour();
 
-    public void setStartingHarbor(String startingHarbor);
+    public void setDepartureHarbour(String startingHarbor);
 
     public String getArrivalHarbor();
 

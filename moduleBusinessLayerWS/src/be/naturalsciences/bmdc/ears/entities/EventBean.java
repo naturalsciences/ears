@@ -63,6 +63,7 @@ public class EventBean implements Serializable, EARSConcept {
     public static final String TOOL_DELIM = ",";
 
     public static final Map<Enum, String> PROPERTY_URLS;
+    private ToolBean tool;
 
     public enum Prop {
         DEPTH_M, HASDATA, LABEL, LENGTH_M, PARAMETER, PROGRAM, RECIPIENT_VOLUME_L, RELATED_EVENT, SAMPLEID, SAMPLED_VOLUME_L, SENSORHEIGHT_M, SUBJECT, SUBSAMPLEID, SWATH_MODE, VOLUMECENTRIFUGE_READING, VOLUMECENTRIFUGED_L, VOLUMEFILTERED_L, VOLUMEFILTERED_READING, WIDTH_SWATH
@@ -109,6 +110,7 @@ public class EventBean implements Serializable, EARSConcept {
      */
     private SingletonMap<String, String> actionUri; //action
 
+    private SingletonMap<String, String> platformUri; //platform
     /**
      * A map of URI Strings of the properties. A property is a key, value pair.
      * As the same property can occur N times, this is implemented as a
@@ -134,20 +136,19 @@ public class EventBean implements Serializable, EARSConcept {
 
     private Double lonDec;
 
-    private String actor;
+    private Actor actor;
+
+    private VesselBean platform;
 
     /**
      * *
      * An ordered set of tools with the parent tools first, followed by the
      * nested tools.
      */
-    private Set<String> toolSet; //tool
-
+    //  private Set<String> toolSet; //tool
     private Set<EventBean> relatedEvents;
 
     private ProgramBean program;
-
-    private CruiseBean cruise;
 
     public static int counter;
 
@@ -190,29 +191,22 @@ public class EventBean implements Serializable, EARSConcept {
      * attachProperty()
      * @param actor Optional
      */
-    public EventBean(String eventDefinitionId, ProgramBean program, CruiseBean cruise, IToolCategory toolCategory, LinkedHashSet<ITool> tools, IProcess process, IAction action, Set<IProperty> properties, String actor) throws IllegalArgumentException {
+    public EventBean(String eventDefinitionId, VesselBean vessel, ProgramBean program, IToolCategory toolCategory, ToolBean tool, IProcess process, IAction action, Set<IProperty> properties, Actor actor) throws IllegalArgumentException {
         super();
         if (toolCategory == null) {
             throw new IllegalArgumentException("Null tool category provided");
-        } else if (tools == null) {
+        } else if (tool == null) {
             throw new IllegalArgumentException("Null tool provided");
-        } else if (tools.isEmpty()) {
-            throw new IllegalArgumentException("Tools list empty");
         } else if (process == null) {
             throw new IllegalArgumentException("Null process provided");
         } else if (action == null) {
             throw new IllegalArgumentException("Null action provided");
-        } else if (cruise == null) {
-            throw new IllegalArgumentException("No cruise provided.");
         } else if (program == null) {
             throw new IllegalArgumentException("No program provided.");
         }
-        this.actor = actor;
-        this.toolSet = new LinkedHashSet(); //cannot be larger than 2!
 
-        for (ITool tool : tools) {
-            this.addTool(tool);
-        }
+        this.actor = actor;
+        this.tool = tool;
         this.processUri = new SingletonMap(AsConcept.getConceptUriString(process), AsConcept.getConceptName(process));//Collections.singletonMap(AsConcept.getConceptUriString(process), AsConcept.getConceptName(process));
         this.toolCategoryUri = new SingletonMap(AsConcept.getConceptUriString(toolCategory), AsConcept.getConceptName(toolCategory));//Collections.singletonMap(AsConcept.getConceptUriString(toolCategory), AsConcept.getConceptName(toolCategory));
         this.actionUri = new SingletonMap(AsConcept.getConceptUriString(action), AsConcept.getConceptName(action));//Collections.singletonMap(AsConcept.getConceptUriString(action), AsConcept.getConceptName(action));
@@ -234,9 +228,9 @@ public class EventBean implements Serializable, EARSConcept {
         }
 
         this.timeStampDt = OffsetDateTime.now();
-        this.cruise = cruise;
+        this.platform = vessel;
         this.program = program;
-        this.eventId = buildEventId();
+        //this.eventId = buildEventId(); //the server takes care of creating the eventId
         this.eventDefinitionId = eventDefinitionId;
         counter++;
     }
@@ -332,15 +326,60 @@ public class EventBean implements Serializable, EARSConcept {
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "actor")
-    public String getActor() {
+    public Actor getActor() {
         return actor;
     }
 
-    public void setActor(String actor) {
+    public void setActor(Actor actor) {
         this.actor = actor;
-
     }
 
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "platform")
+    public VesselBean getPlatform() {
+        return this.platform;
+    }
+
+    public void setPlatform(VesselBean platform) {
+        this.platform = platform;
+    }
+
+    /*public String getPlatformJson() {
+        if (platformUri != null && platformUri.keySet() != null) {
+            return JsonUtils.serializeConcept(platformUri);
+        } else {
+            return null;
+        }
+    }
+
+    public void setPlatformJson(String platformJson) {
+        this.platformUri = JsonUtils.deserializeConcept(platformJson);
+    }
+
+    public String getPlatformUri() {
+        if (platformUri != null && toolCategoryUri.keySet() != null) {
+            return platformUri.firstKey();
+        } else {
+            return null;
+        }
+    }
+
+    public String getPlatform() {
+        if (toolCategoryUri == null) {
+            return null;
+        }
+        if (!hasPlatform()) {//there is only one map element.
+            return (String) toolCategoryUri.keySet().toArray()[0]; //if there is no name return the key 
+        } else {
+            return (String) toolCategoryUri.values().toArray()[0];
+        }
+    }
+
+    public boolean hasPlatform() {
+        if (toolCategoryUri != null) {
+            return toolCategoryUri.values().toArray()[0] != null && !toolCategoryUri.values().toArray()[0].equals("");
+        }
+        return false;
+    }*/
     /**
      * *
      * Return a JSON string representation of the properties. Removes properties
@@ -390,53 +429,19 @@ public class EventBean implements Serializable, EARSConcept {
 
     public String getProgramProperty() {
         Set<String> values = getPropertyValues(Prop.PROGRAM);
-        return StringUtils.join(values,",");
+        return StringUtils.join(values, ",");
     }
 
-    @XmlElementWrapper(namespace = "http://www.eurofleets.eu/", name = "tool")
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "name")
-    public Set<String> getToolSet() {
-        return this.toolSet;
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "tool")
+    public ToolBean getTool() {
+        return this.tool;
     }
 
-    public void setToolSet(Set<String> toolSet) {
-        this.toolSet = toolSet;
+    public void setTool(ToolBean tool) {
+        this.tool = tool;
     }
 
-    public Map<String, String> getToolUris() {
-        return JsonUtils.deserializeConcepts(getToolSet());
-    }
-
-    public String getToolsJson() {
-
-        if (getToolUris() != null && getToolUris().keySet() != null) {
-            return JsonUtils.serializeConcepts(getToolUris());
-        } else {
-            return null;
-        }
-       
-        //return StringUtils.join(getToolSet(), TOOL_DELIM);//serializeTools(toolUris);
-    }
-
-    /**
-     * *
-     * Return the names of the attached tools, separated by a comma.
-     *
-     * @return
-     */
-    public String getToolNames() {
-        return StringUtils.join(getToolUris().values().stream().map(s -> s.replace("+", " ")).collect(Collectors.toList()), ", ");
-    }
-
-    public void addTool(ITool tool) {
-        if (this.getToolSet().size() < 2) {
-            this.getToolSet().add(JsonUtils.serializeConcept(AsConcept.getConceptUriString(tool), AsConcept.getConceptName(tool)));
-        } else {
-            throw new IllegalStateException("The toolSet may not contain more than 2 elements.");
-        }
-    }
-
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "subjectName")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "toolCategory")
     public String getToolCategoryJson() {
         if (toolCategoryUri != null && toolCategoryUri.keySet() != null) {
             return JsonUtils.serializeConcept(toolCategoryUri);
@@ -457,13 +462,6 @@ public class EventBean implements Serializable, EARSConcept {
         }
     }
 
-    public boolean hasToolCategoryName() {
-        if (toolCategoryUri != null) {
-            return toolCategoryUri.values().toArray()[0] != null && !toolCategoryUri.values().toArray()[0].equals("");
-        }
-        return false;
-    }
-
     public String getToolCategoryName() {
         if (toolCategoryUri == null) {
             return null;
@@ -475,7 +473,14 @@ public class EventBean implements Serializable, EARSConcept {
         }
     }
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "categoryName")
+    public boolean hasToolCategoryName() {
+        if (toolCategoryUri != null) {
+            return toolCategoryUri.values().toArray()[0] != null && !toolCategoryUri.values().toArray()[0].equals("");
+        }
+        return false;
+    }
+
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "process")
     public String getProcessJson() {
         if (processUri != null && processUri.keySet() != null) {
             return JsonUtils.serializeConcept(processUri);
@@ -514,7 +519,7 @@ public class EventBean implements Serializable, EARSConcept {
         }
     }
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "name")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "action")
     public String getActionJson() {
         if (actionUri != null && actionUri.keySet() != null) {
             return JsonUtils.serializeConcept(actionUri);
@@ -571,14 +576,6 @@ public class EventBean implements Serializable, EARSConcept {
 
     public Set<EventBean> getRelatedEvents() {
         return relatedEvents;
-    }
-
-    public CruiseBean getCruise() {
-        return cruise;
-    }
-
-    public void setCruise(CruiseBean cruise) {
-        this.cruise = cruise;
     }
 
     public ProgramBean getProgram() {
@@ -745,7 +742,7 @@ public class EventBean implements Serializable, EARSConcept {
      * @return
      */
     public boolean isLegal() {
-        if (getTimeStampDt() == null || getId() == null || getActionUri() == null || getToolCategoryUri() == null || getProcessUri() == null || getToolSet() == null || getToolSet().isEmpty() || new ArrayList(getToolSet()).get(0) == null) {
+        if (getTimeStampDt() == null || getId() == null || getActionUri() == null || getToolCategoryUri() == null || getProcessUri() == null || getTool() == null) {
             return false;
         }
         return true;
@@ -809,10 +806,9 @@ public class EventBean implements Serializable, EARSConcept {
         EventBean clone = new EventBean();
 
         clone.setProgram(this.getProgram());
-        clone.setCruise(this.getCruise());
 
         clone.setToolCategoryJson(this.getToolCategoryJson());
-        clone.setToolSet(this.getToolSet());
+        // clone.setToolSet(this.getToolSet());
         clone.setProcessJson(this.getProcessJson());
         clone.setActionJson(this.getActionJson());
         Set<PropertyBean> properties = this.getProperties();
@@ -832,16 +828,12 @@ public class EventBean implements Serializable, EARSConcept {
 
     @Override
     public String toString() {
-
-        return "Event [eventId=" + eventId + ", timeStamp=" + getTimeStampDt().toString() + ", actor="
-                + actor + ", subject=" + getToolCategoryName() + ", actionName=" + getActionName()
-                + ", actionProperty=" + serializeProperties(getProperties()) + ", categoryName="
-                + getProcessName() + "tools= " + getToolNames() + "] " + "\n";
+        return "EventBean{" + "tool=" + tool + ", timeStampDt=" + timeStampDt + ", program=" + program + ", eventId=" + eventId + ", eventDefinitionId=" + eventDefinitionId + '}';
     }
 
     public String getDescription() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.getToolNames());
+        sb.append(this.getTool());
         sb.append(": ");
         sb.append(this.getProcessName());
         sb.append("/");
@@ -851,4 +843,8 @@ public class EventBean implements Serializable, EARSConcept {
         return sb.toString();
     }
 
+    @Override
+    public String getName() {
+        return getEventId();
+    }
 }

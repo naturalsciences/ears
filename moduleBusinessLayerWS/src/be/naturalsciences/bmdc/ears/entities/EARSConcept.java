@@ -19,4 +19,6 @@ public interface EARSConcept {
      }*/
     public boolean isLegal();
 
+    public String getName();
+
 }

@@ -31,4 +31,9 @@ public class CurrentActor implements IActor, CurrentSingleton<IActor> {
     public boolean isLegal() {
         return true;
     }
+
+    @Override
+    public String getName() {
+        return currentActor.getName();
+    }
 }

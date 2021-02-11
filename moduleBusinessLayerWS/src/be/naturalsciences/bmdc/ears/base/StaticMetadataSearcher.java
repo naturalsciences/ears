@@ -133,8 +133,11 @@ public class StaticMetadataSearcher implements LookupListener {
         return concepts;
     }
 
+    
     public Collection<SeaAreaBean> getSeaAreas(boolean sorted) {
-        return (Collection<SeaAreaBean>) getConcepts(SeaAreaBean.class, sorted);
+        Collection<SeaAreaBean> seas = (Collection<SeaAreaBean>) getConcepts(SeaAreaBean.class, sorted);
+        seas.removeIf(s -> s.getCode().contains("C16"));
+        return seas;
     }
 
     public Collection<ProjectBean> getProjects(boolean sorted) {

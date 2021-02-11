@@ -64,7 +64,6 @@ public class RestClientOntTest {
         RestClientOnt instance = new RestClientOnt();
         String result = instance.getVesselOntology();
         assertTrue(result.length() > 20);
-
     }
 
     /**

@@ -9,32 +9,74 @@ package be.naturalsciences.bmdc.ears.entities;
  *
  * @author Thomas Vandenberghe
  */
+import eu.eurofleets.ears3.dto.CruiseDTO;
+import eu.eurofleets.ears3.dto.EventDTO;
+import eu.eurofleets.ears3.dto.ProgramDTO;
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "message")
-public class MessageBean implements Serializable, IResponseMessage {
-
-    /**
-     * The id of the entity that was just created.
-     */
-    private String code;
+@XmlRootElement(name = "message")
+@XmlSeeAlso({EventDTO.class, CruiseDTO.class, ProgramDTO.class})
+@XmlAccessorType(XmlAccessType.FIELD) //ignore all the getters
+public class MessageBean<E> implements Serializable, IResponseMessage<E> {
 
     /**
-     * The http response code.
+     * The error message.
      */
-    private int status;
+    public String message;
 
-    private String description;
+    /**
+     * The http status code.
+     */
+    public int code;
+
+    /**
+     * The identifier of the created entity
+     */
+    public String identifier;
+
+    /**
+     * The error exceptionType.
+     */
+    public String exceptionType;
+
+    @XmlAnyElement(lax=true)
+    public E object;
 
     public MessageBean() {
     }
 
-    public MessageBean(String code, int status, String description) {
+    public MessageBean(String message) {
+        this.message = message;
+    }
+
+    public MessageBean(Exception e) {
+        this.message = e.getMessage();
+        this.exceptionType = e.getClass().getSimpleName();
+    }
+
+    public MessageBean(String message, Exception e) {
+        this.message = message;
+        this.exceptionType = e.getClass().getSimpleName();
+    }
+
+    public MessageBean(String message, int code, String identifier, String exceptionType, E object) {
+        this.message = message;
         this.code = code;
-        this.description = description;
-        this.status = status;
+        this.identifier = identifier;
+        this.exceptionType = exceptionType;
+        this.object = object;
+    }
+
+    public MessageBean(int code, String message) {
+        this.code = code;
+        this.message = message;
+        this.exceptionType = null;
     }
 
     /**
@@ -42,57 +84,55 @@ public class MessageBean implements Serializable, IResponseMessage {
      *
      * @return
      */
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "code")
-    @Override
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    @Override
-    public int getStatus() {
-        return status;
-    }
-
-    @Override
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 
+    public String getExceptionType() {
+        return exceptionType;
+    }
+
+    public void setExceptionType(String exceptionType) {
+        this.exceptionType = exceptionType;
+    }
+
     /**
-     * A description of the web service action that was just performed.
+     * A message of the web service action that was just performed.
      *
      * @return
      */
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "description")
-    public String getDescription() {
-        return description;
+    public String getMessage() {
+        return message;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public String getSummary() {
-        return getDescription() + ": identifier " + getCode();
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
     public boolean isBad() {
-        int code;
-        if (this.code == null) {
-            return this.status < 200 || this.status >= 300;
-        } else {
-            /*try {
-                code = Integer.parseInt(this.code);
-            } catch (NumberFormatException ex) {
-                return true;
-            }*/
-            return false;
-        }
+        return this.code < 200 || this.code >= 300;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.identifier;
+    }
+
+    @Override
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public E getEntity() {
+        return object;
+    }
+
+    public void setEntity(E entity) {
+        this.object = object;
     }
 }

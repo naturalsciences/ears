@@ -33,7 +33,7 @@ import org.openide.util.NbPreferences;
 public class Configs {
 
     public static void persistActor(Actor actor) {
-        persistActor(actor.getId(), actor.getFirstNameOfActor(), actor.getLastNameOfActor());
+        persistActor(actor.getId(), actor.getFirstName(), actor.getLastName());
     }
 
     private static void persistActor(String key, String firstName, String lastName) {

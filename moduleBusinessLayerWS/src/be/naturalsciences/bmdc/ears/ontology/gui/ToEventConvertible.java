@@ -9,9 +9,13 @@ import be.naturalsciences.bmdc.ears.entities.Actor;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.CurrentActor;
 import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
+import be.naturalsciences.bmdc.ears.entities.CurrentEvent;
 import be.naturalsciences.bmdc.ears.entities.CurrentProgram;
+import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.entities.ToolBean;
+import be.naturalsciences.bmdc.ears.entities.VesselBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.properties.Configs;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
@@ -21,6 +25,10 @@ import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.IEventDefinition;
 import be.naturalsciences.bmdc.ontology.entities.IProperty;
 import be.naturalsciences.bmdc.ontology.entities.ITool;
+import eu.eurofleets.ears3.dto.EventDTO;
+import eu.eurofleets.ears3.dto.LinkedDataTermDTO;
+import eu.eurofleets.ears3.dto.PersonDTO;
+import eu.eurofleets.ears3.dto.ToolDTO;
 import gnu.trove.set.hash.THashSet;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -55,16 +63,16 @@ public interface ToEventConvertible {
             cng = new ConceptHierarchy(la);
 
             ProgramBean currentProgram = null;
-            CruiseBean currentCruise = null;
+            VesselBean currentVessel = null;
             Actor currentActor = null;
             CurrentProgram cProgram = Utilities.actionsGlobalContext().lookup(CurrentProgram.class);
             CurrentActor cActor = Utilities.actionsGlobalContext().lookup(CurrentActor.class);
-            CurrentCruise cCruise = Utilities.actionsGlobalContext().lookup(CurrentCruise.class);
+            CurrentVessel cVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);
             if (cProgram != null) {
                 currentProgram = cProgram.getConcept();
             }
-            if (cCruise != null) {
-                currentCruise = cCruise.getConcept();
+            if (cVessel != null) {
+                currentVessel = cVessel.getConcept();
             }
             if (cActor != null) {
                 currentActor = cActor.getConcept();
@@ -72,17 +80,28 @@ public interface ToEventConvertible {
             if (currentProgram != null) {
                 boolean overrideAnonymous = Configs.getOverrideEventsAsAnonymous();
                 if (currentActor != null || overrideAnonymous) {
-                    LinkedHashSet<ITool> tools = new LinkedHashSet<>();
-                    tools.add(cng.getTool());
+                    LinkedDataTermDTO parentTool = null;
+                    ToolDTO tool = null;
                     if (cng.getHostedTool() != null) {
-                        tools.add(cng.getHostedTool());
+                        //tools.add(cng.getHostedTool());
+                        parentTool = new LinkedDataTermDTO(cng.getTool());
+                        tool = new ToolDTO(new LinkedDataTermDTO(cng.getHostedTool()), parentTool);
+                    } else {
+                        tool = new ToolDTO(new LinkedDataTermDTO(cng.getTool()), null);
                     }
-                    String actor = null;
+
+                    Actor actor = null;
                     if (!overrideAnonymous) {
-                        actor = currentActor.getLastNameFirstName();
+                        actor = currentActor;
                     }
-                    EventBean event = new EventBean(eventDefinition.getUri().toString(), currentProgram, currentCruise, cng.getToolCategory(), tools, cng.getProcess(), cng.getAction(), properties, actor);
-                    GlobalActionContextProxy.getInstance().addEnsureOne(event);
+
+                    actor = new Actor("aaa", "Tess", "T. Essai", "a.b@c.d");
+                    // EventDTO event = new EventBean(eventDefinition.getUri().toString(), currentVessel, currentProgram, cng.getToolCategory(), tool, cng.getProcess(), cng.getAction(), properties, actor);
+                    LinkedDataTermDTO subject = new LinkedDataTermDTO("http://vocab.nerc.ac.uk/collection/C77/current/M05", null, "Occasional standard measurements"); //TODO change this.
+
+                    EventDTO event = new EventDTO(null, eventDefinition.getUri().toString(), null, new PersonDTO(actor), subject, new LinkedDataTermDTO(cng.getToolCategory()), tool, new LinkedDataTermDTO(cng.getProcess()), new LinkedDataTermDTO(cng.getAction()), null, currentProgram.getName(), currentVessel.getCode());
+                    //  GlobalActionContextProxy.getInstance().addEnsureOne(event);
+                    GlobalActionContextProxy.getInstance().add(CurrentEvent.getInstance(event));
                 } else {
                     throw new EarsException("There is no current actor selected. Please (create and) select the current actor first.");
                 }

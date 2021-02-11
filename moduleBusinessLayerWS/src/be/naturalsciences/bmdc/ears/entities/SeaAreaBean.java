@@ -114,35 +114,4 @@ public class SeaAreaBean implements Serializable, ISeaArea, Comparable<SeaAreaBe
     public boolean isLegal() {
         return code != null /*&& sillyCode != null */ && name != null;
     }
-
 }
-/*
- <ewsl:cruise code="B">
- <ewsl:code>402</ewsl:code>
- <ewsl:cruiseName>B</ewsl:cruiseName>
- <ewsl:startDate>2016-04-07T00:00:00+02:00</ewsl:startDate>
- <ewsl:endDate>2016-04-15T00:00:00+02:00</ewsl:endDate>
- <ewsl:chiefScientist>v</ewsl:chiefScientist>
- <ewsl:chiefScientistOrganisation>SDN:EDMO::1988</ewsl:chiefScientistOrganisation>
- <ewsl:platformCode>SDN:C17::09AD</ewsl:platformCode>
- <ewsl:platformClass>SDN:L06::54</ewsl:platformClass>
- <ewsl:objectives>b</ewsl:objectives>
- <ewsl:collateCenter>SDN:EDMO::1994</ewsl:collateCenter>
- <ewsl:startingHarbor>SDN:C38::BSH3376</ewsl:startingHarbor>
- <ewsl:arrivalHarbor>SDN:C38::BSH3484</ewsl:arrivalHarbor>
-
- <ewsl:seaAreas>
-
- <ewsl:seaArea code="SDN:C19::3">
- <ewsl:URN>sillyCode:SDN:C19::3</ewsl:URN>
- </ewsl:seaArea>
-
- <ewsl:seaArea code="SDN:C19::2">
- <ewsl:URN>sillyCode:SDN:C19::2</ewsl:URN>
- </ewsl:seaArea>
-
- </ewsl:seaAreas>
-
- </ewsl:cruise>
-
- */

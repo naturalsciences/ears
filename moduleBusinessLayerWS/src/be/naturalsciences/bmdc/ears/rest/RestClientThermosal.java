@@ -1,5 +1,6 @@
 package be.naturalsciences.bmdc.ears.rest;//ys
 
+import be.naturalsciences.bmdc.ears.entities.MessageBean;
 import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
@@ -31,11 +32,14 @@ public class RestClientThermosal extends RestClient {
 
     protected ResteasyWebTarget getNearestThermosalTarget;
 
+    private boolean isOnline() {
+        return getBaseURL() != null && WebserviceUtils.testWS("ears3Nav/tss/getLast/datagram");
+    }
+
     public RestClientThermosal(boolean cache) throws ConnectException, EarsException {
         super(cache);
-        if (!WebserviceUtils.testWS("ears2Nav/getLast24hMet")) {
-            online = false;
-            throw new ConnectException();
+        if (!isOnline()) {
+            throw new EarsException("The navigation web service can't be reached. The application won't work correctly.");
         }
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
@@ -56,8 +60,8 @@ public class RestClientThermosal extends RestClient {
             throw new EarsException("The base url for the web services is invalid. The thermosal web service won't work correctly.", ex);
         }
         if (uri != null) {
-            getLastThermosalXmlTarget = client.target(uri.resolve("ears2Nav/getLastTssSSR"));
-            getNearestThermosalTarget = client.target(uri.resolve("ears2Nav/getNearestTss"));
+            getLastThermosalXmlTarget = client.target(uri.resolve("ears3Nav/tss/getLast/xml"));
+            getNearestThermosalTarget = client.target(uri.resolve("ears3Nav/tss/getNearest/xml"));
         }
         /*else {
             throw new EarsException("The base url for the web services has not been set correctly; the application won't work properly.");
@@ -90,7 +94,7 @@ public class RestClientThermosal extends RestClient {
         } else {
             Response response = target.request().get();
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + target.getUri().toString() + ")");
+                throw new ConnectException("response.getStatus() + \"(\" + response.getStatusInfo().getReasonPhrase() + \") - " + target.getUri().toString() + ")");
             }
             nav = response.readEntity(ThermosalBean.class);
             response.close();
@@ -113,7 +117,7 @@ public class RestClientThermosal extends RestClient {
                 .request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastThermosalXmlTarget.getUri().toString() + ")");
+            throw new ConnectException("response.getStatus() + \"(\" + response.getStatusInfo().getReasonPhrase() + \") - " + getLastThermosalXmlTarget.getUri().toString() + ")");
         }
         ths = response.readEntity(new GenericType<Collection<ThermosalBean>>() {
         });

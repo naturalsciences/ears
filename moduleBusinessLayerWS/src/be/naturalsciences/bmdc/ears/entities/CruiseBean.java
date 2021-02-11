@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -61,42 +62,42 @@ public class CruiseBean implements Serializable, Cloneable, Comparable<CruiseBea
     private List<Person> chiefScientists = new ArrayList();
 
     private Set<SeaAreaBean> seaAreas;
-    // private String seaAreasIds;
 
     public final static DateFormat DAY_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
+
+    private List<ProgramBean> programs;
 
     public CruiseBean() {
 
     }
 
-    @XmlAttribute(name = "id")
-    public String getRealId() {
+    @XmlAttribute(name = "identifier")
+    public String getIdentifier() {
         return realId;
     }
 
-    public void setRealId(String realId) {
+    public void setIdentifier(String realId) {
         this.realId = realId;
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "id")
-    public String getInternalId() {
+    public String getId() {
         return internalId;
     }
 
-    public void setInternalId(String internalId) {
+    public void setId(String internalId) {
         this.internalId = internalId;
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "cruiseName")
-    public String getCruiseName() {
+    public String getName() {
         return cruiseName;
     }
 
-    public void setCruiseName(String cruiseName) {
+    public void setName(String cruiseName) {
         this.cruiseName = cruiseName.trim();
     }
 
-    /*---*/
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "startDate")
     public String getStartDate() {
         return this.startDate;
@@ -117,7 +118,6 @@ public class CruiseBean implements Serializable, Cloneable, Comparable<CruiseBea
         this.endDate = endDate;
     }
 
-    /*---*/
     public Date getdStartDate() {
         return this.dStartDate;
     }
@@ -134,6 +134,16 @@ public class CruiseBean implements Serializable, Cloneable, Comparable<CruiseBea
     public void setdEndDate(Date dEndDate) throws ParseException {
         this.setEndDate(be.naturalsciences.bmdc.ears.utils.DateUtilities.formatDateTime(dEndDate));
         this.dEndDate = dEndDate;
+    }
+
+    @XmlElementWrapper(namespace = "http://www.eurofleets.eu/", name = "programs")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "program")
+    public List<ProgramBean> getPrograms() {
+        return this.programs;
+    }
+
+    public void setPrograms(List<ProgramBean> programs) {
+        this.programs = programs;
     }
 
     /**
@@ -203,28 +213,70 @@ public class CruiseBean implements Serializable, Cloneable, Comparable<CruiseBea
 
     @XmlTransient
     public String getNiceChiefScientistString() {
-        StringBuilder sb = new StringBuilder();
-        int ii = chiefScientists.size();
-        if (ii == 0) {
-            sb.append("none specified");
-        } else {
-            for (int i = 0; i < ii; i++) {
-                Person p = chiefScientists.get(i);
-                sb.append(p.name);
-                if (i < ii - 1) {
-                    sb.append(", ");
+        StringJoiner sb = new StringJoiner(", ");
+        if (chiefScientists != null) {
+            int ii = chiefScientists.size();
+            if (ii == 0) {
+                return "no Chief Scientist specified";
+            } else {
+                for (Person p : chiefScientists) {
+                    sb.add(p.firstName + " " + p.lastName);
                 }
             }
+            return sb.toString();
         }
-        return sb.toString();
+        return "no Chief Scientist specified";
+    }
+
+    /**
+     * *
+     * Convert a list of scientists and their organisations represented in json
+     * to a list of Scientist
+     *
+     * @param chiefScientist
+     * @return
+     */
+    private List<Person> scientistStringToList(String chiefScientist) {
+        if (chiefScientist == null) {
+            return new ArrayList();
+        }
+        List<Person> r;
+        if (JSONReader.isValidJSON(chiefScientist)) {
+            try {
+                chiefScientist = URLDecoder.decode(chiefScientist, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Person>>() {
+            }.getType();
+
+            r = new Gson().fromJson(chiefScientist, type);
+            return r;
+        } else {
+            r = new ArrayList();
+            r.add(new Person(chiefScientist, chiefScientist, null, null, null));
+            return r;
+        }
+    }
+
+    /**
+     * *
+     * Output a JSON representation of
+     *
+     * @return
+     */
+    private String stringifyScientistList() {
+        String json = new Gson().toJson(getChiefScientists());
+        return json;
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "platformCode")
-    public String getPlatformCode() {
+    public String getPlatform() {
         return platformCode;
     }
 
-    public void setPlatformCode(String platformCode) {
+    public void setPlatform(String platformCode) {
         this.platformCode = platformCode;
     }
 
@@ -247,20 +299,20 @@ public class CruiseBean implements Serializable, Cloneable, Comparable<CruiseBea
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "collateCenter")
-    public String getCollateCenter() {
+    public String getCollateCentre() {
         return collateCenter;
     }
 
-    public void setCollateCenter(String collateCenter) {
+    public void setCollateCentre(String collateCenter) {
         this.collateCenter = collateCenter;
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "startingHarbor")
-    public String getStartingHarbor() {
+    public String getDepartureHarbour() {
         return startingHarbor;
     }
 
-    public void setStartingHarbor(String startingHarbor) {
+    public void setDepartureHarbour(String startingHarbor) {
         this.startingHarbor = startingHarbor;
     }
 
@@ -301,19 +353,19 @@ public class CruiseBean implements Serializable, Cloneable, Comparable<CruiseBea
 
     @Override
     public String toString() {
-        return getCruiseName() + " (" + DAY_FORMAT.format(getdStartDate()) + "-" + DAY_FORMAT.format(getdEndDate()) + ")";
+        return getName() + " (" + DAY_FORMAT.format(getdStartDate()) + "-" + DAY_FORMAT.format(getdEndDate()) + ")";
     }
 
     @Override
     public int compareTo(CruiseBean other) {
-        return this.getRealId().compareTo(other.getRealId());
+        return this.getIdentifier().compareTo(other.getIdentifier());
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof CruiseBean) {
             CruiseBean other = (CruiseBean) o;
-            return this.getRealId().equals(other.getRealId());
+            return this.getIdentifier().equals(other.getIdentifier());
         } else {
             return false;
         }
@@ -322,7 +374,7 @@ public class CruiseBean implements Serializable, Cloneable, Comparable<CruiseBea
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 67 * hash + Objects.hashCode(this.getRealId());
+        hash = 67 * hash + Objects.hashCode(this.getIdentifier());
         return hash;
     }
 
@@ -369,54 +421,11 @@ public class CruiseBean implements Serializable, Cloneable, Comparable<CruiseBea
     }
 
     public boolean isLegal() {
-        return canHaveAsName(this.getCruiseName()) && canHaveAsStartDate(this.getdStartDate()) && canHaveAsEndDate(this.getdEndDate()) && /*getSeaAreas() != null && !getSeaAreas().isEmpty() &&*/ getStartingHarbor() != null && !getStartingHarbor().isEmpty() && getArrivalHarbor() != null && !getArrivalHarbor().isEmpty();
+        return canHaveAsName(this.getName()) && canHaveAsStartDate(this.getdStartDate()) && canHaveAsEndDate(this.getdEndDate()) && /*getSeaAreas() != null && !getSeaAreas().isEmpty() &&*/ getDepartureHarbour() != null && !getDepartureHarbour().isEmpty() && getArrivalHarbor() != null && !getArrivalHarbor().isEmpty();
     }
 
-    /**
-     * *
-     * Convert a list of scientists and their organisations represented in json
-     * to a list of Scientist
-     *
-     * @param chiefScientist
-     * @return
-     */
-    private List<Person> scientistStringToList(String chiefScientist) {
-        if (chiefScientist == null) {
-            return new ArrayList();
-        }
-        List<Person> r;
-        if (JSONReader.isValidJSON(chiefScientist)) {
-            try {
-                chiefScientist = URLDecoder.decode(chiefScientist, "UTF-8");
-            } catch (UnsupportedEncodingException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<Person>>() {
-            }.getType();
-
-            r = new Gson().fromJson(chiefScientist, type);
-            return r;
-        } else {
-            r = new ArrayList();
-            r.add(new Person(chiefScientist, null, null, null));
-            return r;
-        }
-    }
-
-    /**
-     * *
-     * Output a JSON representation of
-     *
-     * @return
-     */
-    private String stringifyScientistList() {
-        String json = new Gson().toJson(getChiefScientists());
-        return json;
-    }
-
-    public void assignRealId() {
-        this.setRealId(DateUtilities.formatDate(getdStartDate()) + "_" + cruiseName);
+    public void assignIdentifier() {
+        this.setIdentifier(cruiseName);
     }
 
     public static ICruise getCruiseByDate(Collection<? extends ICruise> cruises, OffsetDateTime timeStamp) {

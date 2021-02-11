@@ -6,16 +6,20 @@
 package be.naturalsciences.bmdc.ears.entities;
 
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Yvan Stojanov
  */
+@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "actor")
 public class Actor implements IActor, Comparable<Actor> {
 
     private String id;
-    private String firstNameOfActor;
-    private String lastNameOfActor;
+    private String firstName;
+    private String lastName;
+    private String email;
 
     public String getId() {
         return id;
@@ -25,34 +29,54 @@ public class Actor implements IActor, Comparable<Actor> {
         this.id = id;
     }
 
-    public String getFirstNameOfActor() {
-        return firstNameOfActor;
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "firstName")
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstNameOfActor(String firstNameOfActor) {
-        this.firstNameOfActor = firstNameOfActor;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLastNameOfActor() {
-        return lastNameOfActor;
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "lastName")
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastNameOfActor(String lastNameOfActor) {
-        this.lastNameOfActor = lastNameOfActor;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getLastNameFirstName() {
-        return this.lastNameOfActor + ((lastNameOfActor != null && firstNameOfActor != null) ? " " : "") + this.firstNameOfActor;
+        return this.lastName + ((lastName != null && firstName != null) ? " " : "") + this.firstName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Actor() {
     }
 
     public Actor(String id, String nameOfActor, String surnameOfActor) {
         this.id = id;
-        this.firstNameOfActor = nameOfActor;
-        this.lastNameOfActor = surnameOfActor;
+        this.firstName = nameOfActor;
+        this.lastName = surnameOfActor;
+    }
+
+    public Actor(String id, String nameOfActor, String surnameOfActor, String email) {
+        this.id = id;
+        this.firstName = nameOfActor;
+        this.lastName = surnameOfActor;
+        this.email = email;
     }
 
     public boolean isComplete() {
-        return !this.id.isEmpty() && !this.firstNameOfActor.isEmpty() && !this.lastNameOfActor.isEmpty();
+        return !this.id.isEmpty() && !this.firstName.isEmpty() && !this.lastName.isEmpty();
     }
 
     @Override
@@ -85,6 +109,11 @@ public class Actor implements IActor, Comparable<Actor> {
     @Override
     public boolean isLegal() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getName() {
+        return getLastNameFirstName();
     }
 
 }

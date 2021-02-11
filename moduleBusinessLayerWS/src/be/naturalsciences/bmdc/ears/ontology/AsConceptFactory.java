@@ -17,7 +17,6 @@ import be.naturalsciences.bmdc.ontology.IOntologyModel;
 import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.OntologyConstants.ConceptMD;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
-import com.eaio.uuid.UUID;
 import gnu.trove.set.hash.THashSet;
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.apache.http.client.utils.URIBuilder;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
@@ -197,8 +197,7 @@ public class AsConceptFactory implements IAsConceptFactory {
     }
 
     public static String getUUID() {
-        UUID u = new UUID();
-        return u.toString();
+        return UUID.randomUUID().toString();
     }
 
     /**

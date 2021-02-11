@@ -119,9 +119,6 @@
                 </test-type>
             </test-dependencies>
             <public-packages>
-                <package>arq</package>
-                <package>arq.cmd</package>
-                <package>arq.cmdline</package>
                 <package>be.naturalsciences.bmdc.ears.base</package>
                 <package>be.naturalsciences.bmdc.ears.comparator</package>
                 <package>be.naturalsciences.bmdc.ears.entities</package>
@@ -135,28 +132,8 @@
                 <package>be.naturalsciences.bmdc.ontology</package>
                 <package>be.naturalsciences.bmdc.ontology.entities</package>
                 <package>be.naturalsciences.bmdc.ontology.writer</package>
-                <package>com.clarkparsia.owlapi.explanation</package>
-                <package>com.clarkparsia.owlapi.explanation.io</package>
-                <package>com.clarkparsia.owlapi.explanation.util</package>
-                <package>com.clarkparsia.owlapi.modularity.locality</package>
                 <package>com.eaio.util.lang</package>
                 <package>com.eaio.uuid</package>
-                <package>com.google.common.annotations</package>
-                <package>com.google.common.base</package>
-                <package>com.google.common.base.internal</package>
-                <package>com.google.common.cache</package>
-                <package>com.google.common.collect</package>
-                <package>com.google.common.escape</package>
-                <package>com.google.common.eventbus</package>
-                <package>com.google.common.hash</package>
-                <package>com.google.common.html</package>
-                <package>com.google.common.io</package>
-                <package>com.google.common.math</package>
-                <package>com.google.common.net</package>
-                <package>com.google.common.primitives</package>
-                <package>com.google.common.reflect</package>
-                <package>com.google.common.util.concurrent</package>
-                <package>com.google.common.xml</package>
                 <package>com.google.gson</package>
                 <package>com.google.gson.annotations</package>
                 <package>com.google.gson.internal</package>
@@ -164,148 +141,6 @@
                 <package>com.google.gson.internal.bind.util</package>
                 <package>com.google.gson.reflect</package>
                 <package>com.google.gson.stream</package>
-                <package>com.google.inject</package>
-                <package>com.google.inject.binder</package>
-                <package>com.google.inject.internal</package>
-                <package>com.google.inject.internal.asm</package>
-                <package>com.google.inject.internal.asm.signature</package>
-                <package>com.google.inject.internal.asm.util</package>
-                <package>com.google.inject.internal.cglib.core</package>
-                <package>com.google.inject.internal.cglib.proxy</package>
-                <package>com.google.inject.internal.cglib.reflect</package>
-                <package>com.google.inject.internal.cglib.transform</package>
-                <package>com.google.inject.internal.guava.annotations</package>
-                <package>com.google.inject.internal.guava.base</package>
-                <package>com.google.inject.internal.guava.collect</package>
-                <package>com.google.inject.internal.guava.math</package>
-                <package>com.google.inject.internal.guava.primitives</package>
-                <package>com.google.inject.internal.util</package>
-                <package>com.google.inject.matcher</package>
-                <package>com.google.inject.multibindings</package>
-                <package>com.google.inject.name</package>
-                <package>com.google.inject.spi</package>
-                <package>com.google.inject.util</package>
-                <package>com.google.thirdparty.publicsuffix</package>
-                <package>com.hp.hpl.jena</package>
-                <package>com.hp.hpl.jena.assembler</package>
-                <package>com.hp.hpl.jena.assembler.assemblers</package>
-                <package>com.hp.hpl.jena.assembler.exceptions</package>
-                <package>com.hp.hpl.jena.datatypes</package>
-                <package>com.hp.hpl.jena.datatypes.xsd</package>
-                <package>com.hp.hpl.jena.datatypes.xsd.impl</package>
-                <package>com.hp.hpl.jena.enhanced</package>
-                <package>com.hp.hpl.jena.graph</package>
-                <package>com.hp.hpl.jena.graph.compose</package>
-                <package>com.hp.hpl.jena.graph.impl</package>
-                <package>com.hp.hpl.jena.mem</package>
-                <package>com.hp.hpl.jena.n3</package>
-                <package>com.hp.hpl.jena.n3.turtle</package>
-                <package>com.hp.hpl.jena.n3.turtle.parser</package>
-                <package>com.hp.hpl.jena.ontology</package>
-                <package>com.hp.hpl.jena.ontology.impl</package>
-                <package>com.hp.hpl.jena.query</package>
-                <package>com.hp.hpl.jena.rdf.listeners</package>
-                <package>com.hp.hpl.jena.rdf.model</package>
-                <package>com.hp.hpl.jena.rdf.model.impl</package>
-                <package>com.hp.hpl.jena.rdfxml.xmlinput</package>
-                <package>com.hp.hpl.jena.rdfxml.xmlinput.impl</package>
-                <package>com.hp.hpl.jena.rdfxml.xmlinput.states</package>
-                <package>com.hp.hpl.jena.rdfxml.xmloutput</package>
-                <package>com.hp.hpl.jena.rdfxml.xmloutput.impl</package>
-                <package>com.hp.hpl.jena.reasoner</package>
-                <package>com.hp.hpl.jena.reasoner.rulesys</package>
-                <package>com.hp.hpl.jena.reasoner.rulesys.builtins</package>
-                <package>com.hp.hpl.jena.reasoner.rulesys.impl</package>
-                <package>com.hp.hpl.jena.reasoner.transitiveReasoner</package>
-                <package>com.hp.hpl.jena.shared</package>
-                <package>com.hp.hpl.jena.shared.impl</package>
-                <package>com.hp.hpl.jena.shared.uuid</package>
-                <package>com.hp.hpl.jena.shared.wg</package>
-                <package>com.hp.hpl.jena.sparql</package>
-                <package>com.hp.hpl.jena.sparql.algebra</package>
-                <package>com.hp.hpl.jena.sparql.algebra.op</package>
-                <package>com.hp.hpl.jena.sparql.algebra.optimize</package>
-                <package>com.hp.hpl.jena.sparql.algebra.table</package>
-                <package>com.hp.hpl.jena.sparql.core</package>
-                <package>com.hp.hpl.jena.sparql.core.assembler</package>
-                <package>com.hp.hpl.jena.sparql.core.describe</package>
-                <package>com.hp.hpl.jena.sparql.engine</package>
-                <package>com.hp.hpl.jena.sparql.engine.binding</package>
-                <package>com.hp.hpl.jena.sparql.engine.http</package>
-                <package>com.hp.hpl.jena.sparql.engine.index</package>
-                <package>com.hp.hpl.jena.sparql.engine.iterator</package>
-                <package>com.hp.hpl.jena.sparql.engine.main</package>
-                <package>com.hp.hpl.jena.sparql.engine.main.iterator</package>
-                <package>com.hp.hpl.jena.sparql.engine.optimizer</package>
-                <package>com.hp.hpl.jena.sparql.engine.optimizer.reorder</package>
-                <package>com.hp.hpl.jena.sparql.engine.ref</package>
-                <package>com.hp.hpl.jena.sparql.expr</package>
-                <package>com.hp.hpl.jena.sparql.expr.aggregate</package>
-                <package>com.hp.hpl.jena.sparql.expr.nodevalue</package>
-                <package>com.hp.hpl.jena.sparql.function</package>
-                <package>com.hp.hpl.jena.sparql.function.library</package>
-                <package>com.hp.hpl.jena.sparql.function.library.leviathan</package>
-                <package>com.hp.hpl.jena.sparql.function.user</package>
-                <package>com.hp.hpl.jena.sparql.graph</package>
-                <package>com.hp.hpl.jena.sparql.lang</package>
-                <package>com.hp.hpl.jena.sparql.lang.arq</package>
-                <package>com.hp.hpl.jena.sparql.lang.sparql_10</package>
-                <package>com.hp.hpl.jena.sparql.lang.sparql_11</package>
-                <package>com.hp.hpl.jena.sparql.lib</package>
-                <package>com.hp.hpl.jena.sparql.mgt</package>
-                <package>com.hp.hpl.jena.sparql.modify</package>
-                <package>com.hp.hpl.jena.sparql.modify.request</package>
-                <package>com.hp.hpl.jena.sparql.path</package>
-                <package>com.hp.hpl.jena.sparql.path.eval</package>
-                <package>com.hp.hpl.jena.sparql.pfunction</package>
-                <package>com.hp.hpl.jena.sparql.pfunction.library</package>
-                <package>com.hp.hpl.jena.sparql.procedure</package>
-                <package>com.hp.hpl.jena.sparql.procedure.library</package>
-                <package>com.hp.hpl.jena.sparql.resultset</package>
-                <package>com.hp.hpl.jena.sparql.serializer</package>
-                <package>com.hp.hpl.jena.sparql.sse</package>
-                <package>com.hp.hpl.jena.sparql.sse.builders</package>
-                <package>com.hp.hpl.jena.sparql.sse.lang</package>
-                <package>com.hp.hpl.jena.sparql.sse.lang.parser</package>
-                <package>com.hp.hpl.jena.sparql.sse.writers</package>
-                <package>com.hp.hpl.jena.sparql.syntax</package>
-                <package>com.hp.hpl.jena.sparql.util</package>
-                <package>com.hp.hpl.jena.sparql.util.graph</package>
-                <package>com.hp.hpl.jena.sparql.vocabulary</package>
-                <package>com.hp.hpl.jena.tdb</package>
-                <package>com.hp.hpl.jena.tdb.assembler</package>
-                <package>com.hp.hpl.jena.tdb.base</package>
-                <package>com.hp.hpl.jena.tdb.base.block</package>
-                <package>com.hp.hpl.jena.tdb.base.buffer</package>
-                <package>com.hp.hpl.jena.tdb.base.file</package>
-                <package>com.hp.hpl.jena.tdb.base.objectfile</package>
-                <package>com.hp.hpl.jena.tdb.base.page</package>
-                <package>com.hp.hpl.jena.tdb.base.record</package>
-                <package>com.hp.hpl.jena.tdb.base.recordbuffer</package>
-                <package>com.hp.hpl.jena.tdb.graph</package>
-                <package>com.hp.hpl.jena.tdb.index</package>
-                <package>com.hp.hpl.jena.tdb.index.bplustree</package>
-                <package>com.hp.hpl.jena.tdb.index.ext</package>
-                <package>com.hp.hpl.jena.tdb.lib</package>
-                <package>com.hp.hpl.jena.tdb.mgt</package>
-                <package>com.hp.hpl.jena.tdb.migrate</package>
-                <package>com.hp.hpl.jena.tdb.modify</package>
-                <package>com.hp.hpl.jena.tdb.setup</package>
-                <package>com.hp.hpl.jena.tdb.solver</package>
-                <package>com.hp.hpl.jena.tdb.solver.stats</package>
-                <package>com.hp.hpl.jena.tdb.store</package>
-                <package>com.hp.hpl.jena.tdb.store.bulkloader</package>
-                <package>com.hp.hpl.jena.tdb.store.bulkloader2</package>
-                <package>com.hp.hpl.jena.tdb.store.nodetable</package>
-                <package>com.hp.hpl.jena.tdb.store.nodetupletable</package>
-                <package>com.hp.hpl.jena.tdb.store.tupletable</package>
-                <package>com.hp.hpl.jena.tdb.sys</package>
-                <package>com.hp.hpl.jena.tdb.transaction</package>
-                <package>com.hp.hpl.jena.update</package>
-                <package>com.hp.hpl.jena.util</package>
-                <package>com.hp.hpl.jena.util.cache</package>
-                <package>com.hp.hpl.jena.util.iterator</package>
-                <package>com.hp.hpl.jena.vocabulary</package>
                 <package>com.rits.cloning</package>
                 <package>com.rits.perspectives</package>
                 <package>com.sun.activation.registries</package>
@@ -415,24 +250,6 @@
                 <package>com.sun.xml.bind.marshaller</package>
                 <package>com.sun.xml.bind.unmarshaller</package>
                 <package>com.sun.xml.bind.util</package>
-                <package>com.sun.xml.bind.v2</package>
-                <package>com.sun.xml.bind.v2.bytecode</package>
-                <package>com.sun.xml.bind.v2.model.annotation</package>
-                <package>com.sun.xml.bind.v2.model.core</package>
-                <package>com.sun.xml.bind.v2.model.impl</package>
-                <package>com.sun.xml.bind.v2.model.nav</package>
-                <package>com.sun.xml.bind.v2.model.runtime</package>
-                <package>com.sun.xml.bind.v2.model.util</package>
-                <package>com.sun.xml.bind.v2.runtime</package>
-                <package>com.sun.xml.bind.v2.runtime.output</package>
-                <package>com.sun.xml.bind.v2.runtime.property</package>
-                <package>com.sun.xml.bind.v2.runtime.reflect</package>
-                <package>com.sun.xml.bind.v2.runtime.reflect.opt</package>
-                <package>com.sun.xml.bind.v2.runtime.unmarshaller</package>
-                <package>com.sun.xml.bind.v2.schemagen</package>
-                <package>com.sun.xml.bind.v2.schemagen.episode</package>
-                <package>com.sun.xml.bind.v2.schemagen.xmlschema</package>
-                <package>com.sun.xml.bind.v2.util</package>
                 <package>com.sun.xml.fastinfoset</package>
                 <package>com.sun.xml.fastinfoset.algorithm</package>
                 <package>com.sun.xml.fastinfoset.alphabet</package>
@@ -449,6 +266,8 @@
                 <package>com.sun.xml.txw2</package>
                 <package>com.sun.xml.txw2.annotation</package>
                 <package>com.sun.xml.txw2.output</package>
+                <package>eu.eurofleets.ears3</package>
+                <package>eu.eurofleets.ears3.dto</package>
                 <package>gnu.trove</package>
                 <package>gnu.trove.decorator</package>
                 <package>gnu.trove.function</package>
@@ -472,20 +291,10 @@
                 <package>gnu.trove.stack</package>
                 <package>gnu.trove.stack.array</package>
                 <package>gnu.trove.strategy</package>
-                <package>info.aduna.io</package>
-                <package>info.aduna.iteration</package>
-                <package>info.aduna.lang</package>
-                <package>info.aduna.lang.service</package>
-                <package>info.aduna.net</package>
-                <package>info.aduna.text</package>
-                <package>info.aduna.xml</package>
                 <package>javax.activation</package>
                 <package>javax.annotation</package>
-                <package>javax.annotation.concurrent</package>
-                <package>javax.annotation.meta</package>
                 <package>javax.annotation.security</package>
                 <package>javax.annotation.sql</package>
-                <package>javax.inject</package>
                 <package>javax.ws.rs</package>
                 <package>javax.ws.rs.client</package>
                 <package>javax.ws.rs.container</package>
@@ -500,186 +309,14 @@
                 <package>javax.xml.stream</package>
                 <package>javax.xml.stream.events</package>
                 <package>javax.xml.stream.util</package>
-                <package>jena</package>
-                <package>jena.cmdline</package>
                 <package>junit.extensions</package>
                 <package>junit.framework</package>
                 <package>junit.runner</package>
                 <package>junit.textui</package>
-                <package>lode.it.essepuntato</package>
                 <package>net.jcip.annotations</package>
-                <package>net.sf.saxon</package>
-                <package>net.sf.saxon.charcode</package>
-                <package>net.sf.saxon.codenorm</package>
-                <package>net.sf.saxon.dom</package>
-                <package>net.sf.saxon.event</package>
-                <package>net.sf.saxon.expr</package>
-                <package>net.sf.saxon.exslt</package>
-                <package>net.sf.saxon.functions</package>
-                <package>net.sf.saxon.instruct</package>
-                <package>net.sf.saxon.number</package>
-                <package>net.sf.saxon.om</package>
-                <package>net.sf.saxon.pattern</package>
-                <package>net.sf.saxon.pull</package>
-                <package>net.sf.saxon.query</package>
-                <package>net.sf.saxon.regex</package>
-                <package>net.sf.saxon.sort</package>
-                <package>net.sf.saxon.style</package>
-                <package>net.sf.saxon.sxpath</package>
-                <package>net.sf.saxon.tinytree</package>
-                <package>net.sf.saxon.trace</package>
-                <package>net.sf.saxon.trans</package>
-                <package>net.sf.saxon.tree</package>
-                <package>net.sf.saxon.type</package>
-                <package>net.sf.saxon.value</package>
-                <package>org.aopalliance.aop</package>
-                <package>org.aopalliance.intercept</package>
-                <package>org.apache.commons.codec</package>
-                <package>org.apache.commons.codec.binary</package>
-                <package>org.apache.commons.codec.digest</package>
-                <package>org.apache.commons.codec.language</package>
-                <package>org.apache.commons.codec.language.bm</package>
-                <package>org.apache.commons.codec.net</package>
-                <package>org.apache.commons.collections</package>
-                <package>org.apache.commons.collections.bag</package>
-                <package>org.apache.commons.collections.bidimap</package>
-                <package>org.apache.commons.collections.buffer</package>
-                <package>org.apache.commons.collections.collection</package>
-                <package>org.apache.commons.collections.comparators</package>
-                <package>org.apache.commons.collections.functors</package>
-                <package>org.apache.commons.collections.iterators</package>
-                <package>org.apache.commons.collections.keyvalue</package>
-                <package>org.apache.commons.collections.list</package>
-                <package>org.apache.commons.collections.map</package>
-                <package>org.apache.commons.collections.set</package>
                 <package>org.apache.commons.collections4</package>
-                <package>org.apache.commons.collections4.bag</package>
-                <package>org.apache.commons.collections4.bidimap</package>
-                <package>org.apache.commons.collections4.collection</package>
-                <package>org.apache.commons.collections4.comparators</package>
-                <package>org.apache.commons.collections4.functors</package>
-                <package>org.apache.commons.collections4.iterators</package>
-                <package>org.apache.commons.collections4.keyvalue</package>
-                <package>org.apache.commons.collections4.list</package>
-                <package>org.apache.commons.collections4.map</package>
-                <package>org.apache.commons.collections4.multimap</package>
-                <package>org.apache.commons.collections4.multiset</package>
                 <package>org.apache.commons.collections4.queue</package>
-                <package>org.apache.commons.collections4.sequence</package>
-                <package>org.apache.commons.collections4.set</package>
-                <package>org.apache.commons.collections4.splitmap</package>
-                <package>org.apache.commons.collections4.trie</package>
-                <package>org.apache.commons.collections4.trie.analyzer</package>
-                <package>org.apache.commons.csv</package>
-                <package>org.apache.commons.io</package>
-                <package>org.apache.commons.io.comparator</package>
-                <package>org.apache.commons.io.filefilter</package>
-                <package>org.apache.commons.io.input</package>
-                <package>org.apache.commons.io.monitor</package>
-                <package>org.apache.commons.io.output</package>
                 <package>org.apache.commons.lang3</package>
-                <package>org.apache.commons.lang3.builder</package>
-                <package>org.apache.commons.lang3.concurrent</package>
-                <package>org.apache.commons.lang3.event</package>
-                <package>org.apache.commons.lang3.exception</package>
-                <package>org.apache.commons.lang3.math</package>
-                <package>org.apache.commons.lang3.mutable</package>
-                <package>org.apache.commons.lang3.reflect</package>
-                <package>org.apache.commons.lang3.text</package>
-                <package>org.apache.commons.lang3.text.translate</package>
-                <package>org.apache.commons.lang3.time</package>
-                <package>org.apache.commons.lang3.tuple</package>
-                <package>org.apache.commons.logging</package>
-                <package>org.apache.commons.logging.impl</package>
-                <package>org.apache.http</package>
-                <package>org.apache.http.annotation</package>
-                <package>org.apache.http.auth</package>
-                <package>org.apache.http.auth.params</package>
-                <package>org.apache.http.client</package>
-                <package>org.apache.http.client.cache</package>
-                <package>org.apache.http.client.config</package>
-                <package>org.apache.http.client.entity</package>
-                <package>org.apache.http.client.methods</package>
-                <package>org.apache.http.client.params</package>
-                <package>org.apache.http.client.protocol</package>
-                <package>org.apache.http.client.utils</package>
-                <package>org.apache.http.concurrent</package>
-                <package>org.apache.http.config</package>
-                <package>org.apache.http.conn</package>
-                <package>org.apache.http.conn.params</package>
-                <package>org.apache.http.conn.routing</package>
-                <package>org.apache.http.conn.scheme</package>
-                <package>org.apache.http.conn.socket</package>
-                <package>org.apache.http.conn.ssl</package>
-                <package>org.apache.http.conn.util</package>
-                <package>org.apache.http.cookie</package>
-                <package>org.apache.http.cookie.params</package>
-                <package>org.apache.http.entity</package>
-                <package>org.apache.http.impl</package>
-                <package>org.apache.http.impl.auth</package>
-                <package>org.apache.http.impl.bootstrap</package>
-                <package>org.apache.http.impl.client</package>
-                <package>org.apache.http.impl.client.cache</package>
-                <package>org.apache.http.impl.client.cache.ehcache</package>
-                <package>org.apache.http.impl.client.cache.memcached</package>
-                <package>org.apache.http.impl.conn</package>
-                <package>org.apache.http.impl.conn.tsccm</package>
-                <package>org.apache.http.impl.cookie</package>
-                <package>org.apache.http.impl.entity</package>
-                <package>org.apache.http.impl.execchain</package>
-                <package>org.apache.http.impl.io</package>
-                <package>org.apache.http.impl.pool</package>
-                <package>org.apache.http.io</package>
-                <package>org.apache.http.message</package>
-                <package>org.apache.http.params</package>
-                <package>org.apache.http.pool</package>
-                <package>org.apache.http.protocol</package>
-                <package>org.apache.http.ssl</package>
-                <package>org.apache.http.util</package>
-                <package>org.apache.jena.atlas</package>
-                <package>org.apache.jena.atlas.csv</package>
-                <package>org.apache.jena.atlas.data</package>
-                <package>org.apache.jena.atlas.event</package>
-                <package>org.apache.jena.atlas.io</package>
-                <package>org.apache.jena.atlas.iterator</package>
-                <package>org.apache.jena.atlas.json</package>
-                <package>org.apache.jena.atlas.json.io</package>
-                <package>org.apache.jena.atlas.json.io.parser</package>
-                <package>org.apache.jena.atlas.json.io.parserjavacc</package>
-                <package>org.apache.jena.atlas.json.io.parserjavacc.javacc</package>
-                <package>org.apache.jena.atlas.lib</package>
-                <package>org.apache.jena.atlas.lib.cache</package>
-                <package>org.apache.jena.atlas.logging</package>
-                <package>org.apache.jena.atlas.logging.java</package>
-                <package>org.apache.jena.atlas.test</package>
-                <package>org.apache.jena.atlas.web</package>
-                <package>org.apache.jena.atlas.web.auth</package>
-                <package>org.apache.jena.iri</package>
-                <package>org.apache.jena.iri.impl</package>
-                <package>org.apache.jena.riot</package>
-                <package>org.apache.jena.riot.adapters</package>
-                <package>org.apache.jena.riot.checker</package>
-                <package>org.apache.jena.riot.lang</package>
-                <package>org.apache.jena.riot.other</package>
-                <package>org.apache.jena.riot.out</package>
-                <package>org.apache.jena.riot.process.inf</package>
-                <package>org.apache.jena.riot.process.normalize</package>
-                <package>org.apache.jena.riot.resultset</package>
-                <package>org.apache.jena.riot.system</package>
-                <package>org.apache.jena.riot.system.stream</package>
-                <package>org.apache.jena.riot.thrift</package>
-                <package>org.apache.jena.riot.thrift.wire</package>
-                <package>org.apache.jena.riot.tokens</package>
-                <package>org.apache.jena.riot.web</package>
-                <package>org.apache.jena.riot.writer</package>
-                <package>org.apache.jena.web</package>
-                <package>org.apache.thrift</package>
-                <package>org.apache.thrift.async</package>
-                <package>org.apache.thrift.meta_data</package>
-                <package>org.apache.thrift.protocol</package>
-                <package>org.apache.thrift.scheme</package>
-                <package>org.apache.thrift.server</package>
-                <package>org.apache.thrift.transport</package>
                 <package>org.codehaus.jackson</package>
                 <package>org.codehaus.jackson.annotate</package>
                 <package>org.codehaus.jackson.format</package>
@@ -776,14 +413,6 @@
                 <package>org.jboss.resteasy.spi.validation</package>
                 <package>org.jboss.resteasy.test</package>
                 <package>org.jboss.resteasy.util</package>
-                <package>org.json</package>
-                <package>org.jsoup</package>
-                <package>org.jsoup.examples</package>
-                <package>org.jsoup.helper</package>
-                <package>org.jsoup.nodes</package>
-                <package>org.jsoup.parser</package>
-                <package>org.jsoup.safety</package>
-                <package>org.jsoup.select</package>
                 <package>org.junit</package>
                 <package>org.junit.experimental</package>
                 <package>org.junit.experimental.categories</package>
@@ -823,35 +452,6 @@
                 <package>org.objenesis.instantiator.perc</package>
                 <package>org.objenesis.instantiator.sun</package>
                 <package>org.objenesis.strategy</package>
-                <package>org.obolibrary.macro</package>
-                <package>org.obolibrary.obo2owl</package>
-                <package>org.obolibrary.oboformat.diff</package>
-                <package>org.obolibrary.oboformat.model</package>
-                <package>org.obolibrary.oboformat.parser</package>
-                <package>org.obolibrary.oboformat.writer</package>
-                <package>org.obolibrary.owl</package>
-                <package>org.openrdf</package>
-                <package>org.openrdf.model</package>
-                <package>org.openrdf.model.datatypes</package>
-                <package>org.openrdf.model.impl</package>
-                <package>org.openrdf.model.util</package>
-                <package>org.openrdf.model.util.language</package>
-                <package>org.openrdf.model.vocabulary</package>
-                <package>org.openrdf.rio</package>
-                <package>org.openrdf.rio.binary</package>
-                <package>org.openrdf.rio.datatypes</package>
-                <package>org.openrdf.rio.helpers</package>
-                <package>org.openrdf.rio.languages</package>
-                <package>org.openrdf.rio.n3</package>
-                <package>org.openrdf.rio.nquads</package>
-                <package>org.openrdf.rio.ntriples</package>
-                <package>org.openrdf.rio.rdfjson</package>
-                <package>org.openrdf.rio.rdfxml</package>
-                <package>org.openrdf.rio.rdfxml.util</package>
-                <package>org.openrdf.rio.trig</package>
-                <package>org.openrdf.rio.trix</package>
-                <package>org.openrdf.rio.turtle</package>
-                <package>org.openrdf.util.iterators</package>
                 <package>org.semanticweb.owlapi</package>
                 <package>org.semanticweb.owlapi.annotations</package>
                 <package>org.semanticweb.owlapi.apibinding</package>
@@ -898,41 +498,12 @@
                 <package>org.semanticweb.owlapi.util.mansyntax</package>
                 <package>org.semanticweb.owlapi.vocab</package>
                 <package>org.semanticweb.owlapitools.builders</package>
-                <package>org.semarglproject.rdf</package>
-                <package>org.semarglproject.rdf.rdfa</package>
-                <package>org.semarglproject.ri</package>
-                <package>org.semarglproject.sesame.core.sink</package>
-                <package>org.semarglproject.sesame.rdf.rdfa</package>
-                <package>org.semarglproject.sink</package>
-                <package>org.semarglproject.source</package>
-                <package>org.semarglproject.vocab</package>
-                <package>org.semarglproject.xml</package>
-                <package>org.slf4j</package>
-                <package>org.slf4j.helpers</package>
                 <package>org.slf4j.impl</package>
-                <package>org.slf4j.spi</package>
-                <package>org.tukaani.xz</package>
-                <package>org.tukaani.xz.check</package>
-                <package>org.tukaani.xz.common</package>
-                <package>org.tukaani.xz.delta</package>
-                <package>org.tukaani.xz.index</package>
-                <package>org.tukaani.xz.lz</package>
-                <package>org.tukaani.xz.lzma</package>
-                <package>org.tukaani.xz.rangecoder</package>
-                <package>org.tukaani.xz.simple</package>
-                <package>riotcmd</package>
-                <package>tdb</package>
-                <package>tdb.cmdline</package>
-                <package>tdb.tools</package>
                 <package>thewebsemantic</package>
                 <package>thewebsemantic.binder</package>
                 <package>thewebsemantic.binding</package>
                 <package>thewebsemantic.lazy</package>
                 <package>thewebsemantic.vocabulary</package>
-                <package>uk.ac.manchester.cs.owl.explanation.ordering</package>
-                <package>uk.ac.manchester.cs.owl.owlapi</package>
-                <package>uk.ac.manchester.cs.owl.owlapi.util.collections</package>
-                <package>uk.ac.manchester.cs.owlapi.modularity</package>
             </public-packages>
             <class-path-extension>
                 <runtime-relative-path>ext/jettison-1.3.2.jar</runtime-relative-path>
@@ -1003,14 +574,6 @@
                 <binary-origin>release/modules/ext/hamcrest-core-1.3.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/jaxb-api-2.2.7.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jaxb-api-2.2.7.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/jaxb-impl-2.2.7.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jaxb-impl-2.2.7.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
                 <runtime-relative-path>ext/jersey-core-1.19.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/jersey-core-1.19.jar</binary-origin>
             </class-path-extension>
@@ -1055,16 +618,20 @@
                 <binary-origin>release/modules/ext/jcip-annotations-1.0.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
+                <runtime-relative-path>ext/gson-javatime-serialisers-1.1.1.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/gson-javatime-serialisers-1.1.1.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
                 <runtime-relative-path>ext/javax.ws.rs-api-2.0.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/javax.ws.rs-api-2.0.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/jboss-logging-3.1.4.GA.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jboss-logging-3.1.4.GA.jar</binary-origin>
+                <runtime-relative-path>ext/uber-ears3-ontology-base-0.9-SNAPSHOT.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/uber-ears3-ontology-base-0.9-SNAPSHOT.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/uber-ears2-ontology-base-1.0.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/uber-ears2-ontology-base-1.0.jar</binary-origin>
+                <runtime-relative-path>ext/jboss-logging-3.1.4.GA.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jboss-logging-3.1.4.GA.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/jackson-xc-1.9.12.jar</runtime-relative-path>
@@ -1077,6 +644,10 @@
             <class-path-extension>
                 <runtime-relative-path>ext/jsr311-api-1.1.1.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/jsr311-api-1.1.1.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/jackson-annotations-2.10.2.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jackson-annotations-2.10.2.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/httpmime-4.2.6.jar</runtime-relative-path>

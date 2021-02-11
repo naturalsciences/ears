@@ -33,11 +33,14 @@ public class RestClientNav extends RestClient {
 
     protected ResteasyWebTarget getNearestNavTarget;
 
+    private boolean isOnline() {
+        return getBaseURL() != null && WebserviceUtils.testWS("ears3Nav/nav/getLast/datagram");
+    }
+
     public RestClientNav(boolean cache) throws ConnectException, EarsException {
         super(cache);
-        if (!WebserviceUtils.testWS("ears2Nav/getLastNavXml")) {
-            online = false;
-            throw new ConnectException();
+        if (!isOnline()) {
+            throw new EarsException("The navigation web service can't be reached. The application won't work correctly.");
         }
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
@@ -58,8 +61,8 @@ public class RestClientNav extends RestClient {
             throw new EarsException("The base url for the web services is invalid. The navigation web service won't work correctly.", ex);
         }
         if (uri != null) {
-            getLastNavXmlTarget = client.target(uri.resolve("ears2Nav/getLastNavXml"));
-            getNearestNavTarget = client.target(uri.resolve("ears2Nav/getNearestNavXml"));
+            getLastNavXmlTarget = client.target(uri.resolve("ears3Nav/nav/getLast/xml"));
+            getNearestNavTarget = client.target(uri.resolve("ears3Nav/nav/getNearest/xml"));
         }
         /*else {
             throw new EarsException("The base url for the web services has not been set correctly; the application won't work properly.");
@@ -83,7 +86,7 @@ public class RestClientNav extends RestClient {
         } else {
             Response response = target.request().get();
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + target.getUri().toString() + ")");
+                throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") - " + target.getUri().toString() + ")");
             }
             nav = response.readEntity(NavBean.class);
             response.close();
@@ -115,7 +118,7 @@ public class RestClientNav extends RestClient {
                 .request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastNavXmlTarget.getUri().toString() + ")");
+            throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") - z" + getLastNavXmlTarget.getUri().toString() + ")");
         }
         navs = response.readEntity(new GenericType<Collection<NavBean>>() {
         });

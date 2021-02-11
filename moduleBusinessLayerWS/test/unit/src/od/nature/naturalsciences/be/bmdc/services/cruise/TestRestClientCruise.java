@@ -36,6 +36,7 @@ import org.openide.util.Exceptions;
  *
  */
 public class TestRestClientCruise extends TestCase {
+
     /*
      Ensemble des objets utilisés dans plusieurs 
      fonctions d une même classe de test
@@ -75,10 +76,10 @@ public class TestRestClientCruise extends TestCase {
             Exceptions.printStackTrace(ex);
         }
         for (CruiseBean iCruiseBean : collectionsCruise) {
-            cruiseBean.setCruiseName(iCruiseBean.getCruiseName());
-            assertEquals(iCruiseBean.getCruiseName(), cruiseBean.getCruiseName());
-            assert (iCruiseBean.getCruiseName() instanceof String);
-            assert (iCruiseBean.getCruiseName().length() > 0);
+            cruiseBean.setName(iCruiseBean.getName());
+            assertEquals(iCruiseBean.getName(), cruiseBean.getName());
+            assert (iCruiseBean.getName() instanceof String);
+            assert (iCruiseBean.getName().length() > 0);
 
         }
 
@@ -86,7 +87,7 @@ public class TestRestClientCruise extends TestCase {
     //id=2016-12-11_TEST-23&cruiseName=TEST-23&startDate=2016-12-11T00:00:00&endDate=2016-12-12T00:00:00&chiefScientist=%5B%7B%22name%22:%22Ahmed%2BAl%2BVerroes%22%2C%22organisationCode%22:%22SDN:EDMO::1231%22%2C%22organisationName%22:%22Ecole%2BNationale%2BSuperieure%2Bdes%2BSciences%2Bde%2Bla%2BMer%2Bet%2Bde%2Bl%2BAmenagement%2Bdu%2BLittoral%2B-%2BENSSMAL%22%2C%22country%22:%22Algeria%22%7D%5D&platformCode=SDN:C17::742Y&platformClass=SDN:L06::0&objectives=&collateCenter=SDN:EDMO::1822&startingHarbor=SDN:C38::BSH6052&arrivalHarbor=SDN:C38::BSH33&seaAreas=SDN:C19::10_10
 
     @Test
-    public void testPostCruise() throws ParseException,  ConnectException, EarsException, MalformedURLException {
+    public void testPostCruise() throws ParseException, ConnectException, EarsException, MalformedURLException {
         RestClientCruise client = new RestClientCruise();
 
         for (int i = 0; i < 200; i++) {
@@ -101,32 +102,32 @@ public class TestRestClientCruise extends TestCase {
             CruiseBean cruise = new CruiseBean();
             cruise.setArrivalHarbor("SDN:C38::BSH10");
             //Person p0 = new Person("Jorge-Pilár de la Ternéras", "SDN:EDMO::1822", "Naval Hydrographic Service of Ar", "Argent");
-            Person p1 = new Person("Gérard Lachaumet-Desrumaux", "SDN:EDMO::1822", "Centre Nationale de la Récherche", "France");
+            Person p1 = new Person("Gérard", "Lachaumet-Desrumaux", "SDN:EDMO::1822", "Centre Nationale de la Récherche", "France");
             //Person p2 = new Person("Gérard Lachaumet-Desrumaux", "SDN:EDMO::1822", "Centre Nationale de la Récherche", "France");
             //Person p2 = new Person("Olivia Mortimer-McIntosh", "SDN:EDMO::5224", "Eodhainn Sibhann Ddu Maris", "'Éire");
             List<Person> ps = new ArrayList();
             ps.add(p1);
-           // ps.add(p2);
+            // ps.add(p2);
             cruise.setChiefScientists(ps);
             int length = URLEncoder.encode(cruise.getChiefScientist()).length();
             /*String amount = Integer.toString(i * 10);
             String scientistName = StringUtils.rightPad(amount + ":", (i * 10) + amount.length()+1, 'a');
             cruise.setChiefScientist(scientistName);
             int length2 = URLEncoder.encode(cruise.getChiefScientist()).length();*/
-            cruise.setRealId(cruiseName);
-            cruise.setCollateCenter("SDN:EDMO::1520");
-            cruise.setCruiseName(cruiseName);
+            cruise.setIdentifier(cruiseName);
+            cruise.setCollateCentre("SDN:EDMO::1520");
+            cruise.setName(cruiseName);
             cruise.setdStartDate(sdate);
             cruise.setdEndDate(edate);
             cruise.setPlatformClass("SDN:L06::0");
-            cruise.setPlatformCode("SDN:C17::742Y");
+            cruise.setPlatform("SDN:C17::742Y");
             Set seas = new HashSet();
             seas.add(new SeaAreaBean("SDN:C19::10_10", "SDN:C19::10_10", "The sea"));
             cruise.setSeaAreas(seas);
-            cruise.setStartingHarbor("SDN:C38::BSH10");
+            cruise.setDepartureHarbour("SDN:C38::BSH10");
             IResponseMessage msg = client.postCruise(cruise);
             if (msg.isBad()) {
-                String summary = msg.getSummary();
+                String summary = msg.getMessage();
             }
             int a = 5;
             //platformCode=SDN:C17::742Y&platformClass=SDN:L06::0

@@ -5,7 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
-import be.naturalsciences.bmdc.utils.StringUtils;
+import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -22,11 +22,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author thomas
  */
-@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "underway")
+@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "und")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UnderwayBean {
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "time")
     private String date;
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "turbidity_l")
     private Double turbidity_l;

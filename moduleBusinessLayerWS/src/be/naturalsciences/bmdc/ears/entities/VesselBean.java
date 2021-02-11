@@ -23,7 +23,6 @@ public class VesselBean implements IVessel, Comparable<VesselBean> {
         this.vesselName = vesselName;
         this.code = vesselSDNCode;
     }*/
-
     public VesselBean() {
     }
 
@@ -99,6 +98,11 @@ public class VesselBean implements IVessel, Comparable<VesselBean> {
         hash = 29 * hash + Objects.hashCode(this.vesselName);
         hash = 29 * hash + Objects.hashCode(this.code);
         return hash;
+    }
+
+    @Override
+    public String getName() {
+        return vesselName;
     }
 
 }

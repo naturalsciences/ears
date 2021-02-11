@@ -117,12 +117,12 @@ public class CurrentCruise implements ICruise, CurrentSingleton<ICruise> {
     }
 
     @Override
-    public String getPlatformCode() {
+    public String getPlatform() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setPlatformCode(String platformCode) {
+    public void setPlatform(String platformCode) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -147,22 +147,22 @@ public class CurrentCruise implements ICruise, CurrentSingleton<ICruise> {
     }
 
     @Override
-    public String getCollateCenter() {
+    public String getCollateCentre() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setCollateCenter(String collateCenter) {
+    public void setCollateCentre(String collateCenter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public String getStartingHarbor() {
+    public String getDepartureHarbour() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setStartingHarbor(String startingHarbor) {
+    public void setDepartureHarbour(String startingHarbor) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -184,5 +184,10 @@ public class CurrentCruise implements ICruise, CurrentSingleton<ICruise> {
     @Override
     public void setSeaAreas(Set<SeaAreaBean> ssa) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getName() {
+        return currentCruise.getName();
     }
 }

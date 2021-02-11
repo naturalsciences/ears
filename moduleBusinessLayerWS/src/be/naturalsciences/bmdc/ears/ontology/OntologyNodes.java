@@ -589,13 +589,13 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
             if (this.model.getScope().equals(ScopeMap.Scope.VESSEL.name()) && user != null) {
                 IResponseMessage response = client.uploadVesselOntology(destPath, user.getUsername(), user.getPassword());
                 if (response.isBad()) {
-                    throw new EarsException("Vessel tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getSummary());
+                    throw new EarsException("Vessel tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getMessage());
                 }
             }
             if (this.model.getScope().equals(ScopeMap.Scope.PROGRAM.name())) {
                 IResponseMessage response = client.uploadProgramOntology(destPath);
                 if (response.isBad()) {
-                    throw new EarsException("Program tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getSummary());
+                    throw new EarsException("Program tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getMessage());
                 }
             }
             saved = true;

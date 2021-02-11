@@ -43,11 +43,14 @@ public class RestClientUnderway extends RestClient {
 
     protected ResteasyWebTarget getNearestUndTarget;
 
+    private boolean isOnline() {
+        return getBaseURL() != null && WebserviceUtils.testWS("ears3Nav/und/getLast/datagram");
+    }
+
     public RestClientUnderway(boolean cache) throws ConnectException, EarsException {
         super(cache);
-        if (!WebserviceUtils.testWS("ears2Nav/getLastUndXml")) {
-            online = false;
-            throw new ConnectException();
+        if (!isOnline()) {
+            throw new EarsException("The navigation web service can't be reached. The application won't work correctly.");
         }
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
@@ -67,8 +70,8 @@ public class RestClientUnderway extends RestClient {
             throw new EarsException("The base url for the web services is invalid. The underway web service won't work correctly.", ex);
         }
         if (uri != null) {
-            getLastUndXmlTarget = client.target(uri.resolve("ears2Nav/getLastUndXml"));
-            getNearestUndTarget = client.target(uri.resolve("ears2Nav/getNearestUndXml"));
+            getLastUndXmlTarget = client.target(uri.resolve("ears3Nav/und/getLast/xml"));
+            getNearestUndTarget = client.target(uri.resolve("ears3Nav/und/getNearest/xml"));
         }
     }
 
@@ -99,8 +102,8 @@ public class RestClientUnderway extends RestClient {
             Response response = target.request().get();
             if (response.getStatus() != 200) {
                 response.close();
-                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + target.getUri().toString() + ")");
-                
+                throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") - " + target.getUri().toString() + ")");
+
             }
             nav = response.readEntity(UnderwayBean.class);
 

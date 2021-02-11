@@ -878,4 +878,9 @@ public class EarsTerm implements IEarsTerm<Action, EarsTerm, ItemStatus, EarsTer
             }
         }
     }
+
+    @Override
+    public void setTermLabel(EarsTermLabel arg0, Language arg1) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

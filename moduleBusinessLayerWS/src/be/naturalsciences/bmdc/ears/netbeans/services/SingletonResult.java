@@ -25,16 +25,21 @@ public class SingletonResult<T extends CurrentSingleton, E extends Object> {
 
     public boolean matches(LookupEvent ev) {
         if (ev.getSource().equals(result)) {
-            int a = 5;
             return true;
         }
-       /* Set<Class> classes = ((Lookup.Result) ev.getSource()).allClasses();
+        Collection c = ((Lookup.Result) ev.getSource()).allInstances();
+        for (Object object : c) {
+            if (c.getClass().equals(this.cls)) {
+                return true;
+            }
+        }
+        /* Set<Class> classes = ((Lookup.Result) ev.getSource()).allClasses();
         if (classes.contains(cls)) {
             return true;
         } else {
             return false;
         }*/
-       return false;
+        return false;
     }
 
     private Lookup.Result<T> result;
