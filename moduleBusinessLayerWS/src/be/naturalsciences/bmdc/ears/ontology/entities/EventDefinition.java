@@ -1,6 +1,7 @@
 package be.naturalsciences.bmdc.ears.ontology.entities;
 
 import be.naturalsciences.bmdc.ontology.entities.IEventDefinition;
+import be.naturalsciences.bmdc.ontology.entities.ISubject;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import thewebsemantic.RdfType;
 @Namespace("http://ontologies.ef-ears.eu/ears2/1#")
 @RdfType("EventDefinition")
 //public abstract class EventDefinition<E extends IEarsTerm, PR extends IProperty, EV extends IEventDefinition> implements IEventDefinition<E, PR, EV> {public abstract class EventDefinition<E extends IEarsTerm, PR extends IProperty, EV extends IEventDefinition> implements IEventDefinition<E, PR, EV> {
-public class EventDefinition implements IEventDefinition<EarsTerm, Property, EventDefinition>, Serializable {
+public class EventDefinition implements IEventDefinition<EarsTerm, Property, EventDefinition, Subject>, Serializable {
 
     //private static final long serialVersionUID = 1L;
     @Id
@@ -25,6 +26,9 @@ public class EventDefinition implements IEventDefinition<EarsTerm, Property, Eve
     //private Collection<EV> triggerCollection;
     @RdfProperty("http://ontologies.ef-ears.eu/ears2/1#hasProperty")
     private Collection<Property> propertyCollection;
+
+    @RdfProperty("http://ontologies.ef-ears.eu/ears2/1#hasSubject")
+    private Collection<Subject> subjectCollection;
 
     private Collection<EventDefinition> triggeredCollection;
     private Collection<EventDefinition> triggerCollection;
@@ -168,6 +172,16 @@ public class EventDefinition implements IEventDefinition<EarsTerm, Property, Eve
     }
 
     public void linkMyProcessAndActionBackToMe() {
+    }
+
+    @Override
+    public Collection<? extends ISubject> getSubjectCollection() {
+        return this.subjectCollection;
+    }
+
+    @Override
+    public void setSubjectCollection(Collection<Subject> subjectCollection) {
+        this.subjectCollection = subjectCollection;
     }
 
 }

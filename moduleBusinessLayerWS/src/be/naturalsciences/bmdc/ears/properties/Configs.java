@@ -33,11 +33,11 @@ import org.openide.util.NbPreferences;
 public class Configs {
 
     public static void persistActor(Actor actor) {
-        persistActor(actor.getId(), actor.getFirstName(), actor.getLastName());
+        persistActor(actor.getId(), actor.getFirstName(), actor.getLastName(), actor.getEmail());
     }
 
-    private static void persistActor(String key, String firstName, String lastName) {
-        String data = "<firstName>" + firstName + "</firstName>" + "<lastName>" + lastName + "</lastName>";
+    private static void persistActor(int key, String firstName, String lastName, String email) {
+        String data = "<firstName>" + firstName + "</firstName><lastName>" + lastName + "</lastName>" + "<email>" + email + "</email>";
         NbPreferences.forModule(Configs.class).put("actor" + key, data);
     }
 
@@ -79,7 +79,7 @@ public class Configs {
         removeActor(actor.getId());
     }
 
-    private static void removeActor(String key) {
+    private static void removeActor(int key) {
         NbPreferences.forModule(Configs.class).remove("actor" + key);
     }
 
@@ -119,10 +119,9 @@ public class Configs {
         NbPreferences.forModule(Configs.class).putBoolean("overrideEventsAsAnonymous", value);
     }
 
-    public static boolean getOverrideEventsAsAnonymous() {
+    /*public static boolean getOverrideEventsAsAnonymous() {
         return NbPreferences.forModule(Configs.class).getBoolean("overrideEventsAsAnonymous", true);
-    }
-
+    }*/
     public static String getCountryString() {
         return NbPreferences.forModule(Configs.class).get("countries", "");
     }
@@ -173,17 +172,20 @@ public class Configs {
         Set<Actor> actors = new TreeSet<>();
         Pattern p1 = Pattern.compile("<firstName>(.+?)</firstName>");
         Pattern p2 = Pattern.compile("<lastName>(.+?)</lastName>");
+        Pattern p3 = Pattern.compile("<email>(.+?)</email>");
         try {
             for (String key : NbPreferences.forModule(Configs.class).keys()) {
-                String id = null;
+                String idS = null;
                 if (key.startsWith("actor")) {
-                    id = key.replaceAll("actor", "");
+                    idS = key.replaceAll("actor", "");
+                    int id = Integer.parseInt(idS);
                     String actorXml = NbPreferences.forModule(Configs.class).get(key, "");
                     Matcher m1 = p1.matcher(actorXml);
                     Matcher m2 = p2.matcher(actorXml);
+                    Matcher m3 = p3.matcher(actorXml);
 
-                    if (m1.find() && m2.find()) {
-                        Actor actor = new Actor(id, m1.group(1), m2.group(1));
+                    if (m1.find() && m2.find() && m3.find()) {
+                        Actor actor = new Actor(id, m1.group(1), m2.group(1), m3.group(1));
                         actors.add(actor);
                     }
                 }

@@ -5,6 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
+import eu.eurofleets.ears3.dto.PersonDTO;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -16,16 +17,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "actor")
 public class Actor implements IActor, Comparable<Actor> {
 
-    private String id;
+    private int id;
     private String firstName;
     private String lastName;
     private String email;
 
-    public String getId() {
+    public Actor(PersonDTO p) {
+        this.firstName = p.firstName;
+        this.lastName = p.lastName;
+        this.email = p.email;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -62,21 +69,21 @@ public class Actor implements IActor, Comparable<Actor> {
     public Actor() {
     }
 
-    public Actor(String id, String nameOfActor, String surnameOfActor) {
+    public Actor(int id, String firstName, String lastName) {
         this.id = id;
-        this.firstName = nameOfActor;
-        this.lastName = surnameOfActor;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    public Actor(String id, String nameOfActor, String surnameOfActor, String email) {
+    public Actor(int id, String firstName, String lastName, String email) {
         this.id = id;
-        this.firstName = nameOfActor;
-        this.lastName = surnameOfActor;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
     }
 
     public boolean isComplete() {
-        return !this.id.isEmpty() && !this.firstName.isEmpty() && !this.lastName.isEmpty();
+        return !this.email.isEmpty() && !this.firstName.isEmpty() && !this.lastName.isEmpty();
     }
 
     @Override
@@ -88,7 +95,7 @@ public class Actor implements IActor, Comparable<Actor> {
     public boolean equals(Object o) {
         if (o instanceof Actor) {
             Actor other = (Actor) o;
-            return this.getId().equals(other.getId());
+            return Objects.equals(this.getEmail(), other.getEmail());
         } else {
             return false;
         }
@@ -97,7 +104,7 @@ public class Actor implements IActor, Comparable<Actor> {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + Objects.hashCode(this.id);
+        hash = 41 * hash + Objects.hashCode(this.getEmail());
         return hash;
     }
 

@@ -1,9 +1,6 @@
 package be.naturalsciences.bmdc.ears.rest;//ys
 
-import be.naturalsciences.bmdc.ears.entities.NavBean;
-import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
-import be.naturalsciences.bmdc.ears.entities.WeatherBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
@@ -12,21 +9,15 @@ import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.openide.util.Exceptions;
 import org.openide.util.NotImplementedException;
 
 /**

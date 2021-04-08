@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.comparator;
 
-import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import java.util.Comparator;
 

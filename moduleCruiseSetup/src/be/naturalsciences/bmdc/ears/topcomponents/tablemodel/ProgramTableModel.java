@@ -7,7 +7,6 @@ package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
-import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
 
 /**
  *

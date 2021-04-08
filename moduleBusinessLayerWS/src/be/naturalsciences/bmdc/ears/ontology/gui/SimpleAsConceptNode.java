@@ -68,7 +68,7 @@ public class SimpleAsConceptNode extends AbstractNode {
             r = "<font color='#2C3539'>" + getDisplayName() + "</font>";
         }
 
-        if (concept.getTermRef().isOwnTerm(currentVesselCode)) {
+        if (!concept.getTermRef().isBodcTerm()) {
             r = "<i>" + r + "</i>";
         }
         return r;

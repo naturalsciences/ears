@@ -9,15 +9,13 @@ import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.SeaAreaTableModel;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ChiefScientistTableModel;
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
 import be.naturalsciences.bmdc.ears.comparator.CountryComparator;
-import be.naturalsciences.bmdc.ears.comparator.OrganisationNameComparator;
 import be.naturalsciences.bmdc.ears.entities.CountryBean;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
+import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.HarbourBean;
 import be.naturalsciences.bmdc.ears.entities.ICountry;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
-import be.naturalsciences.bmdc.ears.entities.IHarbour;
-import be.naturalsciences.bmdc.ears.entities.IOrganisation;
 import be.naturalsciences.bmdc.ears.entities.IProgram;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
@@ -29,7 +27,6 @@ import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
 import be.naturalsciences.bmdc.ears.rest.RestClientCruise;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
-import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProgramTableModel;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
@@ -56,7 +53,6 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -78,6 +74,7 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
     //protected static JComboBox seaAreaList;
     protected CruiseBean actualCruise;
 
+    protected final SingletonResult<CurrentCruise, ICruise> currentCruiseResult;
     protected final SingletonResult<CurrentVessel, IVessel> currentVesselResult;
 
     protected SeaAreaTableModel seaAreaModel;
@@ -104,6 +101,7 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
     public AbstractCruiseTopComponent() {
         __initComponents();
         currentVesselResult = new SingletonResult<>(CurrentVessel.class, this);
+        currentCruiseResult = new SingletonResult<>(CurrentCruise.class, this);
 
         try {
             programClient = new RestClientProgram();
@@ -480,7 +478,10 @@ public abstract class AbstractCruiseTopComponent extends TopComponent implements
                     Messaging.report("Posting the changed cruise to the webservice failed: " + response.getMessage(), Message.State.BAD, this.getClass(), true);
                 } else {
                     Messaging.report(response.getMessage(), Message.State.GOOD, this.getClass(), true);
-                    GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
+                    GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing actual vessel listeners to update their cruise list
+                    if (currentCruiseResult.getCurrent().getConcept() != null && currentCruiseResult.getCurrent().getConcept().equals(actualCruise)) { //if the actual cruise we're editing is the current one
+                        GlobalActionContextProxy.getInstance().add(CurrentCruise.getInstance(actualCruise)); //causes the cruise to be changed to the modified actual, causing actual cruise listeners to update their cruise list
+                    }
                     progr.finish();
                 }
             }

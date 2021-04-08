@@ -7,7 +7,7 @@ package be.naturalsciences.bmdc.ears.rest;
 
 import be.naturalsciences.bmdc.ears.entities.CurrentURL;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
-import be.naturalsciences.bmdc.ears.entities.MessageBean;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import be.naturalsciences.bmdc.ears.entities.NavBean;
 import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
@@ -19,8 +19,6 @@ import be.naturalsciences.bmdc.ontology.EarsException;
 import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import eu.eurofleets.ears3.dto.CruiseDTO;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
@@ -33,13 +31,10 @@ import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -172,14 +167,20 @@ public abstract class RestClient implements Serializable {
         if (isOnline()) {
             Gson g = Converters.registerOffsetDateTime(new GsonBuilder()).create();
             String payload = g.toJson(o);
+            //  payload = payload.replaceAll(":(\\d{2})\\.\\d+", ":$1");
+            payload = payload.replaceAll("(\\+|\\-)(\\d{2}):(\\d{2})", "+$2$3"); //+01:00->+0100
             Response response = target.request().post(Entity.json(payload));
-            GenericType<MessageBean<E>> type = new GenericType<MessageBean<E>>() {
+            GenericType<RestMessage<E>> type = new GenericType<RestMessage<E>>() {
             };
             try {
                 responseMessage = response.readEntity(type);
-                responseMessage.setMessage(response.getStatus() + " (" + response.getStatusInfo().getReasonPhrase() + ") - " + cls.getSimpleName() + " " + responseMessage.getIdentifier() + " created/modified");
+                if (responseMessage.isOk()) {
+                    responseMessage.setMessage(cls.getSimpleName() + " " + responseMessage.getIdentifier() + " created/modified");
+                } else {
+                    responseMessage.setMessage(response.getStatusInfo().getReasonPhrase() + " (" + responseMessage.getExceptionType() + ") - " + cls.getSimpleName() + " not created/modified");
+                }
             } catch (Exception e) {
-                responseMessage = new MessageBean(response.getStatus(), response.getStatus() + " (" + response.getStatusInfo().getReasonPhrase() + ")");
+                responseMessage = new RestMessage(response.getStatus(), response.getStatus() + " (" + response.getStatusInfo().getReasonPhrase() + ")");
             } finally {
                 int status = response.getStatus();
                 response.close();

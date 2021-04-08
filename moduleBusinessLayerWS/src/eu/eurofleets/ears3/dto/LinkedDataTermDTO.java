@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 @XmlAccessorType(XmlAccessType.FIELD) //ignore all the getters
 public class LinkedDataTermDTO {
 
-    public String identifier;  //an identifier in an external vocabulary, i.e. the EARS ontology
-    public String transitiveIdentifier;  //an identifier in a transitive vocanbulary, i.e. the BODC Tool list L22 (can only be url)
+    public String identifier;  //an identifier in an external vocabulary, i.e. the BODC Tool list L22 (can only be url)
+    public String transitiveIdentifier;  //an identifier in a transitive vocanbulary, i.e. the EARS vocabulary
     public String name;
 
     public LinkedDataTermDTO() {
@@ -30,9 +30,9 @@ public class LinkedDataTermDTO {
     }
 
     public LinkedDataTermDTO(AsConcept concept) {
-        this.identifier =  concept.getUri().toString();
+        this.identifier = concept.getTermRef().getUri().toString(); //reads the BODC identifier
         this.name = concept.getTermRef().getEarsTermLabel().getPrefLabel();
-        this.transitiveIdentifier = concept.getTermRef().getUri().toString();
+        this.transitiveIdentifier = concept.getUri().toString(); //reads the EARS identifier
     }
 
 }

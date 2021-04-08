@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
@@ -30,23 +32,22 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
 
     private List<Actor> datalist = new ArrayList<>();
 
-    private static final String INDEX = "Index";
-    private static final String FIRSTNAME = "firstname";
-    private static final String LASTNAME = "lastname";
+    private static final String EMAIL = "Email";
+    private static final String FIRSTNAME = "First name";
+    private static final String LASTNAME = "Last name";
 
-    private static final String[] COLUMN_NAMES = {INDEX, FIRSTNAME, LASTNAME};
+    private static final String[] COLUMN_NAMES = {FIRSTNAME, LASTNAME, EMAIL};
 
     public Map<String, String> errors;
 
     public ActorTableModel() {
         errors = new HashMap<>();
-        Set<Actor> actors = null;
         try {
-            actors = Configs.getAllActors();
+           Set<Actor>  actors = Configs.getAllActors();
+           addActorList(actors);
         } catch (IOException ex) {
             Messaging.report("There was a problem with the actors file.", ex, ActorTableModel.class, false);
         }
-        addActorList(actors);
         this.addTableModelListener(this);
     }
 
@@ -65,22 +66,6 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
         return COLUMN_NAMES.length;
     }
 
-    public int getMaxId() {
-        int result = 0;
-        int id;
-        for (Actor a : datalist) {
-            try {
-                id = Integer.parseInt(a.getId());
-            } catch (NumberFormatException ex) {
-                break;
-            }
-            if (id > result) {
-                result = id;
-            }
-        }
-        return result;
-    }
-
     @Override
     public boolean isCellEditable(int row, int column) {
         switch (getColumnName(column)) {
@@ -88,8 +73,8 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
                 return true;
             case LASTNAME:
                 return true;
-            case INDEX:
-                return false;
+            case EMAIL:
+                return true;
             default:
                 return false;
         }
@@ -113,6 +98,7 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
                             if (!actor.getLastName().isEmpty()) {
                                 clearErrors(actor, FIRSTNAME);
                                 clearErrors(actor, LASTNAME);
+                                 clearErrors(actor,EMAIL);
                                 fireTableChanged(new TableModelEvent(this, row, row, column));
                             } else {
                                 errors.put(actor.getId() + LASTNAME, actor.toString() + ": last name can't be empty.");
@@ -121,7 +107,7 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
                             }
                         }
                     } else {
-                        errors.put(actor.getId() + FIRSTNAME, actor.toString() + ": first name can't be empty.");
+                        errors.put(actor.getEmail(), actor.toString() + ": first name can't be empty.");
                         fireTableChanged(new TableModelEvent(this, ERROR));
                         //clearErrors(actor);
                     }
@@ -133,6 +119,7 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
                             if (!actor.getFirstName().isEmpty()) {
                                 clearErrors(actor, FIRSTNAME);
                                 clearErrors(actor, LASTNAME);
+                                clearErrors(actor,EMAIL);
                                 fireTableChanged(new TableModelEvent(this, row, row, column));
                             } else {
                                 errors.put(actor.getId() + FIRSTNAME, actor.toString() + ": first name can't be empty.");
@@ -141,19 +128,23 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
                             }
                         }
                     } else {
-                        errors.put(actor.getId() + LASTNAME, actor.toString() + ": last name can't be empty.");
+                        errors.put(actor.getEmail(), actor.toString() + ": last name can't be empty.");
                         fireTableChanged(new TableModelEvent(this, ERROR));
                         //clearErrors(actor);
                     }
                     break;
-                case INDEX:
-                /*if (!string.isEmpty()) {
-                     actor.setId(string);
-                     fireTableChanged(new TableModelEvent(this, row, row, column));
+                case EMAIL:
+                if (!string.isEmpty()) {
+                     Pattern p = Pattern.compile(".+@.+\\.[a-z]+");
+                     Matcher m = p.matcher(string);
+                     if(m.matches()){
+                     actor.setEmail(string);
+                     fireTableChanged(new TableModelEvent(this, row, row, column));}
+                     else{errors.put(actor.getEmail(), actor.toString() + ": email address invalid.");}
                      } else {
-                     errors.put(actor.toString() + ID, actor.toString() + ": id can't be empty.");
+                     errors.put(actor.getEmail(), actor.toString() + ": email address can't be empty.");
                      }
-                     break;*/
+                     break;
                 default:
             }
 
@@ -185,8 +176,12 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
     }
 
     public void addEmptyRow() {
-        if (errors.isEmpty() || datalist.isEmpty()) {
-            addActor(new Actor(String.valueOf(getMaxId() + 1), "", ""));
+        if (errors.isEmpty()) {
+            int newId=0;
+            if(!datalist.isEmpty()){
+                newId=datalist.get(datalist.size()-1).getId()+1;
+            }
+            addActor(new Actor(newId, "", "",""));
         }
     }
 
@@ -198,8 +193,8 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
                 return actor.getFirstName();
             case LASTNAME:
                 return actor.getLastName();
-            case INDEX:
-                return actor.getId();
+            case EMAIL:
+                return actor.getEmail();
             default:
                 return null;
         }
@@ -220,8 +215,10 @@ public class ActorTableModel extends AbstractTableModel implements TableModelLis
             case TableModelEvent.UPDATE:
                 if (index > -1 && firstRow > -1) {
                     a = getActorAt(firstRow);
-                    GlobalActionContextProxy.getInstance().replace(a);
-                    Configs.persistActor(a);
+                    if(a.getFirstName()!=null && a.getLastName()!=null && a.getEmail()!=null && !"".equals(a.getFirstName()) && !"".equals(a.getLastName()) && !"".equals(a.getEmail())){
+                        GlobalActionContextProxy.getInstance().replace(a);
+                        Configs.persistActor(a);
+                    }
                 }
                 break;
             case TableModelEvent.DELETE:

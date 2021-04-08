@@ -5,11 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.ontology.rdf;
 
-import be.naturalsciences.bmdc.ears.entities.CurrentProgram;
-import be.naturalsciences.bmdc.ears.entities.CurrentSettings;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
-import be.naturalsciences.bmdc.ears.ontology.TestOntology;
-import be.naturalsciences.bmdc.ears.ontology.VesselOntology;
 import be.naturalsciences.bmdc.ears.properties.Constants;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
@@ -28,7 +24,6 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
@@ -57,10 +52,12 @@ public class NewVesselRdfFileTypeAction implements ActionListener {
 
         ScopeMap scope = null;
         String vesselName = null;
+         String vesselCode = null;
         if (currentVessel != null) {
             vesselName = currentVessel.getConcept().getVesselName();
+            vesselCode = currentVessel.getConcept().getCode();
             scope = ScopeMap.VESSEL_SCOPE;
-            scope.put(ScopeMap.Scope.VESSEL, vesselName);
+            scope.put(ScopeMap.Scope.VESSEL, vesselCode);
         }
         if (scope != null) {
             EARSOntologyCreator creator = new EARSOntologyCreator(scope, "Vessel tree of " + vesselName);

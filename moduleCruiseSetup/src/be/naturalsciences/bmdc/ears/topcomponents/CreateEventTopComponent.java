@@ -5,9 +5,9 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
-import be.naturalsciences.bmdc.ears.listeners.ExportEventActionListener;
+import be.naturalsciences.bmdc.ears.listeners.EventExportActionListener;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
-import be.naturalsciences.bmdc.ears.comparator.ActorComparator;
+import be.naturalsciences.bmdc.ears.comparator.PersonDTOComparator;
 import be.naturalsciences.bmdc.ears.entities.Actor;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.CurrentActor;
@@ -19,12 +19,7 @@ import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.IProgram;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
-import be.naturalsciences.bmdc.ears.entities.NavBean;
-import be.naturalsciences.bmdc.ears.entities.PropertyBean;
-import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
-import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
-import be.naturalsciences.bmdc.ears.entities.WeatherBean;
-import static be.naturalsciences.bmdc.ears.listeners.ExportEventActionListener.EXPORT_FILE_NAME;
+import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.listeners.SelectOnClickPopupMenuListener;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
@@ -33,14 +28,8 @@ import be.naturalsciences.bmdc.ears.ontology.ProgramOntology;
 import be.naturalsciences.bmdc.ears.ontology.VesselOntology;
 import be.naturalsciences.bmdc.ears.ontology.entities.Property;
 import be.naturalsciences.bmdc.ears.ontology.entities.SpecificEventDefinition;
-import be.naturalsciences.bmdc.ears.properties.Configs;
-import be.naturalsciences.bmdc.ears.rest.RestClient;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
-import be.naturalsciences.bmdc.ears.rest.RestClientNav;
-import be.naturalsciences.bmdc.ears.rest.RestClientThermosal;
-import be.naturalsciences.bmdc.ears.rest.RestClientUnderway;
-import be.naturalsciences.bmdc.ears.rest.RestClientWeather;
-import be.naturalsciences.bmdc.ears.utils.Message;
+import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.SwingUtils;
 import be.naturalsciences.bmdc.ears.utils.TableColumnAdjuster;
@@ -49,65 +38,42 @@ import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import com.github.lgooddatepicker.tableeditors.DateTableEditor;
 import com.github.lgooddatepicker.tableeditors.TimeTableEditor;
 import com.github.lgooddatepicker.zinternaltools.InternalUtilities;
-import com.opencsv.CSVWriter;
 import gnu.trove.map.hash.THashMap;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.SecureRandom;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import static javax.swing.JFileChooser.SAVE_DIALOG;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
-import javax.swing.SwingUtilities;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -122,7 +88,12 @@ import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 
 import eu.eurofleets.ears3.dto.EventDTO;
+import eu.eurofleets.ears3.dto.PersonDTO;
 import eu.eurofleets.ears3.dto.PropertyDTO;
+import java.util.HashSet;
+import javax.swing.AbstractCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.table.TableCellEditor;
 
 /**
  * Top component which displays something.
@@ -134,9 +105,9 @@ import eu.eurofleets.ears3.dto.PropertyDTO;
 @TopComponent.Description(
         preferredID = "CreateEventTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
-        persistenceType = TopComponent.PERSISTENCE_NEVER
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = false)
+@TopComponent.Registration(mode = "editor", openAtStartup = true)
 @ActionID(category = "Window", id = "be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent")
 @ActionReferences({
     // @ActionReference(path = "Toolbars/Window", position = 3333,name = "Create/edit events"),
@@ -159,6 +130,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     public final static int DEFAULT_ROW_HEIGHT = 25;
 
     private TableColumn actorColumn;
+    private TableColumn programColumn;
     private TableColumn propertyColumn;
 
     //private Lookup.Result<EventDTO> eventResult;
@@ -168,23 +140,25 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private SingletonResult<CurrentCruise, ICruise> currentCruiseResult;
     private SingletonResult<CurrentProgram, IProgram> currentProgramResult;
 
-    private ExportEventActionListener exportEventActionListener;
+    private EventExportActionListener exportEventActionListener;
 
     private TableRowSorter<TableModel> eventsTable2Sorter;
 
     private final Action editPropertyEventAction;
 
     private static RestClientEvent restClientEvent;
+    private static RestClientProgram restClientProgram;
 
     private EventTableModel model;
     JPopupMenu popupMenu = new JPopupMenu();
-
+    Set<PersonDTO> actors = new TreeSet<>(new PersonDTOComparator());
     private Map<TableColumn, int[]> columnWidths;
 
     public CreateEventTopComponent() {
         initComponents();
         try {
             restClientEvent = new RestClientEvent();
+            restClientProgram = new RestClientProgram();
         } catch (ConnectException ex) {
             Messaging.report("Note that the webservices are offline. The events can't be retrieved.", ex, this.getClass(), true);
         } catch (EarsException ex) {
@@ -198,14 +172,12 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         actorResult = Utilities.actionsGlobalContext().lookupResult(Actor.class);
         actorResult.addLookupListener(this);
 
-        //  eventResult = Utilities.actionsGlobalContext().lookupResult(EventDTO.class);//lookupEvent.lookupResult(EventDTO.class);
-        //  eventResult.addLookupListener(this);
         currentVesselResult = new SingletonResult<>(CurrentVessel.class, this);
         currentCruiseResult = new SingletonResult<>(CurrentCruise.class, this);
         currentProgramResult = new SingletonResult<>(CurrentProgram.class, this);
         latestEventResult = new SingletonResult<>(CurrentEvent.class, this);
 
-        exportEventActionListener = new ExportEventActionListener();
+        exportEventActionListener = new EventExportActionListener();
 
         eventsTable2.setRowHeight(DEFAULT_ROW_HEIGHT);
         eventsTable2.setFont(DEFAULT_FONT);
@@ -223,8 +195,8 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
                 for (int i = 0; i < modelRows.length; i++) {
                     EventDTO event = (EventDTO) getModel().getEntityAt(modelRows[i]).clone();
-                    //  event.setEventId(event.buildEventId());
-                    GlobalActionContextProxy.getInstance().addEnsureOne(event);
+                    event.setIdentifier(null); //let the server add identifier
+                    GlobalActionContextProxy.getInstance().add(CurrentEvent.getInstance(event));
                 }
             }
         });
@@ -236,10 +208,9 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
 
                 for (int i = 0; i < modelRows.length; i++) {
                     EventDTO event = getModel().getEntityAt(modelRows[i]).clone();
-
-                    //   event.setEventId(event.buildEventId());
-                    event.setTimeStamp(OffsetDateTime.now());
-                    GlobalActionContextProxy.getInstance().addEnsureOne(event);
+                    event.setIdentifier(null); //let the server add identifier
+                    event.setTimeStamp(null); //let the server add the current time
+                    GlobalActionContextProxy.getInstance().add(CurrentEvent.getInstance(event));
                 }
             }
         });
@@ -328,9 +299,10 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             public void actionPerformed(ActionEvent e) {
                 int modelRow = Integer.valueOf(e.getActionCommand());
                 EventDTO event = getModel().getEntityAt(modelRow);
-                JDialog dialog = new EventPropertyDialog(eventsTable2, null, null, event);
-
-                dialog.setVisible(true);
+                if (event.getProperties() != null) {
+                    JDialog dialog = new EventPropertyDialog(eventsTable2, null, null, event);
+                    dialog.setVisible(true);
+                }
             }
         };
         popupMenu.add(copyItem);
@@ -366,6 +338,8 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jPanel3 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         timeZoneCheckBox = new javax.swing.JCheckBox();
         toolCatCheckBox = new javax.swing.JCheckBox();
@@ -373,25 +347,38 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         actorCheckBox = new javax.swing.JCheckBox();
         programCheckbox = new javax.swing.JCheckBox();
         labelCheckbox = new javax.swing.JCheckBox();
-        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 32767));
+        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22));
         comboFilterDateOfEvent = new javax.swing.JComboBox();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 22), new java.awt.Dimension(10, 22), new java.awt.Dimension(10, 22));
         jButton1 = new javax.swing.JButton();
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 32767));
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22));
         jLabel1 = new javax.swing.JLabel();
-        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 22), new java.awt.Dimension(10, 22), new java.awt.Dimension(10, 22));
         mainActorCombobox = new javax.swing.JComboBox();
-        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 32767));
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22));
         nbEventsLabel = new javax.swing.JLabel();
-        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(80, 0), new java.awt.Dimension(80, 0), new java.awt.Dimension(80, 32767));
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22));
         exportEventButton = new javax.swing.JButton();
-        eventsScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
         eventsTable2 = new javax.swing.JTable();
 
-        setPreferredSize(new java.awt.Dimension(1535, 1135));
+        setMaximumSize(new java.awt.Dimension(1100, 700));
+        setMinimumSize(new java.awt.Dimension(200, 500));
+        setPreferredSize(new java.awt.Dimension(1100, 700));
+        setLayout(new java.awt.CardLayout());
+
+        jScrollPane3.setMaximumSize(new java.awt.Dimension(1100, 700));
+        jScrollPane3.setMinimumSize(new java.awt.Dimension(200, 500));
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(1100, 700));
+
+        jPanel3.setMaximumSize(new java.awt.Dimension(1100, 700));
+        jPanel3.setMinimumSize(new java.awt.Dimension(200, 500));
+        jPanel3.setPreferredSize(new java.awt.Dimension(1100, 700));
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
+        jToolBar1.setMaximumSize(new java.awt.Dimension(1252, 25));
+        jToolBar1.setPreferredSize(new java.awt.Dimension(1252, 25));
 
         timeZoneCheckBox.setSelected(true);
         timeZoneCheckBox.setText(org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.timeZoneCheckBox.text")); // NOI18N
@@ -522,7 +509,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         jToolBar1.add(jLabel1);
         jToolBar1.add(filler6);
 
-        mainActorCombobox.setMaximumSize(new java.awt.Dimension(200, 32767));
+        mainActorCombobox.setMaximumSize(new java.awt.Dimension(200, 25));
         mainActorCombobox.setMinimumSize(new java.awt.Dimension(200, 25));
         mainActorCombobox.setPreferredSize(new java.awt.Dimension(200, 25));
         mainActorCombobox.addItemListener(new java.awt.event.ItemListener() {
@@ -561,35 +548,45 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         });
         jToolBar1.add(exportEventButton);
 
-        eventsScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        eventsScrollPane2.setAutoscrolls(true);
-        eventsScrollPane2.setMinimumSize(new java.awt.Dimension(1000, 1000));
-        eventsScrollPane2.setName(""); // NOI18N
-        eventsScrollPane2.setPreferredSize(new java.awt.Dimension(1535, 1000));
-        eventsScrollPane2.setRequestFocusEnabled(false);
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setMaximumSize(new java.awt.Dimension(1252, 700));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(1252, 700));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(1252, 700));
 
-        eventsTable2.setPreferredSize(new java.awt.Dimension(1000, 1000));
-        eventsScrollPane2.setViewportView(eventsTable2);
+        eventsTable2.setMaximumSize(new java.awt.Dimension(1252, 700));
+        eventsTable2.setMinimumSize(new java.awt.Dimension(1252, 700));
+        eventsTable2.setPreferredSize(new java.awt.Dimension(1252, 700));
+        jScrollPane1.setViewportView(eventsTable2);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1523, Short.MAX_VALUE)
-                    .addComponent(eventsScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1279, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1279, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(eventsScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 676, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(220, Short.MAX_VALUE))
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 34, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(669, Short.MAX_VALUE)))
         );
+
+        jScrollPane3.setViewportView(jPanel3);
+
+        add(jScrollPane3, "card3");
     }// </editor-fold>//GEN-END:initComponents
 
     private void actorCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actorCheckBoxActionPerformed
@@ -616,9 +613,9 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     }//GEN-LAST:event_toolCatCheckBoxItemStateChanged
 
     private void mainActorComboboxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_mainActorComboboxItemStateChanged
-        Actor actor = null;
-        if (evt.getItem() instanceof Actor) {
-            actor = (Actor) evt.getItem();
+        PersonDTO actor = null;
+        if (evt.getItem() instanceof PersonDTO) {
+            actor = (PersonDTO) evt.getItem();
         }
         if (actor != null) {
             GlobalActionContextProxy.getInstance().add(CurrentActor.getInstance(actor));
@@ -645,20 +642,22 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         String text = (String) comboFilterDateOfEvent.getSelectedItem();
-        boolean isDate = true;
-        try {
-            StringUtils.SDF_ISO_DATE.parse(text);
-        } catch (ParseException ex) {
-            isDate = false;
-        }
-        if (isDate) {
+        if (text != null) {
+            boolean isDate = true;
             try {
-                eventsTable2Sorter.setRowFilter(RowFilter.regexFilter(text));
-            } catch (PatternSyntaxException pse) {
-                Messaging.report("Bad regex pattern. Could not sort or limit table", pse, this.getClass(), false);
+                StringUtils.SDF_ISO_DATE.parse(text);
+            } catch (ParseException ex) {
+                isDate = false;
             }
-        } else {
-            eventsTable2Sorter.setRowFilter(null);
+            if (isDate) {
+                try {
+                    eventsTable2Sorter.setRowFilter(RowFilter.regexFilter(text));
+                } catch (PatternSyntaxException pse) {
+                    Messaging.report("Bad regex pattern. Could not sort or limit table", pse, this.getClass(), false);
+                }
+            } else {
+                eventsTable2Sorter.setRowFilter(null);
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -678,17 +677,16 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private void mainActorComboboxFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mainActorComboboxFocusGained
         // TODO add your handling code here:
         CurrentActor currentActor = Utilities.actionsGlobalContext().lookup(CurrentActor.class);
-
         if (currentActor != null) {
-            Actor a = currentActor.getConcept();
+            PersonDTO a = currentActor.getConcept();
             mainActorCombobox.setSelectedItem(a);
         }
     }//GEN-LAST:event_mainActorComboboxFocusGained
 
     private void exportEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportEventButtonActionPerformed
         // TODO add your handling code here:
-        //    ExportEventAction e = new ExportEventAction(this, getViewedEvents(), currentVesselResult.getCurrent(), currentCruiseResult.getCurrent(), currentProgramResult.getCurrent());
-        // exportEventActionListener.actionPerformed(e);
+        ExportEventAction e = new ExportEventAction(this, currentVesselResult.getCurrent(), currentCruiseResult.getCurrent(), currentProgramResult.getCurrent());
+        exportEventActionListener.actionPerformed(e);
     }//GEN-LAST:event_exportEventButtonActionPerformed
 
     private void comboFilterDateOfEventActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboFilterDateOfEventActionPerformed
@@ -716,7 +714,6 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox actorCheckBox;
     private javax.swing.JComboBox comboFilterDateOfEvent;
-    private javax.swing.JScrollPane eventsScrollPane2;
     private javax.swing.JTable eventsTable2;
     private javax.swing.JButton exportEventButton;
     private javax.swing.Box.Filler filler2;
@@ -727,6 +724,9 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private javax.swing.Box.Filler filler7;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JCheckBox labelCheckbox;
     private javax.swing.JComboBox mainActorCombobox;
@@ -794,61 +794,72 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     }
 
     private void populateEventModel() {
-        if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
-            CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
-            List<EventDTO> events = null;
-            try {
-                events = (List<EventDTO>) restClientEvent.getEventsByCruise(currentCruise);
-            } catch (ConnectException ex) {
-                Messaging.report("Note that the webservices are offline. The event list can't be retrieved.", ex, this.getClass(), true);
+        List<EventDTO> events = null;
+        if (restClientEvent != null) {
+            if (currentCruiseResult.getCurrent() != null && currentCruiseResult.getCurrent().getConcept() != null) { //there is a current cruise
+                CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
+
+                try {
+                    events = (List<EventDTO>) restClientEvent.getEventsByCruise(currentCruise);
+                } catch (ConnectException ex) {
+                    Messaging.report("Note that the webservices are offline. The event list can't be retrieved.", ex, this.getClass(), true);
+                }
+            } else if (currentProgramResult.getCurrent() != null && currentProgramResult.getCurrent().getConcept() != null) {
+                ProgramBean currentProgram = currentProgramResult.getCurrent().getConcept();
+
+                try {
+                    events = (List<EventDTO>) restClientEvent.getEventsByProgram(currentProgram);
+                } catch (ConnectException ex) {
+                    Messaging.report("Note that the webservices are offline. The event list can't be retrieved.", ex, this.getClass(), true);
+                }
             }
-            if (events != null) {
-                Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
-                for (EventDTO event : events) {
-                    // getAssociatedAcquisitionInfo(event);
-                    if (event.getProperties() != null) {
-                        for (PropertyDTO property : event.getProperties()) {
-                            try {
-                                Set<Property> properties = Individuals.getConcepts(allIndividuals, new URI(property.key.identifier), true, Property.class);
-                                for (Property earsProperty : properties) {
-                                    property.mandatory = earsProperty.isMandatory();
-                                    property.multiple = earsProperty.isMultiple();
-                                    property.valueClass = earsProperty.getValueClass();
+        }
+        if (events != null) {
+            Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
+            for (EventDTO event : events) {
+                // getAssociatedAcquisitionInfo(event);
+                if (event.getProperties() != null) {
+                    for (PropertyDTO property : event.getProperties()) {
+                        try {
+                            Set<Property> properties = Individuals.getConcepts(allIndividuals, new URI(property.key.identifier), true, Property.class);
+                            for (Property earsProperty : properties) {
+                                property.mandatory = earsProperty.isMandatory();
+                                property.multiple = earsProperty.isMultiple();
+                                property.valueClass = earsProperty.getValueClass();
+                            }
+                        } catch (URISyntaxException ex) {
+                            Messaging.report("URISyntaxException", ex, this.getClass(), false);
+                        }
+                    }
+                }
+                for (Individuals individuals : allIndividuals) {
+                    if (individuals.getModel() instanceof ProgramOntology) {
+
+                        for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
+                            if (sev.equals(event)) {
+                                for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
+
+                                    event.attachProperty(property, null);
                                 }
-                            } catch (URISyntaxException ex) {
-                                Messaging.report("URISyntaxException", ex, this.getClass(), false);
                             }
                         }
                     }
-                    for (Individuals individuals : allIndividuals) {
-                        if (individuals.getModel() instanceof ProgramOntology) {
-
-                            for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
-                                if (sev.equals(event)) {
-                                    for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
-
-                                        event.attachProperty(property, null);
-                                    }
-                                }
-                            }
-                        }
-                        if (individuals.getModel() instanceof VesselOntology) {
-                            for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
-                                if (sev.equals(event)) {
-                                    for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
-                                        event.attachProperty(property, null);
-                                    }
+                    if (individuals.getModel() instanceof VesselOntology) {
+                        for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
+                            if (sev.equals(event)) {
+                                for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
+                                    event.attachProperty(property, null);
                                 }
                             }
                         }
                     }
                 }
-
-                model = new EventTableModel(eventsTable2, events);
-                eventsTable2.setModel(model);
-                resizeToEvents(eventsTable2);
-                populateNbEventsLabel();
             }
+
+            model = new EventTableModel(eventsTable2, events);
+            eventsTable2.setModel(model);
+            resizeToEvents(eventsTable2);
+            populateNbEventsLabel();
         }
     }
 
@@ -859,20 +870,32 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         table.setPreferredSize(dim);
     }
 
-    @Override
-    public void componentOpened() {
-        mainActorCombobox.removeAllItems();
-
-        Set<Actor> actors = new TreeSet<>(new ActorComparator());
-        if (!Configs.getOverrideEventsAsAnonymous()) {
-            actors.addAll(actorResult.allInstances());
-            for (Actor actor : actors) {
-                mainActorCombobox.addItem(actor);
-            }
+    private void populateActorCombobox(JComboBox actorCombobox) {
+        actorCombobox.removeAllItems();
+        actors.clear();
+        // if (!Configs.getOverrideEventsAsAnonymous()) { // no more anonymous events in ears3
+        Collection<? extends Actor> allActors = actorResult.allInstances();
+        for (Actor actor : allActors) {
+            actors.add(new PersonDTO(actor));
         }
 
-        if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
+        for (EventDTO event : this.getModel().getEntities()) {
+            actors.add(event.getActor());
+        }
+        for (PersonDTO actor : actors) {
+            actorCombobox.addItem(actor);
+        }
+        /*  } else {
+            actors.clear();
+            GlobalActionContextProxy.getInstance().add(CurrentActor.getInstance(null));
+        }*/
+    }
+
+    @Override
+    public void componentOpened() {
+        if (restClientEvent != null) {
             populateEventModel();
+            populateActorCombobox(mainActorCombobox);
             TableColumnModel tableColumnModel = eventsTable2.getColumnModel();
 
             int dateColumnId = model.findColumn(EventTableModel.DATE);
@@ -895,7 +918,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             TableColumn processColumn = tableColumnModel.getColumn(processColumnId);
             TableColumn actionColumn = tableColumnModel.getColumn(actionColumnId);
             actorColumn = tableColumnModel.getColumn(actorColumnId);
-            TableColumn programColumn = tableColumnModel.getColumn(programColumnId);
+            programColumn = tableColumnModel.getColumn(programColumnId);
             TableColumn labelColumn = tableColumnModel.getColumn(labelColumnId);
             propertyColumn = tableColumnModel.getColumn(propertyColumnId);
 
@@ -937,6 +960,11 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             //add actor column
             actorColumn.setCellRenderer(new DropdownTableCellRenderer());
             actorColumn.setCellEditor(new ActorCellEditor(actors));
+
+            //add program column
+            Set<ProgramBean> programs = populatePrograms();
+            programColumn.setCellRenderer(new DropdownTableCellRenderer());
+            programColumn.setCellEditor(new ProgramCellEditor(programs));
 
             //add action column
             actionColumn.setCellRenderer(new DropdownTableCellRenderer());
@@ -985,108 +1013,74 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         // TODO read your settings according to their version
     }
 
-    private static Object previousEvent;
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-
-        if (ev.getSource().equals(actorResult)) {
-
-            mainActorCombobox.removeAllItems();
-            Set<Actor> actors = new TreeSet<>(new ActorComparator());
-            if (!Configs.getOverrideEventsAsAnonymous()) {
-                actors.addAll(actorResult.allInstances());
-            } else {
-                actors.clear();
-                GlobalActionContextProxy.getInstance().add(CurrentActor.getInstance(null));
-            }
-            for (Actor actor : actors) {
-                mainActorCombobox.addItem(actor);
-            }
-            if (actorColumn != null) {
-                actorColumn.setCellEditor(new ActorCellEditor(actors));
-            }
-        }
-        if (latestEventResult.matches(ev) && latestEventResult.getCurrent() != null) {
-
-            //Collection c = ((Lookup.Result) ev.getSource()).allInstances();
-            //  EventDTO[] events = eventResult.allInstances().toArray(new EventDTO[eventResult.allInstances().size()]);
-            // for (Object c1 : c) {
-            //   if (c1 instanceof EventDTO && !c1.equals(previousEvent)) {
-            //     previousEvent = c1;
-            // EventDTO currentEvent = (EventDTO) c1;
-            EventDTO currentEvent = latestEventResult.getCurrent().getConcept();
-            this.getModel().addEntity(currentEvent);
-
-            populateNbEventsLabel();
-            // getAssociatedAcquisitionInfo(currentEvent);
-            if (eventsTable2.getHeight() < eventsTable2.getModel().getRowCount() * DEFAULT_ROW_HEIGHT) {
-                int newHeight = eventsTable2.getHeight() + DEFAULT_ROW_HEIGHT;
-                Dimension dim = new Dimension(eventsTable2.getWidth(), newHeight);
-                eventsTable2.setPreferredSize(dim);
-            }
-            eventsTable2.scrollRectToVisible(eventsTable2.getCellRect(eventsTable2.getModel().getRowCount() + 1, 0, true));
-            // }
-            //    }
-        }
-
-        if (currentCruiseResult.matches(ev)) {
-            if (restClientEvent != null) {
-                populateEventModel();
-            //    componentOpened();
-            }
+    private void addDropdownMenu(String columnName, TableCellEditor editor) {
+        TableColumnModel tableColumnModel = eventsTable2.getColumnModel();
+        int actorColumnId = model.findColumn(columnName);
+        TableColumn actorColumn = tableColumnModel.getColumn(actorColumnId);
+        if (actorColumn != null) {
+            actorColumn.setCellRenderer(new DropdownTableCellRenderer());
+            actorColumn.setCellEditor(editor);
         }
     }
 
-    public static void getAssociatedAcquisitionInfo(final EventDTO event) {
-        Thread thr = new Thread() {
-            public void run() {
-                RestClientNav restNav = null;
-                RestClientWeather restWeather = null;
-                RestClientThermosal restThermosal = null;
-                RestClientUnderway restUnderway = null;
-                try {
-                    restNav = new RestClientNav(true);
-                } catch (ConnectException ex) {
-                    Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), true);
-                } catch (EarsException ex) {
-                    Messaging.report("Problem with the navigation web service", ex, this.getClass(), true);;
-                }
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        if (ev.getSource().equals(actorResult)) {
+            populateActorCombobox(mainActorCombobox);
+            addDropdownMenu(EventTableModel.ACTOR, new ActorCellEditor(actors));
+        }
+        EventDTO currentEvent = null;
+        if (latestEventResult.matches(ev) && latestEventResult.getCurrent() != null) {
+            if (latestEventResult.getCurrent().getConcept() != currentEvent) { //same event sometimes added multiple times!
+                currentEvent = latestEventResult.getCurrent().getConcept();
+                this.getModel().addEntity(currentEvent);
 
-                try {
-                    restWeather = new RestClientWeather(true);
-                } catch (ConnectException ex) {
-                    Messaging.report("Can't connect to the weather web service", ex, this.getClass(), true);
-                } catch (EarsException ex) {
-                    Messaging.report("Problem with the weather web service", ex, this.getClass(), true);
+                populateNbEventsLabel();
+                // getAssociatedAcquisitionInfo(currentEvent);
+                if (eventsTable2.getHeight() < eventsTable2.getModel().getRowCount() * DEFAULT_ROW_HEIGHT) {
+                    int newHeight = eventsTable2.getHeight() + DEFAULT_ROW_HEIGHT * 2;
+                    Dimension dim = new Dimension(eventsTable2.getWidth(), newHeight);
+                    eventsTable2.setPreferredSize(dim);
                 }
-                try {
-                    restThermosal = new RestClientThermosal(true);
-                } catch (ConnectException ex) {
-                    Messaging.report("Can't connect to the thermosal web service", ex, this.getClass(), true);
-                } catch (EarsException ex) {
-                    Messaging.report("Problem with the thermosal web service", ex, this.getClass(), true);
-                }
-                try {
-                    restUnderway = new RestClientUnderway(true);
-                } catch (ConnectException ex) {
-                    Messaging.report("Can't connect to the underway web service", ex, this.getClass(), true);
-                } catch (EarsException ex) {
-                    Messaging.report("Problem with the underway web service", ex, this.getClass(), true);
-                }
-                OffsetDateTime time = event.getTimeStamp();
-                RestClient.getNavigation(restNav, event.getTimeStamp());
-                RestClient.getThermosal(restThermosal, time);
-                RestClient.getWeather(restWeather, time);
-                RestClient.getUnderway(restUnderway, time);
-                System.out.println("Fetched acquisition info for " + event.toString());
+                eventsTable2.scrollRectToVisible(eventsTable2.getCellRect(eventsTable2.getModel().getRowCount() + 2, 0, true));
             }
+        }
 
-        };
-        thr.start();
+        if (currentProgramResult.matches(ev) && currentProgramResult.getCurrent() != null) {
+            if (restClientEvent != null) {
+                populateEventModel();
+                Set<ProgramBean> programs = populatePrograms();
+                addDropdownMenu(EventTableModel.PROGRAM, new ProgramCellEditor(programs));
+                addDropdownMenu(EventTableModel.ACTOR, new ActorCellEditor(actors));
+            }
+        }
+
+        if (currentCruiseResult.matches(ev) && currentCruiseResult.getCurrent() != null) {
+            if (restClientEvent != null) {
+                populateEventModel();
+                Set<ProgramBean> programs = populatePrograms();
+                addDropdownMenu(EventTableModel.PROGRAM, new ProgramCellEditor(programs));
+                addDropdownMenu(EventTableModel.ACTOR, new ActorCellEditor(actors));
+            }
+        }
     }
 
     private void populateNbEventsLabel() {
         nbEventsLabel.setText("Number of selected events: " + eventsTable2.getSelectedRows().length + "/" + eventsTable2.getModel().getRowCount());
+    }
+
+    private Set<ProgramBean> populatePrograms() {
+        Set<ProgramBean> programs = null;
+        if (currentCruiseResult.getCurrent() != null && currentCruiseResult.getCurrent().getConcept() != null) { //there is a current cruise
+            CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
+            programs = new HashSet(currentCruise.getPrograms());
+        } else {
+            try {
+                programs = new HashSet(restClientProgram.getAllPrograms());
+            } catch (ConnectException ex) {
+                Messaging.report("Note that the webservices are offline. The programs can't be retrieved.", ex, this.getClass(), true);
+            }
+        }
+        return programs;
     }
 }

@@ -7,36 +7,26 @@ package be.naturalsciences.bmdc.ears.rest;
 
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
-import be.naturalsciences.bmdc.ears.entities.MessageBean;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
 import be.naturalsciences.bmdc.ears.entities.VesselBean;
-import static be.naturalsciences.bmdc.ears.rest.RestClient.printResponse;
 import be.naturalsciences.bmdc.ears.utils.DateUtilities;
-import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import eu.eurofleets.ears3.dto.CruiseDTO;
-import eu.eurofleets.ears3.dto.LinkedDataTermDTO;
 import eu.eurofleets.ears3.dto.PersonDTO;
-import eu.eurofleets.ears3.dto.ProgramDTO;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -104,7 +94,7 @@ public class RestClientCruise extends RestClient {
             if (response.getStatus() == 404) {
                 return null;
             } else if (response.getStatus() != 200) {
-                MessageBean message = response.readEntity(MessageBean.class);
+                RestMessage message = response.readEntity(RestMessage.class);
                 throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") -" + message.getMessage());
             } else {
                 cruise = response.readEntity(CruiseBean.class);
@@ -206,16 +196,16 @@ public class RestClientCruise extends RestClient {
                     if (concurrentCruises.isEmpty()) { //if this cruise doesn't overlap with other cruises on this vessel
                         return performPost(postTarget, CruiseDTO.class, cruiseDTO);
                     } else {
-                        return new MessageBean("Could not create this cruise because it overlaps with the following cruises of this vessel: " + StringUtils.join(concurrentCruises, ","));
+                        return new RestMessage("Could not create this cruise because it overlaps with the following cruises of this vessel: " + StringUtils.join(concurrentCruises, ","));
                     }
                 } else {
-                    return new MessageBean("Could not create this cruise because a cruise with the same cruiseId already exists.");
+                    return new RestMessage("Could not create this cruise because a cruise with the same cruiseId already exists.");
                 }
             } catch (Exception e) {
-                return new MessageBean("Could not create this cruise because a " + e.getClass().getSimpleName() + " occured: " + e.getLocalizedMessage(), e);
+                return new RestMessage("Could not create this cruise because a " + e.getClass().getSimpleName() + " occured: " + e.getLocalizedMessage(), e);
             }
         } else {
-            return new MessageBean("Could not create this cruise because it is illegal");
+            return new RestMessage("Could not create this cruise because it is illegal");
         }
     }
 
@@ -226,10 +216,10 @@ public class RestClientCruise extends RestClient {
                 return performPost(postTarget, CruiseDTO.class,
                         cruiseDTO);
             } catch (Exception e) {
-                return new MessageBean("Could not modify this cruise because a " + e.getClass().getSimpleName() + " occured: " + e.getLocalizedMessage(), e);
+                return new RestMessage("Could not modify this cruise because a " + e.getClass().getSimpleName() + " occured: " + e.getLocalizedMessage(), e);
             }
         } else {
-            return new MessageBean("Could not modify this cruise because it is illegal");
+            return new RestMessage("Could not modify this cruise because it is illegal");
         }
 
     }
@@ -250,7 +240,7 @@ public class RestClientCruise extends RestClient {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = removeTarget.queryParam("identifier", cruiseIdentifier);
         Response response = target.request().delete();
-        MessageBean res = new MessageBean("Cruise " + cruiseIdentifier + " removed ", response.getStatus(), cruiseIdentifier, null, null);
+        RestMessage res = new RestMessage("Cruise " + cruiseIdentifier + " removed ", response.getStatus(), cruiseIdentifier, null, null);
         response.close();
         return res;
     }
@@ -272,12 +262,12 @@ public class RestClientCruise extends RestClient {
                     .request().get();
 
             // Read output in string format
-            MessageBean res = response.readEntity(MessageBean.class);
+            RestMessage res = response.readEntity(RestMessage.class);
 
             response.close();
             return res;
         }
-        return new MessageBean(10, "Could not remove this cruise because the web service is not available.");
+        return new RestMessage(10, "Could not remove this cruise because the web service is not available.");
     }*/
     /**
      * *

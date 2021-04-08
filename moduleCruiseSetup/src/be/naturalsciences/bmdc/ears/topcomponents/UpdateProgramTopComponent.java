@@ -8,15 +8,20 @@ package be.naturalsciences.bmdc.ears.topcomponents;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.FilterableTableModel;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
+import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
 import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
+import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +38,6 @@ import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
@@ -70,7 +74,7 @@ import org.openide.windows.WindowManager;
 })
 public final class UpdateProgramTopComponent extends TopComponent implements LookupListener {
 
-        private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
+    private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
         
     ProgramTableModel model;
     private InputOutput io;
@@ -299,34 +303,38 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
             final JPopupMenu popupMenu = new JPopupMenu();
             JMenuItem editItem = new JMenuItem("Edit");
             JSeparator sep = new JSeparator();
-
             JMenuItem deleteItem = new JMenuItem("Delete");
+            
+            o_Program.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    if (me.getClickCount() == 2) {     // to detect doble click events
+                        editProgram();
+                    }
+                }
+            });
 
             editItem.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                     editProgram();
                 }
             });
             deleteItem.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
-                    NotifyDescriptor.Confirmation confirm = new NotifyDescriptor.Confirmation("Do you want to delete this program? Unfortunately this is not possible as the functionality is not provided in the EARS web services", "Delete program", NotifyDescriptor.YES_NO_OPTION);
+                    NotifyDescriptor.Confirmation confirm = new NotifyDescriptor.Confirmation("Do you want to delete this program? This operation cannot be undone.", "Delete program", NotifyDescriptor.YES_NO_OPTION);
 
                     Object result = DialogDisplayer.getDefault().notify(confirm);
                     if (result != NotifyDescriptor.YES_OPTION) {
                         return;
                     }
-                    //JOptionPane.showMessageDialog(UpdateCruiseTopComponent.this, "Right-click performed on table and choose DELETE");
-                    /*ProgramBean program = model.getEntityAt(o_Program.getSelectedRow());
+                    int row = o_Program.convertRowIndexToModel(o_Program.getSelectedRow());
+                    ProgramBean program = model.getEntityAt(row);
                     TopComponent tc = findTopComponent(program);
                     if (tc != null) {
                         tc.close();
                     }
-                    removeProgram(program); //remove from ws*/
+                    removeProgram(program);
                 }
             });
             popupMenu.add(editItem);
@@ -352,11 +360,25 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
         }
         return null;
     }
+    
+        private void removeProgram(ProgramBean program) {
+        IResponseMessage removeProgramMessage = restClientProgram.removeProgram(program);
+        if (!removeProgramMessage.isBad()) {
+           if (currentVesselResult.getCurrent() != null) {
+            try {
+                model.refresh(restClientProgram.getAllPrograms());
+            } catch (ConnectException ex) {
+                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+            }
+            o_Program.repaint();
+            GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
+           }
+        }else{Messaging.report(removeProgramMessage.getMessage(), Message.State.BAD, this.getClass(), true);}
+    }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        //instance.close();//ys01
         instance = null;
     }
 
@@ -393,7 +415,7 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
 
             TopComponent tc = findTopComponent(currentlyEditedProgram);
             if (tc == null) {
-                tc = new EditProgramSetupTopComponent(currentlyEditedProgram);
+                tc = new EditProgramTopComponent(currentlyEditedProgram);
                 tc.open();
             }
             tc.requestActive();
@@ -431,16 +453,16 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
 
         @Override
         public Object getValueAt(ProgramBean entity, int columnIndex) {
-            Person pi = entity.getPrincipalInvestigators().get(0);
+            Person pi = entity.getPrincipalInvestigators().isEmpty()?null:entity.getPrincipalInvestigators().get(0);
             switch (getColumnName(columnIndex)) {
              /* case CRUISE:
                     return entity.getCruiseId();*/
                 case PROGRAM_NAME:
                     return entity.getProgramId();
                 case PI_FIRST_NAME:
-                    return pi.firstName;
+                    return pi==null?null:pi.firstName;
                 case PI_LAST_NAME:
-                    return pi.lastName;
+                    return pi==null?null:pi.lastName;
                 default:
                     return null;
             }

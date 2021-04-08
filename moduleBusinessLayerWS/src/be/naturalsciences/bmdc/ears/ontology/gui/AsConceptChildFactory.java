@@ -11,6 +11,7 @@ import be.naturalsciences.bmdc.ears.ontology.entities.Tool;
 import be.naturalsciences.bmdc.ears.ontology.gui.AsConceptNode.ContextBehaviour;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.IOntologyModel;
+import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
@@ -54,19 +55,8 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
      * An empty constructor, used to set the Children after construction
      */
     public AsConceptChildFactory() {
-//does nothing
     }
 
-    /*public AsConceptChildFactory(AsConcept concept) {
-     this.concept = concept;
-     try {
-     ontModel = new OntologyModel<>("earsv2-onto-belgica.rdf", ToolCategory.class);
-     } catch (FileNotFoundException ex) {
-     Exceptions.printStackTrace(ex);
-     } catch (OntologyModelException ex) {
-     Exceptions.printStackTrace(ex);
-     }
-     }*/
     public AsConceptChildFactory(AsConceptNode parentNode, AsConcept concept, ConceptHierarchy parents, IOntologyModel ontModel, ContextBehaviour behaviour/*, File ontologyFile*/) {
         if (parentNode == null && !(concept instanceof FakeConcept)) {
             throw new IllegalArgumentException("ParentNode is null.");
@@ -79,19 +69,6 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
     }
 
     public boolean hasChildren() {
-        /*if (this.concept instanceof FakeConcept) {
-         FakeConcept c = (FakeConcept) this.concept;
-         return c.isIsRoot(); //root is understood to have children 
-         } else*/
- /* if (this.concept != null && this.concept.getTermRef() != null && this.concept.getTermRef().getPublisherUrn() != null && this.concept.getTermRef().getPublisherUrn().equals("SDN:L22::NETT0007")) { //BIOMAPER-II
-            int a = 5;//no kids
-        }
-        if (this.concept != null && this.concept.getTermRef() != null && this.concept.getTermRef().getPublisherUrn() != null && this.concept.getTermRef().getPublisherUrn().equals("SDN:L22::TOOL0434")) { //APPLIED MICROSYSTEMS MICRO CTD
-            int a = 5; //kids
-        }
-        if (this.concept != null && this.concept.getTermRef() != null && this.concept.getTermRef().getPublisherUrn() != null && this.concept.getTermRef().getPublisherUrn().equals("SDN:L05::130")) { //CTD
-            int a = 5; //kids
-        }*/
         if (parents != null) {
             Set<AsConcept> children = concept.getChildren(parents);
             if (children != null) {
@@ -113,22 +90,9 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
     @Override
     protected boolean createKeys(List<AsConcept> toPopulate) {
         if (parents != null) {
-            /*if (concept instanceof FakeConcept && ((FakeConcept) concept).isIsRoot() && concept.getChildren(parents).isEmpty()) {
-             List<ToolCategory> tcList = null;
-             try {
-             tcList = ontModel.getNodes().getNodes();
-             } catch (NullPointerException e) {
-             int a = 5;
-             }
-             for (ToolCategory tc : tcList) {
-             if (tc.getId() != null) {
-
-             concept.addToChildren(parents, tc, false);
-             }
-             }
-             }*/
-            Set<AsConcept> acList = concept.getChildren(parents);
-            toPopulate.addAll(acList);
+            Set<AsConcept> children = concept.getChildren(parents);
+            children.removeIf(c -> c.getTermRef().getStatusName().equals(OntologyConstants.STATUSES.get(OntologyConstants.DEPRECATED)));
+            toPopulate.addAll(children);
         } else {
             return false;
         }
@@ -182,7 +146,7 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
         if (!(this.concept instanceof FakeConcept)) {
             this.parentNode.getChildFactory().refresh();
         }
-        this.refresh(true);
+        this.refresh(false);
     }
 
     @Override
@@ -191,7 +155,6 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
     }
 
     public enum DropPermitted {
-
         TRUE,
         FALSE,
         ONPARENT //the drop of dropped should happen on the parent of destination because the classes of destination and dropped are the same.
@@ -219,18 +182,9 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
 
     @Override
     protected Node createNodeForKey(AsConcept key) {
-        //this.conceptNode = new AsConceptNode(parentNode, concept, new InstanceContent(), ontModel);
-        //AsConceptNode childNode = new AsConceptNode(this.conceptNode, key, new InstanceContent(), ontModel) {
         this.conceptNode = new AsConceptNode(this.parentNode, this.concept, this.ontModel, this.behaviour);
-        //   this.conceptNode.addNodeListenerUseThis(this.conceptNode);
-        /*this.conceptNode.addPropertyChangeListenerUseThis(behaviour.pcListener);
-         this.conceptNode.addNodeListenerUseThis(behaviour.nListener);*/
-
         AsConceptNode childNode = new AsConceptNode(this.conceptNode, key, this.ontModel, this.behaviour);
-
         childNode.addNodeListenerUseThis(this);
-        //  childNode.addNodeListenerUseThis(childNode); //listen to my own changes
         return childNode;
     }
-
 }

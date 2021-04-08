@@ -7,7 +7,7 @@ package od.nature.naturalsciences.be.bmdc.services.cruise;
 
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
-import be.naturalsciences.bmdc.ears.entities.MessageBean;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
 import be.naturalsciences.bmdc.ears.rest.RestClientCruise;
 import be.naturalsciences.bmdc.ontology.EarsException;
@@ -15,7 +15,6 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.After;
@@ -105,7 +104,7 @@ public class RestClientCruiseTest {
         //pCruise.setdStartDate(Date);
 
         RestClientCruise instance = new RestClientCruise();
-        MessageBean expResult = null;
+        RestMessage expResult = null;
         IResponseMessage result = instance.postCruise(pCruise);
         if (result.isBad()) {
             fail("response failed: cruise not created. see log.");
@@ -136,7 +135,7 @@ public class RestClientCruiseTest {
         System.out.println("removeCruise");
         CruiseBean pCruise = null;
         RestClientCruise instance = new RestClientCruise();
-        MessageBean expResult = null;
+        RestMessage expResult = null;
         IResponseMessage result = instance.removeCruise(pCruise);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.

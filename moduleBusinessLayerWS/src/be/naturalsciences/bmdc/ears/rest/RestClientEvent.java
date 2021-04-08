@@ -1,27 +1,18 @@
 package be.naturalsciences.bmdc.ears.rest;//ys
 
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
-import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
-import be.naturalsciences.bmdc.ears.entities.MessageBean;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
-import static be.naturalsciences.bmdc.ears.rest.RestClient.printResponse;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import eu.eurofleets.ears3.dto.EventDTO;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -81,7 +72,7 @@ public class RestClientEvent extends RestClient {
         Response response = getEventsTarget.request(MediaType.APPLICATION_XML).get();
         try {
             if (response.getStatus() != 200) {
-                MessageBean message = response.readEntity(MessageBean.class);
+                RestMessage message = response.readEntity(RestMessage.class);
                 throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") -" + message.getMessage());
             }
             events = (Collection<EventDTO>) response.readEntity(new GenericType<Collection<EventDTO>>() {
@@ -98,7 +89,7 @@ public class RestClientEvent extends RestClient {
         try {
             response = getEventTarget.queryParam("identifier", eventIdentifier).request().get();
             if (response.getStatus() != 200) {
-                MessageBean message = response.readEntity(MessageBean.class);
+                RestMessage message = response.readEntity(RestMessage.class);
                 throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") -" + message.getMessage());
             }
             event = response.readEntity(EventDTO.class);
@@ -122,7 +113,7 @@ public class RestClientEvent extends RestClient {
         Response response = getEventsTarget.queryParam("cruiseIdentifier", cruise.getIdentifier()).request(MediaType.APPLICATION_XML).get();
         try {
             if (response.getStatus() != 200) {
-                MessageBean message = response.readEntity(MessageBean.class);
+                RestMessage message = response.readEntity(RestMessage.class);
                 throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") -" + message.getMessage());
             }
             events = (Collection<EventDTO>) response.readEntity(new GenericType<Collection<EventDTO>>() {
@@ -133,21 +124,52 @@ public class RestClientEvent extends RestClient {
         return events;
 
     }
+    
+        /**
+     * *
+     * A web method to retrieve the events of one cruise. Is not implemented at
+     * the level of the web services but indirectly via the date range of the
+     * cruise.
+     *
+     * @param cruiseId
+     * @return
+     */
+    public Collection<EventDTO> getEventsByProgram(ProgramBean program) throws ConnectException {
+        Collection<EventDTO> events = new ArrayList();
+        Response response = getEventsTarget.queryParam("programIdentifier", program.getName()).request(MediaType.APPLICATION_XML).get();
+        try {
+            if (response.getStatus() != 200) {
+                RestMessage message = response.readEntity(RestMessage.class);
+                throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") -" + message.getMessage());
+            }
+            events = (Collection<EventDTO>) response.readEntity(new GenericType<Collection<EventDTO>>() {
+            });
+        } finally {
+            response.close();
+        }
+        return events;
+
+    }
+    
+    
 
     public IResponseMessage<EventDTO> postEvent(EventDTO event) {
+        //  EventDTO clone = event.clone();
+        // clone.getProperties().removeIf(p -> p.value == null || p.value.equals("")); //remove properties that have empty values
         return performPost(postEventTarget, EventDTO.class, event);
     }
 
     public IResponseMessage removeEvent(String eventIdentifier) {
         ResteasyWebTarget target = removeEventTarget.queryParam("identifier", eventIdentifier);
         Response response = target.request().delete();
-        MessageBean res = new MessageBean("Event removed " + response.getStatus(), response.getStatus(), eventIdentifier, null, null);
+        RestMessage res = new RestMessage("Event removed " + response.getStatus(), response.getStatus(), eventIdentifier, null, null);
         response.close();
         return res;
     }
 
     public IResponseMessage<EventDTO> modifyEvent(EventDTO event) {
-        //EventDTO eventDTO = new EventDTO(event);
+        // EventDTO clone = event.clone();
+        // clone.getProperties().removeIf(p -> p.value == null || p.value.equals("")); //remove properties that have empty values
         return performPost(postEventTarget, EventDTO.class, event);
     }
 }

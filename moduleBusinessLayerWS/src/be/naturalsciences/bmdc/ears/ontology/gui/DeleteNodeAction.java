@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
-import be.naturalsciences.bmdc.ears.utils.Messaging;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;

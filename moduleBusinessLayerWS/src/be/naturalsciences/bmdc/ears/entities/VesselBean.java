@@ -7,6 +7,7 @@ package be.naturalsciences.bmdc.ears.entities;
 
 import be.naturalsciences.bmdc.ears.utils.SetterField;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -75,11 +76,8 @@ public class VesselBean implements IVessel, Comparable<VesselBean> {
 
     @Override
     public int compareTo(VesselBean other) {
-        int i = vesselName.compareTo(other.vesselName);
-        if (i != 0) {
-            return i;
-        }
-        return code.compareTo(other.code);
+        return Comparator.comparing((VesselBean b) -> b.getName())
+                .thenComparing((VesselBean b) -> b.getCode()).compare(this, other);
     }
 
     @Override

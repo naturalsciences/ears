@@ -6,7 +6,6 @@
 package be.naturalsciences.bmdc.ears.ontology;
 
 import be.naturalsciences.bmdc.ears.comparator.TermKindComparator;
-import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import be.naturalsciences.bmdc.ears.ontology.gui.AsConceptNode;
 import be.naturalsciences.bmdc.ontology.AsConceptEvent;
 import be.naturalsciences.bmdc.ontology.IIndividuals;

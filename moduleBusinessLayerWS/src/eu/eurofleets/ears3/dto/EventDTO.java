@@ -1,16 +1,15 @@
 package eu.eurofleets.ears3.dto;
 
-import be.naturalsciences.be.linkeddata.LinkedDataTerm;
 import be.naturalsciences.bmdc.ears.entities.EARSConcept;
 import be.naturalsciences.bmdc.ears.entities.EventBean;
 import static be.naturalsciences.bmdc.ears.entities.EventBean.PROPERTY_URLS;
-import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import be.naturalsciences.bmdc.ontology.entities.IProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import gnu.trove.set.hash.THashSet;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -33,7 +32,7 @@ public class EventDTO implements EARSConcept {
 
     public String identifier;
     public String eventDefinitionId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
     @XmlJavaTypeAdapter(value = OffsetDateTimeAdapter.class)
     public OffsetDateTime timeStamp;
     public PersonDTO actor;
@@ -195,7 +194,7 @@ public class EventDTO implements EARSConcept {
         String url = (String) PROPERTY_URLS.get(prop);
         Set<String> r = new THashSet<>();
         for (PropertyDTO property : getProperties()) {
-            if (property.key.identifier.equals(url)) {
+            if (url.equals(property.key.transitiveIdentifier)) {
                 r.add(property.value);
             }
         }
@@ -237,16 +236,17 @@ public class EventDTO implements EARSConcept {
 
     @Override
     public EventDTO clone() {
+
         EventDTO clone = new EventDTO(this.identifier,
                 this.eventDefinitionId,
                 this.timeStamp,
-                this.actor, 
+                this.actor,
                 this.subject,
-                this.toolCategory, 
+                this.toolCategory,
                 this.tool,
                 this.process,
                 this.action,
-                this.properties,
+                this.properties != null ? new HashSet<>(this.properties) : null,
                 this.program,
                 this.platform);
         return clone;

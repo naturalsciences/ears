@@ -6,9 +6,7 @@
 package be.naturalsciences.bmdc.ears.topcomponents;
 
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.CruiseTableModel;
-import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.FilterableTableModel;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
-import static be.naturalsciences.bmdc.ears.entities.CruiseBean.DAY_FORMAT;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
@@ -19,6 +17,8 @@ import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.ConnectException;
 import java.util.Set;
 import javax.swing.JMenuItem;
@@ -32,7 +32,6 @@ import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -261,17 +260,6 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        // TODO add custom code on component opening
-
-        /*if (UpdateProgramTopComponent.getInstance() instanceof UpdateProgramTopComponent) {
-         UpdateProgramTopComponent currentUpdateProgramTopComponent = UpdateProgramTopComponent.getInstance();
-         currentUpdateProgramTopComponent.close();//ys01
-         }*/
-
- /*if (EditProgramSetupTopComponent.getInstance() instanceof EditProgramSetupTopComponent) {
-         EditProgramSetupTopComponent currentEditProgramSetupTopComponent = EditProgramSetupTopComponent.getInstance();
-         currentEditProgramSetupTopComponent.close();//ys01
-         }*/
         //Create a table with a sorter.
         if (currentVesselResult.getCurrent() != null && restClientCruise != null) {
             try {
@@ -292,8 +280,16 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
             final JPopupMenu popupMenu = new JPopupMenu();
             JMenuItem editItem = new JMenuItem("Edit");
             JSeparator sep = new JSeparator();
-
             JMenuItem deleteItem = new JMenuItem("Delete");
+
+            o_cruiseJtable.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    if (me.getClickCount() == 2) {     // to detect doble click events
+                        editCruise();
+                    }
+                }
+            });
+
             editItem.addActionListener(new ActionListener() {
 
                 @Override
@@ -315,16 +311,13 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
                     if (result != NotifyDescriptor.YES_OPTION) {
                         return;
                     }
-                    //JOptionPane.showMessageDialog(UpdateCruiseTopComponent.this, "Right-click performed on table and choose DELETE");
                     int row = o_cruiseJtable.convertRowIndexToModel(o_cruiseJtable.getSelectedRow());
-                    //int row = o_cruiseJtable.convertRowIndexToModel(o_cruiseJtable.getEditingRow());
-
                     CruiseBean cruise = model.getCruise(row);
                     TopComponent tc = findTopComponent(cruise);
                     if (tc != null) {
                         tc.close();
                     }
-                    removeCruise(cruise); //remove from ws
+                    removeCruise(cruise);
                 }
             });
             popupMenu.add(editItem);
@@ -359,7 +352,7 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
 
             TopComponent tc = findTopComponent(currentlyEditedCruise);
             if (tc == null) {
-                tc = new EditCruiseSetupTopComponent(currentlyEditedCruise);
+                tc = new EditCruiseTopComponent(currentlyEditedCruise);
                 tc.open();
             }
             tc.requestActive();
@@ -389,24 +382,12 @@ public final class UpdateCruiseTopComponent extends TopComponent implements Look
                 }
                 o_cruiseJtable.repaint();
             }
-          //  GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
+            GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
         }
     }
 
     @Override
     public void resultChanged(LookupEvent le) {
-        le.getSource();
-        /*YS replace by 
-        if (currentVesselResult.getCurrent() != null && restClientCruise != null) {
-         try {
-                model.refreshModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));
-            } catch (ConnectException ex) {
-                Messaging.report("The webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
-            }
-            model.fireTableDataChanged();
-            o_cruiseJtable.repaint();
-        }
-         */
         if (currentVesselResult.getCurrent() != null) {
             try {
                 model.refreshModel(restClientCruise.getCruiseByPlatform(currentVesselResult.getCurrent().getConcept()));

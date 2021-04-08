@@ -41,6 +41,9 @@ public class ButtonColumn extends AbstractCellEditor
      * @param buttonText the text applied to the button
      */
     public ButtonColumn(JTable table, Action action, int column, String buttonText) {
+        if (buttonText == null) {
+            throw new IllegalArgumentException("No button text provided!");
+        }
         this.table = table;
         this.action = action;
         this.buttonText = buttonText;
@@ -97,15 +100,13 @@ public class ButtonColumn extends AbstractCellEditor
     public Component getTableCellEditorComponent(
             JTable table, Object value, boolean isSelected, int row, int column) {
         if (value == null) {
-            throw new IllegalArgumentException("The provided Object value is null.");
+            editButton.setText("No properties");
+            editButton.setForeground(table.getForeground());
+            editButton.setBackground(UIManager.getColor("Button.background"));
         } else if (value instanceof Icon) {
             editButton.setIcon((Icon) value);
         } else {
-            if (buttonText != null) {
-                editButton.setText(buttonText);
-            } else {
-                editButton.setText(value.toString());
-            }
+            editButton.setText(buttonText);
             editButton.setIcon(null);
         }
 
@@ -136,15 +137,15 @@ public class ButtonColumn extends AbstractCellEditor
         }
 
         if (value == null) {
-            throw new IllegalArgumentException("The provided Object value is null.");
+            return null;
+            //renderButton.setText("No properties");
+            //renderButton.setForeground(table.getForeground());
+            //renderButton.setBackground(UIManager.getColor("Button.background"));
+            // throw new IllegalArgumentException("The provided Object value is null.");
         } else if (value instanceof Icon) {
             renderButton.setIcon((Icon) value);
         } else {
-            if (buttonText != null) {
-                renderButton.setText(buttonText);
-            } else {
-                renderButton.setText(value.toString());
-            }
+            renderButton.setText(buttonText);
             renderButton.setIcon(null);
         }
 
@@ -155,12 +156,12 @@ public class ButtonColumn extends AbstractCellEditor
      *	The button has been pressed. Stop editing and invoke the custom Action
      */
     public void actionPerformed(ActionEvent e) {
-        
+
         int row = table.convertRowIndexToModel(table.getEditingRow());
         fireEditingStopped();
 
         //  Invoke the Action and pass the button and the row
-        ActionEvent event = new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED, "" + row); 
+        ActionEvent event = new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED, "" + row);
         action.actionPerformed(event);
     }
 

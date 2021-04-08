@@ -5,27 +5,22 @@
  */
 package od.nature.naturalsciences.be.bmdc.services.event;
 
-import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.EventBean;
-import be.naturalsciences.bmdc.ears.entities.MessageBean;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.rest.RestClientCruise;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import java.io.File;
 import java.net.ConnectException;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -154,7 +149,7 @@ public class RestClientEventTest {
         //    event.attachProperty(EventBean.Prop.PARAMETER, "AMON");
         //EventBean event = new EventBean(toolCat, tool, process, action, null, "Oscar Vandewiele");
         RestClientEvent instance = new RestClientEvent();
-        MessageBean expResult = null;
+        RestMessage expResult = null;
         //  IResponseMessage result = instance.postEvent(event);
         //    if (result.isBad()) {
         fail("response failed: event not created. see log.");

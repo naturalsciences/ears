@@ -14,37 +14,26 @@ import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.net.ConnectException;
-import java.text.DateFormat;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.openide.awt.NotificationDisplayer;
-import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -365,8 +354,8 @@ public final class InfoBar implements LookupListener {
         if (ex == null) {
             report(msg, caller);
         } else {
-            Logger logger = Logger.getLogger(caller.getName());
-            logger.log(Level.INFO, msg, ex);
+            /*Logger logger = Logger.getLogger(caller.getName());
+            logger.log(Level.INFO, msg, ex);*/ //extra logging not needed
 
             String thisMoment = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC).format(Instant.now());
 

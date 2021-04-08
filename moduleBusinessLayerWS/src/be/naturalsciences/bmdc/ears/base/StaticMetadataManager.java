@@ -473,5 +473,4 @@ public class StaticMetadataManager<C extends EARSConcept> {
         }
         return new JsonWrapper(date, results);
     }
-
 }

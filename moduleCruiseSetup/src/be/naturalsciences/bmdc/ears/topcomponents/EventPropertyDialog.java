@@ -6,8 +6,6 @@
 package be.naturalsciences.bmdc.ears.topcomponents;
 
 import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
-import be.naturalsciences.bmdc.ears.entities.EventBean;
-import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
@@ -41,7 +39,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
@@ -87,21 +84,22 @@ class EventPropertyDialog extends JDialog implements LookupListener {
     public EventPropertyDialog(Component parentComponent, ActionListener okListener, ActionListener cancelListener, EventDTO event) throws HeadlessException {
         super(getWindowForComponent(parentComponent), "Properties", ModalityType.APPLICATION_MODAL);
         this.event = event;
-        programResult = Utilities.actionsGlobalContext().lookupResult(ProgramBean.class);
-        //programResult.addLookupListener(this);
-        currentCruiseResult = new SingletonResult<>(CurrentCruise.class, this);
-        currentPrograms = new ArrayList();
-        addButtons = new THashMap();
-        minusButtons = new THashMap();
-        init(okListener, cancelListener);
-        pack();
-        /* Double cx = closeToThisComponent.getLocation().getX() - parentComponent.getLocation().getX();
+        if (this.event.getProperties() != null) {
+            programResult = Utilities.actionsGlobalContext().lookupResult(ProgramBean.class);
+            //programResult.addLookupListener(this);
+            currentCruiseResult = new SingletonResult<>(CurrentCruise.class, this);
+            currentPrograms = new ArrayList();
+            addButtons = new THashMap();
+            minusButtons = new THashMap();
+            init(okListener, cancelListener);
+            pack();
+            /* Double cx = closeToThisComponent.getLocation().getX() - parentComponent.getLocation().getX();
         Double cy = closeToThisComponent.getLocation().getY() - parentComponent.getLocation().getY();*/
-        Point location = MouseInfo.getPointerInfo().getLocation();
-        setLocation(location);
+            Point location = MouseInfo.getPointerInfo().getLocation();
+            setLocation(location);
 
-        setResizable(true);
-
+            setResizable(true);
+        }
     }
 
     protected JPanel initSaveButton(ActionListener okListener, ActionListener cancelListener) {
@@ -337,10 +335,6 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                 propertyPane.add(propertyValueField, "wrap");
             }
         }
-    }
-
-    private class PropertyFieldRow {
-
     }
 
     private JButton getAddButton(JPanel pane, PropertyDTO property, int maximum) {

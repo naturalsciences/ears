@@ -4,6 +4,7 @@ import be.naturalsciences.bmdc.ears.comparator.TermLabelComparator;
 import be.naturalsciences.bmdc.ears.ontology.AsConceptFlavor;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.IAsConceptFactory;
+import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.IEventDefinition;
 import be.naturalsciences.bmdc.ontology.entities.IProcess;
@@ -47,8 +48,6 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
     protected URI uri;
     //protected Long id;
 
-    private Collection<Subject> subjectCollection;
-
     private transient Collection<ProcessAction> processActionCollection;
     private Collection<Process> processCollection;
 
@@ -81,7 +80,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
         eventDefinition = new ArrayList();
         actionCollection = new ArrayList();
         processCollection = new ArrayList();
-        subjectCollection = new ArrayList();
+       // subjectCollection = new ArrayList();
     }
 
     /*public Process(Long id) {
@@ -117,16 +116,6 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
     @Override
     public String getUrn() {
         return this.getTermRef().getPublisherUrn();
-    }
-
-    @Override
-    public Collection<Subject> getSubjectCollection() {
-        return subjectCollection;
-    }
-
-    @Override
-    public void setSubjectCollection(Collection<Subject> subjectCollection) {
-        this.subjectCollection = subjectCollection;
     }
 
     /**
@@ -298,28 +287,6 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
         return true;
     }
 
-    /*boolean equalsNbChildren(Process otherProcess, ConceptHierarchy thisParents, ConceptHierarchy otherParents) {
-        thisParents.add(this);
-        otherParents.add(otherProcess);
-        if (!this.equals(otherProcess)) {
-            return false;
-        }
-        boolean allLevelsTrue = true;
-        if (this.getChildren(thisParents).size() != otherProcess.getChildren(otherParents).size()) {
-            return false;
-        }
-        if (this.getChildren(thisParents).size() > 0) {
-            for (Action action : this.getChildren(thisParents)) {
-                for (Action otherAction : otherProcess.getChildren(otherParents)) {
-                    if (action.equals(otherAction)) {
-                        return action.equalsNbChildren(otherAction, thisParents, otherParents);
-                    }
-                }
-
-            }
-        }
-        return true;
-    }*/
     @Override
     public String toString() {
         return "id=" + getId() + "; hash=" + System.identityHashCode(this) + "; name=" + ((this.getTermRef() != null) ? this.getTermRef().getName() : "no name");
@@ -334,7 +301,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
         collectionIdentityHashMap.put(this.eventDefinition, shallowClone.eventDefinition);
         collectionIdentityHashMap.put(this.actionCollection, shallowClone.actionCollection);
         collectionIdentityHashMap.put(this.processCollection, shallowClone.processCollection);
-        collectionIdentityHashMap.put(this.subjectCollection, shallowClone.subjectCollection);
+//        collectionIdentityHashMap.put(this.subjectCollection, shallowClone.subjectCollection);
         cc.cloneCollection(collectionIdentityHashMap);
 
         return shallowClone;
@@ -382,7 +349,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
                 }
             }
         }
-
+        result.removeIf(a -> a.getTermRef().getStatusName().equals(OntologyConstants.STATUSES.get(OntologyConstants.DEPRECATED)));
         return result;
     }
 
@@ -624,9 +591,6 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
 
     @Override
     public void isolate() {
-        if (subjectCollection != null) {
-            subjectCollection.clear();
-        }
 
         if (processActionCollection != null) {
             processActionCollection.clear();

@@ -6,10 +6,9 @@
 package be.naturalsciences.bmdc.ears.rest;
 
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
-import be.naturalsciences.bmdc.ears.entities.MessageBean;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import be.naturalsciences.bmdc.ears.entities.User;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
-import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
@@ -76,8 +74,8 @@ public class RestClientOnt extends RestClient {
             getProgramOntologyTarget = client.target(uri.resolve("ears3/ontology/program"));
             getVesselOntologyDateTarget = client.target(uri.resolve("ears3/ontology/vessel/date"));
             getProgramOntologyDateTarget = client.target(uri.resolve("ears3/ontology/program/date"));
-            uploadVesselOntologyTarget = client.target(uri.resolve("ears3/uploadVesselOntology"));
-            uploadProgramOntologyTarget = client.target(uri.resolve("ears3/uploadProgramOntology"));
+            uploadVesselOntologyTarget = client.target(uri.resolve("ears3/ontology/vessel/upload"));
+            uploadProgramOntologyTarget = client.target(uri.resolve("ears3/ontology/program/upload"));
             authenticateTarget = client.target(uri.resolve("ears3/ontology/authenticate"));
         }
     }
@@ -127,9 +125,9 @@ public class RestClientOnt extends RestClient {
         try ( FileInputStream fis = new FileInputStream(path.toFile())) {
             return uploadVesselOntology(fis, path.getFileName().toString(), username, password);
         } catch (FileNotFoundException ex) {
-            return new MessageBean(ex);
+            return new RestMessage(ex);
         } catch (IOException ex) {
-            return new MessageBean(ex);
+            return new RestMessage(ex);
         }
     }
 
@@ -137,9 +135,9 @@ public class RestClientOnt extends RestClient {
         try ( FileInputStream fis = new FileInputStream(file)) {
             return uploadVesselOntology(fis, file.getName(), username, password);
         } catch (FileNotFoundException ex) {
-            return new MessageBean(ex);
+            return new RestMessage(ex);
         } catch (IOException ex) {
-            return new MessageBean(ex);
+            return new RestMessage(ex);
         }
     }
 
@@ -153,7 +151,7 @@ public class RestClientOnt extends RestClient {
         uploadVesselOntologyTarget.register(new BasicAuthentication(username, password));
         Response response = uploadVesselOntologyTarget.request().post(Entity.entity(entity, MediaType.MULTIPART_FORM_DATA_TYPE));
 
-        IResponseMessage responseMessage = response.readEntity(MessageBean.class);
+        IResponseMessage responseMessage = response.readEntity(RestMessage.class);
         responseMessage.setCode(response.getStatus());
         printResponse(uploadVesselOntologyTarget, response.getStatus(), this.getClass(), responseMessage);
         return responseMessage;
@@ -164,9 +162,9 @@ public class RestClientOnt extends RestClient {
         try ( FileInputStream fis = new FileInputStream(path.toFile())) {
             return uploadProgramOntology(fis, path.getFileName().toString());
         } catch (FileNotFoundException ex) {
-            return new MessageBean(ex);
+            return new RestMessage(ex);
         } catch (IOException ex) {
-            return new MessageBean(ex);
+            return new RestMessage(ex);
         }
     }
 
@@ -179,8 +177,7 @@ public class RestClientOnt extends RestClient {
         };
 
         Response response = uploadProgramOntologyTarget.request().post(Entity.entity(entity, MediaType.MULTIPART_FORM_DATA_TYPE));
-
-        IResponseMessage responseMessage = response.readEntity(MessageBean.class);
+        IResponseMessage responseMessage = response.readEntity(RestMessage.class);
         responseMessage.setCode(response.getStatus());
         printResponse(uploadProgramOntologyTarget, response.getStatus(), this.getClass(), responseMessage);
         return responseMessage;

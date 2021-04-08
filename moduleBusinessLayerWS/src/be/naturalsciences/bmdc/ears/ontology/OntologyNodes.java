@@ -38,11 +38,9 @@ import java.net.ConnectException;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.semanticweb.owlapi.io.OWLOntologyCreationIOException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -254,18 +252,6 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
      * @return
      */
     static <C extends AsConcept> Set<C> getAllChildren(AsConcept c, Set<C> r, Class<C> cls) {
-        if (c != null && c.getTermRef() != null && c.getTermRef().getEarsTermLabel() != null && c.getTermRef().getEarsTermLabel().getPrefLabel() != null) {
-
-            if (c.getTermRef().getEarsTermLabel().getPrefLabel().equals("Rosette")) {
-                int a = 5;
-            }
-            if (c.getTermRef().getEarsTermLabel().getPrefLabel().equals("Profile")) {
-                int a = 5;
-            }
-            if (c.getTermRef().getEarsTermLabel().getPrefLabel().equals("Cruise")) {
-                int a = 5;
-            }
-        }
         Tool hostedToolNode = (Tool) previousNodesInPath.getHostedTool();
         Process processNode = (Process) previousNodesInPath.getProcess();
         Action actionNode = (Action) previousNodesInPath.getAction();
@@ -301,12 +287,6 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
         //make sure that first the Processes of the own tool are handled and later the processes of the nested tool!!
         //otherwise the nestedTools are already stored as a child and the subpath is calculated from the tool's processes but with the child tool as purported tool.
         if (ch != null && ch.size() > 0 && r != null) { //if there are any children
-            // boolean isHostedTool = false;
-            // if (c instanceof Tool) {
-            //     Tool tool = (Tool) c;
-            //     isHostedTool = tool.isHostedTool();
-            // }
-            // if (!isHostedTool) {
             previousNodesInPath.removeOfType(c); //attention: this removes the parent tool in case there is a nested tool.
             previousNodesInPath.add(c);
             //  }
@@ -424,66 +404,9 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
         return null;
     }
 
-    Set<String> names = new THashSet<>();
-
-    public void testNames(List<AsConcept> concepts) {
-        for (AsConcept concept : concepts) {
-            if (names.add(concept.getTermRef().getEarsTermLabel().getPrefLabel())) {
-
-            } else {
-                int a = 5;
-            }
-        }
-    }
-
-    /**
-     * ***
-     * Serializes the jenaModel to an rdf file at the given path. Ignores
-     * countries, organisations, harbours,
-     *
-     * @throws IOException
-     */
-    private void save(Path destPath) throws OWLOntologyCreationException, EarsException {
-        CurrentUser currentUser = Utilities.actionsGlobalContext().lookup(CurrentUser.class);
-        User user = null;
-        if (currentUser != null && currentUser.getConcept() != null) {
-            user = currentUser.getConcept();
-        }
-
-        RestClientOnt client = null;
-        if (this.model.getScope().equals(ScopeMap.Scope.VESSEL.name())) {
-            if (user == null) {
-                throw new IllegalStateException("The vessel tree is write-protected. No credentials are registered in the Settings.");
-            }
-            try {
-                client = new RestClientOnt();
-            } catch (ConnectException ex) {
-                throw new EarsException("The vessel tree cannot be edited when the EARS web server is unreachable.");
-            } catch (EarsException ex) {
-                throw new IllegalStateException("The vessel tree cannot be edited when the url for the EARS web server is empty or invalid.");
-            }
-            boolean authenticated;
-            try {
-                authenticated = client.authenticate(user);
-            } catch (ConnectException ex) {
-                throw new EarsException("The vessel tree cannot be edited when the EARS web server is unreachable.");
-            }
-            if (!authenticated) {
-                throw new IllegalStateException("The vessel tree is write-protected. You did not provide the correct credentials in the Settings to edit it.");
-            }
-        } else if (this.model.getScope().equals(ScopeMap.Scope.PROGRAM.name())) {
-            try {
-                client = new RestClientOnt();
-            } catch (ConnectException ex) {
-                throw new EarsException("The program tree cannot be edited when the EARS web server is unreachable.");
-            } catch (EarsException ex) {
-                throw new IllegalStateException("The vessel tree cannot be edited when the url for the EARS web server is empty or invalid.");
-            }
-        }
-
+    private void saveInternal(Path destPath, User user, RestClientOnt client) throws OWLOntologyCreationException, EarsException {
         if (getRoot() == null) {
-            throw new IllegalStateException("This set of OntologyNodes doesn't have a root. "
-                    + "Unrooted OntologyNodes can't be saved. Adding a root to an OntologyModel's nodes is done by passing the OntologyModel to a Root FakeConcept constructor.");
+            throw new IllegalStateException("This set of OntologyNodes doesn't have a root. Unrooted OntologyNodes can't be saved. Adding a root to an OntologyModel's nodes is done by passing the OntologyModel to a Root FakeConcept constructor.");
         } else {
             this.nodes = (Set<T>) getRoot().getChildren(null);
         }
@@ -514,6 +437,9 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                     }
                     if (tool.getGenericEventDefinitionCollection() != null) {
                         genericEventDefinitions.addAll(tool.getGenericEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
+                    }
+                    if (tool.getToolCategoryCollection() != null) { //add all the original tool catagories to be serialized as well.
+                        toolCategories.addAll(tool.getToolCategoryCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
                     }
                 } catch (Exception e) {
                     Messaging.report("A problem occured during saving the tree at " + destPath + " for the tool" + tool.getUri(), e, this.getClass(), false);
@@ -586,13 +512,13 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
 
             owlCreator.createOntoFile(EARSOntologyCreator.LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), version + 1, destPath, null, null, null, true);
 
-            if (this.model.getScope().equals(ScopeMap.Scope.VESSEL.name()) && user != null) {
+            if (this.model.getScope().equals(ScopeMap.Scope.VESSEL.name()) && user != null && client != null) { //upload it when we can
                 IResponseMessage response = client.uploadVesselOntology(destPath, user.getUsername(), user.getPassword());
                 if (response.isBad()) {
                     throw new EarsException("Vessel tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getMessage());
                 }
             }
-            if (this.model.getScope().equals(ScopeMap.Scope.PROGRAM.name())) {
+            if (this.model.getScope().equals(ScopeMap.Scope.PROGRAM.name()) && client != null) { //upload it when we can
                 IResponseMessage response = client.uploadProgramOntology(destPath);
                 if (response.isBad()) {
                     throw new EarsException("Program tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getMessage());
@@ -616,6 +542,53 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
     }
 
     /**
+     * ***
+     * Serializes the jenaModel to an rdf file at the given path. Ignores
+     * countries, organisations, harbours,
+     *
+     * @throws IOException
+     */
+    private void save(Path destPath) throws OWLOntologyCreationException, EarsException {
+        CurrentUser currentUser = Utilities.actionsGlobalContext().lookup(CurrentUser.class);
+        User user = null;
+        if (currentUser != null && currentUser.getConcept() != null) {
+            user = currentUser.getConcept();
+        }
+
+        RestClientOnt client = null;
+        if (this.model.getScope().equals(ScopeMap.Scope.VESSEL.name())) {
+            if (user == null) {
+                throw new IllegalStateException("The vessel tree is write-protected. No credentials are registered in the Settings.");
+            }
+            try {
+                client = new RestClientOnt();
+            } catch (ConnectException ex) {
+                throw new EarsException("The vessel tree cannot be edited when the EARS web server is unreachable.");
+            } catch (EarsException ex) {
+                throw new IllegalStateException("The vessel tree cannot be edited when the url for the EARS web server is empty or invalid.");
+            }
+            boolean authenticated;
+            try {
+                authenticated = client.authenticate(user);
+            } catch (ConnectException ex) {
+                throw new EarsException("The vessel tree cannot be edited when the EARS web server is unreachable.");
+            }
+            if (!authenticated) {
+                throw new IllegalStateException("The vessel tree is write-protected. You did not provide the correct credentials in the Settings to edit it.");
+            }
+        } else if (this.model.getScope().equals(ScopeMap.Scope.PROGRAM.name())) {
+            try {
+                client = new RestClientOnt();
+            } catch (ConnectException ex) {
+                throw new EarsException("The program tree cannot be edited when the EARS web server is unreachable.");
+            } catch (EarsException ex) {
+                throw new IllegalStateException("The vessel tree cannot be edited when the url for the EARS web server is empty or invalid.");
+            }
+        }
+        saveInternal(destPath, user, client);
+    }
+
+    /**
      * *
      * Saves the ontology to its path and returns true if the operation
      * succeeds, false if otherwise. After saving, the reference from the model
@@ -626,18 +599,17 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
      */
     @Override
     public boolean save() {
-
         Path path = this.getModel().getFile().toPath();
         try {
             save(path);
         } catch (OWLOntologyCreationIOException ex) {
-            Messaging.report("The ontology server is unreachable", ex, this.getClass(), false);
+            Messaging.report("The ontology server is unreachable", ex, this.getClass(), true);
             return false;
         } catch (OWLOntologyCreationException ex) {
-            Messaging.report("The tree couldn't be serialized to rdf", ex, this.getClass(), false);
+            Messaging.report("The tree couldn't be serialized to rdf", ex, this.getClass(), true);
             return false;
-        } catch (EarsException ex) {
-            Messaging.report("The tree couldn't be saved", ex, this.getClass(), false);
+        } catch (EarsException | IllegalStateException ex) {
+            Messaging.report("The tree couldn't be saved", ex, this.getClass(), true);
             return false;
         }
         try {
@@ -661,10 +633,9 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
      * @return
      */
     @Override
-    public boolean saveAs(Path destPath
-    ) {
+    public boolean saveAs(Path destPath) {
         try {
-            save(destPath);
+            saveInternal(destPath, null, null);
         } catch (OWLOntologyCreationIOException ex) {
             Messaging.report("The ontology server is unreachable.", ex, this.getClass(), true);
             return false;

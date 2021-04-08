@@ -6,6 +6,7 @@ import be.naturalsciences.bmdc.ears.ontology.AsConceptFlavor;
 import be.naturalsciences.bmdc.ears.utils.Cloner;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.IAsConceptFactory;
+import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.ITool;
 import gnu.trove.map.hash.THashMap;
@@ -26,7 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.ws.rs.core.UriBuilder;
 import thewebsemantic.Id;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
@@ -233,63 +233,29 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash ^= (getId() != null ? getId().hashCode() : 0);
-        hash ^= (uri != null ? uri.hashCode() : 0);
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.uri);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (this == object) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(object instanceof Tool)) {
+        if (obj == null) {
             return false;
         }
-        Tool other = (Tool) object;
-        /*    if (!(this.getId() == null && other.getId() == null) && ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId())))) {
-            return false;
-        }*/
-        if (!Objects.equals(this.getId(), other.getId())) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        if ((this.uri == null && other.uri != null) || (this.uri != null && !this.uri.equals(other.uri))) {
-            return false;
-        }
-        
-        if (!Objects.equals(this.serialNumber, other.serialNumber)) {
-            return false;
-        }
-        if (!Objects.equals(this.toolIdentifier, other.toolIdentifier)) {
+        final Tool other = (Tool) obj;
+        if (!Objects.equals(this.uri, other.uri)) {
             return false;
         }
         return true;
     }
 
-    /*boolean equalsNbChildren(Tool otherTool, ConceptHierarchy thisParents, ConceptHierarchy otherParents) {
-        thisParents.add(this);
-        otherParents.add(otherTool);
-        if (!this.equals(otherTool)) {
-            return false;
-        }
-        boolean allLevelsTrue = true;
-        if (this.getChildren(thisParents).size() != otherTool.getChildren(otherParents).size()) {
-            return false;
-        }
-        if (this.getChildren(thisParents).size() > 0) {
-            for (Process process : this.getChildren(thisParents)) {
-                for (Process otherProcess : otherTool.getChildren(otherParents)) {
-                    if (process.equals(otherProcess)) {
-                        return process.equalsNbChildren(otherProcess, thisParents, otherParents);
-                    }
-                }
-
-            }
-        }
-        return true;
-    }*/
     @Override
     public String toString() {
         return "id=" + getId() + ";hash=" + System.identityHashCode(this) + ";name=" + ((this.getTermRef() != null) ? this.getTermRef().getName() : "no name");
@@ -593,9 +559,9 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
          }*/
         // Set<Process> children = this.getChildren(targetParents);
         //int before = this.getSpecificEventDefinitionCollection().size();
-        if (childConcept != null && childConcept instanceof Tool) { //i.e. a tool will be added to myself, I become am a hosted tool.
+        if (childConcept != null && childConcept instanceof Tool) { //i.e. a tool will be added to myself, I become am a hosting tool.
             Tool childTool = (Tool) childConcept;
-            childTool.setToolCategoryCollection(new ArrayList());
+           // childTool.setToolCategoryCollection(new ArrayList()); //keep the original categories I was part of
             this.hostedCollection.add(childTool);
             childTool.hostsCollection.add(this);
         }
@@ -610,12 +576,11 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
 
             if (childActions.isEmpty()) {
                 try {
-                    //force add process by creating dummy action
-                    //Action a = Action.createDummyAction();
-                    //process.getActionCollection().add(a);
-                    AsConcept action = factory.buildChild(childProcess);
+                    //force add process by creating dummy dummyAction
+                    AsConcept dummyAction = factory.buildChild(childProcess);
                     targetParents.add(this);
-                    childProcess.addToChildren(targetParents, action, false, newChildParents, factory);
+                    childProcess.addToChildren(targetParents, dummyAction, false, newChildParents, factory);
+                    dummyAction.getTermRef().setStatusName(OntologyConstants.DEPRECATED); //this ensures this dummy action is never displayed!
                 } catch (Exception ex) {
                     throw new RuntimeException("There was a problem with creating an Action for this Tool.", ex);
                 }
@@ -693,6 +658,18 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
     @Override
 
     public void delete(ConceptHierarchy parents) {
+
+        if (specificEventDefinitionCollection != null && specificEventDefinitionCollection.size() > 0) {
+            Iterator<SpecificEventDefinition> iter = this.getSpecificEventDefinitionCollection().iterator();
+            while (iter.hasNext()) {
+                SpecificEventDefinition sev = iter.next();
+                // for (SpecificEventDefinition sev : specificEventDefinitionCollection) {
+                sev.setToolRef(null);
+                sev.safeDelete(null, this, iter);
+            }
+            specificEventDefinitionCollection = null;
+        }
+
         ITool parentTool = parents.getTool();
         if (parentTool != null && this.hostsCollection.contains(parentTool)) { //I am a hosted tool because I appear in the hosted tools of my parents
             this.removeFromHostsCollection(parentTool);
@@ -703,16 +680,6 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
                 tc.removeTool(this);
             }
             toolCategoryCollection = null;
-        }
-        if (specificEventDefinitionCollection != null && specificEventDefinitionCollection.size() > 0) {
-            Iterator<SpecificEventDefinition> iter = this.getSpecificEventDefinitionCollection().iterator();
-            while (iter.hasNext()) {
-                SpecificEventDefinition sev = iter.next();
-                // for (SpecificEventDefinition sev : specificEventDefinitionCollection) {
-                sev.setToolRef(null);
-                sev.safeDelete(null, this, iter);
-            }
-            specificEventDefinitionCollection = null;
         }
 
         /*uri = null;
@@ -747,8 +714,8 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
     }
 
     /**
-     * *
-     * For the provided process and/or action, delete the
+     * **
+     * For the provided process and/or dummyAction, delete the
      * SpecificEventDefinitions of this.
      *
      * @param process
@@ -768,7 +735,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
         }
         /*for (int j = 0; j < this.getSpecificEventDefinitionCollection().size(); j++) {
          SpecificEventDefinition sev = (SpecificEventDefinition) new ArrayList(this.getSpecificEventDefinitionCollection()).get(j);
-         if (sev.getProcess().equals(process) && (action != null ? sev.getAction().equals(action) : true)) {
+         if (sev.getProcess().equals(process) && (dummyAction != null ? sev.getAction().equals(dummyAction) : true)) {
          sev.delete(null);
          this.specificEventDefinitionCollection.remove(sev);
          j = (j - 1 < 0 ? 0 : j - 1);
@@ -854,28 +821,6 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
         } else {
             return false;
         }
-    }
-
-    public String getDeckIdentifier() {
-        if (this.getSerialNumber() != null) {
-            return this.getSerialNumber();
-        } else {
-            return this.getDeckIdentifier();
-        }
-    }
-
-    public URI buildUri() {
-        URI uri = getUri();
-
-        String fragment = uri.getFragment();
-        if (!fragment.contains("/")) {
-            URI newUri = UriBuilder.fromUri(uri).fragment(fragment + "/" + getDeckIdentifier()).build();
-            this.setUri(newUri);
-            return newUri;
-        } else {
-            return uri;
-        }
-
     }
 
     @Override

@@ -7,7 +7,6 @@ import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.ISpecificEventDefinition;
 import gnu.trove.map.hash.THashMap;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.IdentityHashMap;
@@ -222,7 +221,7 @@ public class SpecificEventDefinition extends EventDefinition implements ISpecifi
             collectionIdentityHashMap.put(this.process.getEventDefinition(), shallowProcess.getEventDefinition());
             collectionIdentityHashMap.put(this.process.getActionCollection(), shallowProcess.getActionCollection());
             collectionIdentityHashMap.put(this.process.getProcessCollection(), shallowProcess.getProcessCollection());
-            collectionIdentityHashMap.put(this.process.getSubjectCollection(), shallowProcess.getSubjectCollection());
+//            collectionIdentityHashMap.put(this.process.getSubjectCollection(), shallowProcess.getSubjectCollection());
             ccProcess.cloneCollection(collectionIdentityHashMap);
 
             Map<Collection, Collection> collectionIdentityHashMap2 = new THashMap<>();

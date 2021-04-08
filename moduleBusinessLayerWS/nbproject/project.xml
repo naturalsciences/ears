@@ -316,6 +316,12 @@
                 <package>net.jcip.annotations</package>
                 <package>org.apache.commons.collections4</package>
                 <package>org.apache.commons.collections4.queue</package>
+                <package>org.apache.commons.io</package>
+                <package>org.apache.commons.io.comparator</package>
+                <package>org.apache.commons.io.filefilter</package>
+                <package>org.apache.commons.io.input</package>
+                <package>org.apache.commons.io.monitor</package>
+                <package>org.apache.commons.io.output</package>
                 <package>org.apache.commons.lang3</package>
                 <package>org.codehaus.jackson</package>
                 <package>org.codehaus.jackson.annotate</package>

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 /**
@@ -22,7 +22,7 @@ import javax.swing.table.TableRowSorter;
  * @author Yvan Stojanov
  * @param <E>
  */
-public abstract class EntityTableModel<E extends EARSConcept> extends AbstractTableModel {
+public abstract class EntityTableModel<E extends EARSConcept> extends DefaultTableModel {
 
     protected JTable table;
     protected TableRowSorter<EntityTableModel<E>> rowSorter;

@@ -6,7 +6,6 @@
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
-import java.text.MessageFormat;
 import java.util.Set;
 import org.openide.nodes.AbstractNode;
 

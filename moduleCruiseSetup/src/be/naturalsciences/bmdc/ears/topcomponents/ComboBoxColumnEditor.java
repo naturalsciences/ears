@@ -6,7 +6,6 @@
 package be.naturalsciences.bmdc.ears.topcomponents;
 
 import be.naturalsciences.bmdc.ears.entities.EARSConcept;
-import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.utils.SwingUtils;
 import java.awt.Component;

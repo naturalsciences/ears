@@ -115,6 +115,8 @@
   
    
         <folder name="Clipboard_hidden"/>  
+        <file name="Memory_hidden"/>
+        <folder name="Performance_hidden"/>  
         <folder name="UndoRedo_hidden"/>
     </folder>
 

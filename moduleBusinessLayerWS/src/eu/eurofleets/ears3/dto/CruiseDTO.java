@@ -1,8 +1,10 @@
 package eu.eurofleets.ears3.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -16,7 +18,11 @@ import java.util.List;
 public class CruiseDTO {
 
     public String identifier;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
+    @XmlJavaTypeAdapter(value = OffsetDateTimeAdapter.class)
     public OffsetDateTime startDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
+    @XmlJavaTypeAdapter(value = OffsetDateTimeAdapter.class)
     public OffsetDateTime endDate;
     public String collateCentre;
     public String departureHarbour;

@@ -6,15 +6,16 @@
 package be.naturalsciences.bmdc.ears.ontology;
 
 import be.naturalsciences.bmdc.ears.comparator.TermLabelComparator;
+import be.naturalsciences.bmdc.ears.comparator.TermLabelUriComparator;
 import be.naturalsciences.bmdc.ears.entities.CurrentOntologyModels;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.ontology.entities.Tool;
+import be.naturalsciences.bmdc.ears.ontology.entities.ToolCategory;
 import be.naturalsciences.bmdc.ears.ontology.entities.Vessel;
 import be.naturalsciences.bmdc.ears.properties.Constants;
 import be.naturalsciences.bmdc.ears.rest.RestClientOnt;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
-import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.IOntologyModel;
 import be.naturalsciences.bmdc.ontology.OntologyConstants;
@@ -291,7 +292,6 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         Statement modifiedProperty = this.jenaModel.getProperty(ontology, modifiedProp);
         Statement versionInfoProperty = this.jenaModel.getProperty(ontology, OWL.versionInfo);
         if (modifiedProperty != null) {
-
             Date resultDate = ((XSDDateTime) modifiedProperty.getLiteral().getValue()).asCalendar().getTime();
             versionInfo = resultDate;
         }
@@ -315,8 +315,7 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         buildIndividuals();
         GlobalActionContextProxy.getInstance().add(this.getIndividuals()); //are added to the list and last forever, opening and reopening the ontology doesn't change this.
     }
-    
-    
+
     @Override
     public Set<ActionEnum> getCurrentActions() {
         return this.currentActions;
@@ -409,7 +408,7 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
     private <C extends AsConcept> Set<C> getAllIndividuals(RDF2Bean reader, Class<C> cls, boolean sorted) {
         Set<C> classResults;
         if (sorted) {
-            classResults = new TreeSet<>(new TermLabelComparator());
+            classResults = new TreeSet<>(new TermLabelUriComparator());
         } else {
             classResults = new THashSet<>();
         }
@@ -505,13 +504,12 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
             //   this.editable = true;
         }
     }*/
-
     /**
      * *
      * Verify whether the provided ontologyFile can be used. If a newer version
      * is present, it is downloaded.
      */
-   /* private void verifyVersion(ScopeMap scopeMap, Date date) {
+    /* private void verifyVersion(ScopeMap scopeMap, Date date) {
         try {
             OntologySynchronizer.synchronizeOntology(this);
         } catch (ConnectException ex) {
@@ -520,7 +518,6 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
             Messaging.report("The local " + scopeMap.getScopeString() + " tree could not be synced as the EARS web services url is not properly set.", ex, this.getClass(), false);
         }
     }*/
-
     protected static File downloadLatestVersion(Path folder, String name) {
         return downloadLatestVersion(folder.toFile(), name);
     }
@@ -565,6 +562,14 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         } else {
             System.out.println("null model");
         }
+    }
+
+    public String printTree() {
+        Set<ToolCategory> tcs = this.getAllIndividuals(ToolCategory.class, true);
+        for (ToolCategory tc : tcs) {
+
+        }
+        return "";
     }
 
     public void printTriples() {

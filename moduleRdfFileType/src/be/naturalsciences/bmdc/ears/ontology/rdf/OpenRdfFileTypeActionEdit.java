@@ -8,7 +8,6 @@ package be.naturalsciences.bmdc.ears.ontology.rdf;
 import be.naturalsciences.bmdc.ears.entities.CurrentUser;
 import be.naturalsciences.bmdc.ears.rest.RestClientOnt;
 import be.naturalsciences.bmdc.ontology.EarsException;
-import be.naturalsciences.bmdc.ontology.writer.ScopeMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.ConnectException;
@@ -18,7 +17,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 
@@ -37,18 +35,18 @@ import org.openide.util.Utilities;
 public final class OpenRdfFileTypeActionEdit implements ActionListener {
 
     private final RdfFileTypeDataObject context;
+    private final boolean bypass = true; //bypasses any credential check so a file can be opened anyway
 
     public OpenRdfFileTypeActionEdit(RdfFileTypeDataObject context) {
         this.context = context;
     }
-    
-    
+
     @Override
     public void actionPerformed(ActionEvent ev) {
         String failMsg = null;
         CurrentUser currentUser = Utilities.actionsGlobalContext().lookup(CurrentUser.class);
         if (context.getOntModel().isPasswordProtected()) {
-            if (currentUser != null && currentUser.getConcept() != null) {
+            if (!bypass && currentUser != null && currentUser.getConcept() != null) {
                 RestClientOnt client = null;
 
                 try {
@@ -58,19 +56,21 @@ public final class OpenRdfFileTypeActionEdit implements ActionListener {
                 } catch (EarsException ex) {
                     failMsg = "This tree is write-protected and cannot be edited when the url for the EARS web server is empty or invalid.";
                 }
-                boolean authenticated = false;
-                try {
-                    if (client != null) {
-                        authenticated = client.authenticate(currentUser.getConcept());
+                if (failMsg == null) {
+                    boolean authenticated = false;
+                    try {
+                        if (client != null) {
+                            authenticated = client.authenticate(currentUser.getConcept());
+                        }
+                    } catch (ConnectException ex) {
+                        failMsg = "This tree is write-protected and cannot be edited when the EARS web server is unreachable.";
                     }
-                } catch (ConnectException ex) {
-                    failMsg = "This tree is write-protected and cannot be edited when the EARS web server is unreachable.";
-                }
-                if (!authenticated) {
-                    failMsg = "This tree is write-protected. You did not provide the correct credentials in the Settings to edit it.";
+                    if (!authenticated) {
+                        failMsg = "This tree is write-protected. You did not provide the correct credentials in the Settings to edit it.";
+                    }
                 }
 
-            } else {
+            } else if (!bypass) {
                 failMsg = "This tree is write-protected. No credentials are registered in the Settings.";
             }
         }

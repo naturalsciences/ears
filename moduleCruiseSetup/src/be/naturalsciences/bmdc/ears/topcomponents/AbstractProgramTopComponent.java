@@ -9,11 +9,8 @@ import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProjectTableModel;
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
 import be.naturalsciences.bmdc.ears.comparator.CountryComparator;
 import be.naturalsciences.bmdc.ears.entities.CountryBean;
-import be.naturalsciences.bmdc.ears.entities.CruiseBean;
-import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.ICountry;
-import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.IOrganisation;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
@@ -22,7 +19,6 @@ import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
-import be.naturalsciences.bmdc.ears.rest.RestClientCruise;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ChiefScientistTableModel;
 import be.naturalsciences.bmdc.ears.utils.Message;
@@ -38,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -48,8 +43,6 @@ import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.validation.api.Problem;
 import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
 import org.netbeans.validation.api.ui.ValidationGroup;
-import org.openide.util.Exceptions;
-import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 
@@ -70,7 +63,7 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
     ProjectTableModel projectTableModel;
 
     public ValidationGroup getValidationGroup() {
-        return group;
+        return validationGroup;
     }
 
     protected abstract void __initComponents();
@@ -123,9 +116,9 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
         Object o = piOrganisationSecondary.getSelectedItem();
         if (o != null && o instanceof OrganisationBean) {
             OrganisationBean selectedOrganisation = (OrganisationBean) o;
-            o_collateCentreResult.setText(selectedOrganisation.getCode());
+            piOrgGreyTextField.setText(selectedOrganisation.getCode());
         } else if (o instanceof String) {
-            o_collateCentreResult.setText("");
+            piOrgGreyTextField.setText("");
         }
     }
 
@@ -146,7 +139,7 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
     protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JScrollPane jScrollPane2;
     protected javax.swing.JScrollPane jScrollPane3;
-    protected javax.swing.JTextField o_collateCentreResult;
+    protected javax.swing.JTextField piOrgGreyTextField;
     protected javax.swing.JTextArea descriptionTextField;
     protected javax.swing.JTextField piLastNameTextField;
     protected javax.swing.JTextField piFirstNameTextField;
@@ -160,7 +153,7 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
 
     protected org.netbeans.validation.api.ui.swing.ValidationPanel validationPanel1;
 
-    protected ValidationGroup group = null;
+    protected ValidationGroup validationGroup = null;
 
     // End of variables declaration                   
     @Override
@@ -194,16 +187,16 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
 
         AutoCompleteDecorator.decorate(piOrganisationSecondary);
 
-        group.add(programIdTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
-        group.add(piFirstNameTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
-        group.add(piLastNameTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
-        group.add(piOrganisationSecondary, new OrganisationValidator());
+        validationGroup.add(programIdTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
+        validationGroup.add(piFirstNameTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
+        validationGroup.add(piLastNameTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
+        validationGroup.add(piOrgGreyTextField, new OrganisationValidator());
         //associated project
 
-        enableThatButtonGreysOutOnValidationFailure(programIdTextField, group);
-        enableThatButtonGreysOutOnValidationFailure(piFirstNameTextField, group);
-        enableThatButtonGreysOutOnValidationFailure(piLastNameTextField, group);
-        enableThatButtonGreysOutOnValidationFailure((JTextField) piOrganisationSecondary.getEditor().getEditorComponent(), group);
+        enableThatButtonGreysOutOnValidationFailure(programIdTextField, validationGroup);
+        enableThatButtonGreysOutOnValidationFailure(piFirstNameTextField, validationGroup);
+        enableThatButtonGreysOutOnValidationFailure(piLastNameTextField, validationGroup);
+        enableThatButtonGreysOutOnValidationFailure(piOrgGreyTextField, validationGroup);
 
         String scrollSpeedString = org.openide.util.NbBundle.getMessage(AbstractCruiseTopComponent.class, "AbstractCruiseTopComponent.ScrollSpeed");
         int scrollSpeed = Integer.parseInt(scrollSpeedString);
@@ -344,7 +337,7 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
     }
 
     protected boolean formValidates() {
-        Problem validateAll = group.performValidation();
+        Problem validateAll = validationGroup.performValidation();
         return !(validateAll != null && validateAll.isFatal());
     }
 
@@ -353,7 +346,7 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
 
         //   program.setCruiseId(((CruiseBean) cruiseComboBox.getSelectedItem()).getIdentifier()); //YS error if no cruise predefini
         program.setProgramId(programIdTextField.getText());
-        Person pi = new Person(piFirstNameTextField.getText(), piLastNameTextField.getText(), o_collateCentreResult.getText(), null, null);
+        Person pi = new Person(piFirstNameTextField.getText(), piLastNameTextField.getText(), piOrgGreyTextField.getText(), null, null);
         program.setPrincipalInvestigators(new ArrayList<>());
         program.getPrincipalInvestigators().add(pi);
         program.setDescription(descriptionTextField.getText());

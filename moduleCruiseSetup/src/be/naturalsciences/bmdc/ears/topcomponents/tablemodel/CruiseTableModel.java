@@ -102,9 +102,8 @@ public class CruiseTableModel extends AbstractTableModel implements FilterableTa
         try {
            return getValueAt(0, c).getClass();
         } catch (Exception e) {
-            int a = 5;
+            return String.class;
         }
-        return null;
     }
 
     /*
@@ -150,7 +149,9 @@ public class CruiseTableModel extends AbstractTableModel implements FilterableTa
     public void refreshModel(Collection<CruiseBean> cruises) {
         this.clearAllCruises();
         this.addCruiseList(cruises);
-        fireTableDataChanged();
+        if(cruises!=null && cruises.size()>0 ){
+            fireTableDataChanged();
+        }
     }
     
 }

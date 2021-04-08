@@ -1,6 +1,6 @@
 package be.naturalsciences.bmdc.ears.ontology.entities;
 
-import be.naturalsciences.bmdc.ears.comparator.TermLabelAndDeckIdentifierComparator;
+import be.naturalsciences.bmdc.ears.comparator.TermLabelUriComparator;
 import be.naturalsciences.bmdc.ears.ontology.AsConceptFlavor;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.EarsException;
@@ -46,8 +46,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
     @Id
     protected URI uri;
 
-    private Collection<Subject> subjectCollection;
-
     @RdfProperty(value = "http://ontologies.ef-ears.eu/ears2/1#contains", inverseOf = "http://ontologies.ef-ears.eu/ears2/1#isMemberOf")
     private Collection<Tool> toolCollection;
 
@@ -65,7 +63,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
     @Override
     public void init() {
         toolCollection = new ArrayList();
-        subjectCollection = new ArrayList();
+        //subjectCollection = new ArrayList();
         //vesselCollection = new ArrayList();
         genericEventDefinitionCollection = new ArrayList();
     }
@@ -105,15 +103,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
         return this.getTermRef().getPublisherUrn();
     }
 
-    @Override
-    public Collection<Subject> getSubjectCollection() {
-        return subjectCollection;
-    }
-
-    @Override
-    public void setSubjectCollection(Collection<Subject> subjectCollection) {
-        this.subjectCollection = subjectCollection;
-    }
 
     @Override
     public Collection<Tool> getToolCollection() {
@@ -214,7 +203,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
         }
         return true;
     }*/
-
     @Override
     public String toString() {
         return "id=" + getId() + "; hash=" + System.identityHashCode(this) + "; name=" + ((this.getTermRef() != null) ? this.getTermRef().getName() : "no name");
@@ -226,7 +214,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
         ToolCategory shallowClone = cc.cloneOriginal();
 
         Map<Collection, Collection> collectionIdentityHashMap = new THashMap<>();
-        collectionIdentityHashMap.put(this.subjectCollection, shallowClone.subjectCollection);
+//        collectionIdentityHashMap.put(this.subjectCollection, shallowClone.subjectCollection);
         collectionIdentityHashMap.put(this.toolCollection, shallowClone.toolCollection);
         collectionIdentityHashMap.put(this.genericEventDefinitionCollection, shallowClone.genericEventDefinitionCollection);
         cc.cloneCollection(collectionIdentityHashMap);
@@ -283,10 +271,20 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
 
     @Override
     public Set<Tool> getChildren(ConceptHierarchy parents) {
-        Set<Tool> l = new TreeSet(new TermLabelAndDeckIdentifierComparator());
+        Set<Tool> l = new TreeSet(new TermLabelUriComparator());
 
-        List two = new ArrayList(getToolCollection());
-        l.addAll(two);
+        // List two = new ArrayList(getToolCollection());
+        // l.addAll(getToolCollection());
+        //getToolCollection()
+        //for (Tool tool : getToolCollection()) { //https://bugs.openjdk.java.net/browse/JDK-8150808 and https://stackoverflow.com/questions/26184532/concurrentmodificationexception-add-vs-addall
+        //   l.add(tool);
+        // }
+        Iterator<Tool> iterator = getToolCollection().iterator();
+        while (iterator.hasNext()) {
+            Tool tool = iterator.next();
+            l.add(tool);
+
+        }
         // getToolCollection());
         //Collections.sort(l, new TermUriComparator());
         return l;
@@ -352,7 +350,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
      * @param process
      * @param action
      */
-  /*  void reduceGevsToSevs(Process process, Action action) throws EarsException {
+    /*  void reduceGevsToSevs(Process process, Action action) throws EarsException {
         if (process == null) {
             throw new IllegalArgumentException("Process must be provided.");
         }
@@ -371,7 +369,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
             }
         }
     }*/
-
     /**
      * *
      * Convert the GenericEventDefinitions of this ToolCategory to
@@ -418,9 +415,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
         if (this.toolCollection != null) {
             this.toolCollection.clear();
         }
-        if (this.subjectCollection != null) {
-            this.subjectCollection.clear();
-        }
     }
 
     @Override
@@ -465,12 +459,11 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
 
     @Override
     public void delete(ConceptHierarchy parents) {
-        parents.getRoot().getChildren(null).remove(this);
+
         /*for (AsConcept oldParentToolCategory : this.getParents()) {
          FakeConcept root = (FakeConcept) oldParentToolCategory;
          root.setChildren(null);
          }*/
-
         Iterator<Tool> iter = this.getToolCollection().iterator();
         while (iter.hasNext()) {
             // for (int i = 0; i < eventDefinition.size(); i++) {
@@ -485,6 +478,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
             //}
 
         }
+        parents.getRoot().getChildren(null).remove(this);
     }
 
     @Override

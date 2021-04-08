@@ -93,11 +93,7 @@ public class AsConceptFactory implements IAsConceptFactory {
             Exceptions.printStackTrace(ex);
             return null;
         }
-        //try {
         createUriAttachTerm(parent.getChildType(), c);
-        /*} catch (EarsException ex) {
-            Exceptions.printStackTrace(ex);
-        }*/
         c.init();
         return c;
     }
@@ -129,28 +125,20 @@ public class AsConceptFactory implements IAsConceptFactory {
      */
     private <C extends AsConcept> void createUriAttachTerm(Class<C> cls, C c) throws EarsException {
         ConceptMD md = Constants.ALL_CLASSNAMES.get(cls);
-        //long conceptId = getIndividuals().getGlobalHighestIdOfClass(cls) + 1;
-        //long termId = getIndividuals().getGlobalHighestEarsTermId() + 1;
-        /*  if (Individuals.allTermIds.contains(termId)) {
-            int a = 5;
-        }
-        Individuals.allTermIds.add(termId);*/
-
         if (md != null) {
-
             CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);
             if (currentVessel == null || currentVessel.getConcept() == null || currentVessel.getConcept().getCode() == null || currentVessel.getConcept().getCode().isEmpty()) {
-                throw new EarsException("The current vessel is null or empty. Can't create an URI for a new term.");
+                throw new EarsException("The current vessel is null or empty. Can't set the owner of this new term.");
             }
             String vesselCode = currentVessel.getConcept().getCode();
             String id = getUUID();
             String newName = "New " + cls.getSimpleName() + " " + id;
-            c.setUri(getURI(cls, vesselCode.replaceAll("SDN:C17::", ""), id));
+            c.setUri(createUri(cls, null, id));
             EarsTerm term = null;
             if (cls.equals(GenericEventDefinition.class)) {
                 //term = new CompoundEarsTerm();
             } else {
-                URI termURI = getTermURI(vesselCode.replaceAll("SDN:C17::", ""), id);
+                URI termURI = getTermURI(null, id);
                 term = new EarsTerm();
                 term.setCreationDate(new Date());
                 term.setOrigUrn("ears:" + md.abbreviation.toLowerCase() + "::" + id);
@@ -159,7 +147,7 @@ public class AsConceptFactory implements IAsConceptFactory {
                 term.setStatusName(statusName);
 
                 term.setVersionInfo("1");
-
+                term.setCreator(vesselCode);
                 term.setSubmitter(vesselCode);
                 term.setUri(termURI);
                 c.setTermRef(term);
@@ -208,7 +196,7 @@ public class AsConceptFactory implements IAsConceptFactory {
      * @param termId
      * @return
      */
-    private static <C extends AsConcept> URI getURI(Class<C> cls, String urlModifier, String id) {
+    public static <C extends AsConcept> URI createUri(Class<C> cls, String urlModifier, String uuid) {
         ConceptMD md = Constants.ALL_CLASSNAMES.get(cls);
         if (md != null) {
             URI uri = null;
@@ -226,8 +214,11 @@ public class AsConceptFactory implements IAsConceptFactory {
             // int id = o.getLastId();//model.getLastId(cls);//OntologyServices.getLastConceptIdOfType(cls, model) + 1;//increase with 1
             String path = OntologyConstants.EARS2_PATH;
             try {
-
-                uri = new URIBuilder().setScheme("http").setHost(OntologyConstants.EARS2_HOST).setPath(path).setFragment(urlModifier + "_" + md.abbreviation.toLowerCase() + "_" + id).build();
+                if (urlModifier != null) {
+                    uri = new URIBuilder().setScheme("http").setHost(OntologyConstants.EARS2_HOST).setPath(path).setFragment(urlModifier + "_" + md.abbreviation.toLowerCase() + "_" + uuid).build();
+                } else {
+                    uri = new URIBuilder().setScheme("http").setHost(OntologyConstants.EARS2_HOST).setPath(path).setFragment(md.abbreviation.toLowerCase() + "_" + uuid).build();
+                }
             } catch (URISyntaxException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -248,7 +239,12 @@ public class AsConceptFactory implements IAsConceptFactory {
         URI uri = null;
         String path = OntologyConstants.EARS2_PATH;
         try {
-            uri = new URIBuilder().setScheme("http").setHost(OntologyConstants.EARS2_HOST).setPath(path).setFragment(urlModifier + "_concept_" + termId).build();
+            if (urlModifier != null) {
+                uri = new URIBuilder().setScheme("http").setHost(OntologyConstants.EARS2_HOST).setPath(path).setFragment(urlModifier + "_concept_" + termId).build();
+            } else {
+                uri = new URIBuilder().setScheme("http").setHost(OntologyConstants.EARS2_HOST).setPath(path).setFragment("concept_" + termId).build();
+
+            }
         } catch (URISyntaxException ex) {
             Exceptions.printStackTrace(ex);
         }

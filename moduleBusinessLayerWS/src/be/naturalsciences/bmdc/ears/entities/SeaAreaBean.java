@@ -11,6 +11,7 @@ package be.naturalsciences.bmdc.ears.entities;
  */
 import be.naturalsciences.bmdc.ears.utils.SetterField;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -91,7 +92,8 @@ public class SeaAreaBean implements Serializable, ISeaArea, Comparable<SeaAreaBe
 
     @Override
     public int compareTo(SeaAreaBean other) {
-        return this.getName().compareTo(other.getName());
+        return Comparator.comparing((SeaAreaBean b) -> b.getName())
+                .thenComparing((SeaAreaBean b) -> b.getCode()).compare(this, other);
     }
 
     @Override

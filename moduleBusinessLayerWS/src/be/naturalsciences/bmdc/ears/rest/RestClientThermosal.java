@@ -1,6 +1,5 @@
 package be.naturalsciences.bmdc.ears.rest;//ys
 
-import be.naturalsciences.bmdc.ears.entities.MessageBean;
 import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
@@ -14,15 +13,12 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.openide.util.Exceptions;
 
 public class RestClientThermosal extends RestClient {
 

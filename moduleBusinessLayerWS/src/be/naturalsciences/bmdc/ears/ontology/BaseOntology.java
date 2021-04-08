@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Date;
-import org.openide.util.Exceptions;
 
 /**
  *

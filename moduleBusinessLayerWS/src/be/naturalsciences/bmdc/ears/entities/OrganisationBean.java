@@ -2,6 +2,7 @@ package be.naturalsciences.bmdc.ears.entities;//ys
 
 import be.naturalsciences.bmdc.ears.utils.SetterField;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -80,7 +81,8 @@ public class OrganisationBean implements Serializable, IOrganisation, Comparable
 
     @Override
     public int compareTo(OrganisationBean other) {
-        return this.getName().compareTo(other.getName());
+               return Comparator.comparing((OrganisationBean b) -> b.getName())
+                .thenComparing((OrganisationBean b) -> b.getCode()).compare(this, other);
     }
 
     @Override

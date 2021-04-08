@@ -32,4 +32,6 @@ public interface IResponseMessage<E> {
     public void setEntity(E entity);
 
     public boolean isBad();
+
+    public boolean isOk();
 }

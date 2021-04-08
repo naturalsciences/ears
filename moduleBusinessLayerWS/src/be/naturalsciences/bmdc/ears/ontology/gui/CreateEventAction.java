@@ -8,14 +8,9 @@ package be.naturalsciences.bmdc.ears.ontology.gui;
 import be.naturalsciences.bmdc.ears.ontology.ProgramOntology;
 import be.naturalsciences.bmdc.ears.ontology.VesselOntology;
 import be.naturalsciences.bmdc.ears.ontology.entities.Action;
-import be.naturalsciences.bmdc.ears.rest.RestClient;
 import be.naturalsciences.bmdc.ears.rest.RestClientNav;
 import be.naturalsciences.bmdc.ears.rest.RestClientThermosal;
-import be.naturalsciences.bmdc.ears.rest.RestClientUnderway;
 import be.naturalsciences.bmdc.ears.rest.RestClientWeather;
-import be.naturalsciences.bmdc.ears.utils.Messaging;
-import be.naturalsciences.bmdc.ontology.EarsException;
-import java.net.ConnectException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
@@ -35,7 +30,7 @@ import org.openide.util.actions.CookieAction;
  @ActionReference(path = "Projects/Actions")
  })*/
 @ActionRegistration(
-        displayName = "#CTL_CreateEventAction", lazy = false)//YS
+        displayName = "#CTL_CreateEventAction", lazy = false)
 
 @Messages("CTL_CreateEventAction=Create event")
 public class CreateEventAction extends CookieAction {

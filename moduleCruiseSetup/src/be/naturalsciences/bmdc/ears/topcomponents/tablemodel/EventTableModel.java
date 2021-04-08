@@ -5,12 +5,8 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
-import be.naturalsciences.bmdc.ears.entities.Actor;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
-import be.naturalsciences.bmdc.ears.entities.SeaAreaBean;
-import be.naturalsciences.bmdc.ears.rest.RestClient;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
-import be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
@@ -18,17 +14,12 @@ import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import eu.eurofleets.ears3.dto.EventDTO;
 import eu.eurofleets.ears3.dto.PersonDTO;
 import java.net.ConnectException;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
@@ -71,7 +62,6 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
 
     public Set<String> getAllDates() {
         Set<String> result = new TreeSet<>();
-
         for (int i = 0; i < this.getRowCount(); i++) {
             result.add((String) this.getValueAt(i, this.findColumn(DATE)));
         }
@@ -89,8 +79,12 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
         if (entities.isEmpty() || this.getValueAt(0, columnIndex) == null) { //avoid error in setAutoCreateRowSorter
             return Object.class;
         }
+        if(this.getColumnName(columnIndex).equals(ACTOR)){
+            return PersonDTO.class;
+        }
+        else{
         return this.getValueAt(0, columnIndex).getClass();
-
+        }
     }
 
     /**
@@ -119,7 +113,7 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
             case ACTOR:
                 return true;
             case PROGRAM:
-                return false;
+                return true;
             case LABEL:
                 return false;
             /* case DELETE:
@@ -138,34 +132,28 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
      */
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        Object originalValue = getValueAt(rowIndex, columnIndex);
+        Object originalValue = getObjectValueAt(rowIndex, columnIndex);
         EventDTO event = getEntities().get(rowIndex);
         String colName = getColumnName(columnIndex);
         switch (colName) {
             case DATE:
-                if (value != null && !value.equals(originalValue)) {
-                    OffsetDateTime originalDate = OffsetDateTime.parse(originalValue.toString() + "T" + this.getValueAt(rowIndex, TIME) + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
-                    OffsetDateTime oD = null;
-                    try {
-                        oD = OffsetDateTime.parse(value.toString() + "T" + this.getValueAt(rowIndex, TIME) + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
-                    } catch (java.time.format.DateTimeParseException ex) {
-                        Messaging.report("Date format incorrect", ex, this.getClass(), true);
-                    }
-                    if (oD != null) {
-                        event.setTimeStamp(oD);
+                OffsetDateTime originalDate=(OffsetDateTime)originalValue;
+                if (value != null) {
+                OffsetDateTime newDate = OffsetDateTime.parse(value.toString() + "T" + this.getValueAt(rowIndex, TIME) + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
+                if (!newDate.equals(originalDate)) {
+                        event.setTimeStamp(newDate);
                         IResponseMessage response = restClientEvent.modifyEvent(event);
-                       // CreateEventTopComponent.getAssociatedAcquisitionInfo(event);
+                         Messaging.report(response.getMessage(), response.isBad()?Message.State.BAD:Message.State.GOOD, this.getClass(), true);
                         if (response.isBad()) {
-                            Messaging.report("Event "+response.getIdentifier()+" wasn't modified because of http error " + response.getMessage(), Message.State.BAD, this.getClass(), true);
                             event.setTimeStamp(originalDate);
-                        }
-                    }
+                        }                    }
                 }
                 break;
             case TIME:
-                if (value != null && !value.equals(originalValue)) {
-                    OffsetDateTime originalDate = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE) + "T" + originalValue.toString() + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
-                    OffsetDateTime oT = null;
+                originalDate = (OffsetDateTime)originalValue;
+                if (value != null) {
+                    
+                    /*OffsetDateTime oT = null;
                     String valueString = value.toString();
                     Pattern noSeconds = Pattern.compile("^\\d{2}:\\d{2}:?$"); //correct times that have no seconds to 0 seconds. Incorrect seconds remain invalid
                     Matcher matcher = noSeconds.matcher(valueString);
@@ -180,46 +168,53 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
                         oT = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE) + "T" + valueString + ".000" + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
                     } catch (java.time.format.DateTimeParseException ex) {
                         Messaging.report("Date format incorrect", ex, this.getClass(), true);
-                    }
-                    if (oT != null) {
-                        event.setTimeStamp(oT);
+                    }*/
+                        
+                OffsetDateTime newDate = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE)  + "T" +value.toString() + this.getValueAt(rowIndex, TIMEZONE), DateTimeFormatter.ISO_DATE_TIME);
+                if (!newDate.equals(originalDate)) {
+                        event.setTimeStamp(newDate);
                         IResponseMessage response = restClientEvent.modifyEvent(event);
+                        Messaging.report(response.getMessage(), response.isBad()?Message.State.BAD:Message.State.GOOD, this.getClass(), true);
                         if (response.isBad()) {
-                            Messaging.report("Event "+response.getIdentifier()+" wasn't modified because of http error " + response.getMessage(), Message.State.BAD, this.getClass(), true);
                             event.setTimeStamp(originalDate);
                         }
                     }
-
+                
                 }
                 break;
             case TIMEZONE:
-                if (value != null && !value.equals(originalValue)) {
-                    OffsetDateTime originalDate = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + this.getValueAt(rowIndex, 1) + originalValue.toString(), DateTimeFormatter.ISO_DATE_TIME);
-                    OffsetDateTime oZ = null;
-                    try {
-                        oZ = OffsetDateTime.parse(this.getValueAt(rowIndex, 0) + "T" + this.getValueAt(rowIndex, 1) + value.toString(), DateTimeFormatter.ISO_DATE_TIME);
-                    } catch (java.time.format.DateTimeParseException ex) {
-                        Messaging.report("Date format incorrect", ex, this.getClass(), true);
-                    }
-                    if (oZ != null) {
-                        event.setTimeStamp(oZ);
+                ZoneOffset  originalOffset=(ZoneOffset)originalValue;
+                originalDate = (OffsetDateTime) event.getTimeStamp();
+                if (value != null) {
+                OffsetDateTime newDate = OffsetDateTime.parse(this.getValueAt(rowIndex, DATE) + "T" + this.getValueAt(rowIndex, TIME) + value.toString(), DateTimeFormatter.ISO_DATE_TIME);
+                if (!newDate.getOffset().equals(originalOffset)) {
+                        event.setTimeStamp(newDate);
                         IResponseMessage response = restClientEvent.modifyEvent(event);
+                        Messaging.report(response.getMessage(), response.isBad()?Message.State.BAD:Message.State.GOOD, this.getClass(), true);
                         if (response.isBad()) {
-                            Messaging.report("Event "+response.getIdentifier()+" wasn't modified because of http error " + response.getMessage(), Message.State.BAD, this.getClass(), true);
                             event.setTimeStamp(originalDate);
                         }
-                    }
+                }
                 }
                 break;
             case ACTOR:
+                PersonDTO originalActor =(PersonDTO) originalValue;
                 if (value != null && !value.equals(originalValue)) {
-                    PersonDTO actor = new PersonDTO((Actor)value);
-                    event.setActor(actor);
+                    event.setActor((PersonDTO)value);
                     IResponseMessage response = restClientEvent.modifyEvent(event);
-                    if (response.isBad()) {
-                        Messaging.report("Event wasn't modified" + response.getMessage(), Message.State.BAD, this.getClass(), true);
-                        PersonDTO originalActor = new PersonDTO((Actor)originalValue);
+                    Messaging.report(response.getMessage(), response.isBad()?Message.State.BAD:Message.State.GOOD, this.getClass(), true);
+                    if (response.isBad()) {          
                         event.setActor(originalActor);
+                    }
+                }
+                break;
+            case PROGRAM:
+                if (value != null && !value.equals(originalValue)) {
+                    event.setProgram((String)value);
+                    IResponseMessage response = restClientEvent.modifyEvent(event);
+                    Messaging.report(response.getMessage(), response.isBad()?Message.State.BAD:Message.State.GOOD, this.getClass(), true);
+                    if (response.isBad()) {          
+                        event.setProgram((String)originalValue);
                     }
                 }
                 break;
@@ -249,15 +244,17 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
         if (!response.isBad()) {
             String identifier = response.getIdentifier();
             e.setIdentifier(identifier);
-            OffsetDateTime timeStamp = response.getEntity().getTimeStamp();
-            e.setTimeStamp(timeStamp);
+            if(response.getEntity()!=null){
+                OffsetDateTime timeStamp = response.getEntity().getTimeStamp();
+                e.setTimeStamp(timeStamp);
+            }
             entities.add(e);
             fireTableRowsInserted(entities.size() - 1, entities.size() - 1);
             fireTableDataChanged();
+            Messaging.report(response.getMessage(), Message.State.GOOD, this.getClass(), true);
         } else {
-            Messaging.report("Event wasn't saved to web services: " + response.getMessage(), Message.State.BAD, this.getClass(), true);
+            Messaging.report(response.getMessage(), Message.State.BAD, this.getClass(), true);
         }
-
     }
 
     @Override
@@ -287,14 +284,46 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
             case LABEL:
                 return event.getLabel();
             case PROPERTIES:
-                return "properties";
+                return event.getProperties()!=null && event.getProperties().size()>0?"properties":null;
             default:
                 return null;
         }
     }
     
-        public EventDTO getEntityWithName(String name) {
-        for (EventDTO e : entities) {
+   private Object getObjectValueAt(int rowIndex, int columnIndex) {
+        EventDTO event = (EventDTO)entities.get(rowIndex);
+
+        String colName = getColumnName(columnIndex);
+        switch (colName) {
+            case DATE:
+                return event.getTimeStamp();
+            case TIME:
+                return event.getTimeStamp();
+            case TIMEZONE:
+                return event.getTimeStamp().getOffset();
+            case TOOL_CATEGORY:
+                return event.getToolCategory();
+            case TOOL:
+                return event.getTool();
+            case PROCESS:
+                return event.getProcess();
+            case ACTION:
+                return event.getAction();
+            case ACTOR:
+                return event.getActor();
+            case PROGRAM:
+                return event.getProgram();
+            case LABEL:
+                return event.getLabel();
+            case PROPERTIES:
+                return event.getProperties();
+            default:
+                return null;
+        }
+    }
+    
+    public EventDTO getEntityWithName(String name) {
+       for (EventDTO e : entities) {
                 if(e.getIdentifier().equals(name)){return e;}
         }
             return null;

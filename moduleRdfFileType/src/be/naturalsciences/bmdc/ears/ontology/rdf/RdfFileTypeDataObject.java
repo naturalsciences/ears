@@ -98,7 +98,6 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
     /*public void setDirectoryChangeListeners(Set<DirectoryChangeListener> directoryChangeListeners) {
         this.directoryChangeListeners = directoryChangeListeners;
     }*/
-
     public FileObject getFileObject() {
         return fileObject;
     }
@@ -352,7 +351,6 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
     /*public void addPropertyChangeListener(PropertyChangeListener listener) {
         this.propertyChangeListeners.add(listener);
     }*/
-
     public void addDirectoryChangeListener(DirectoryChangeListener listener) {
         this.directoryChangeListeners.add(listener);
     }
@@ -363,7 +361,14 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
     }
 
     public boolean isCorrect() {
-        return ontEx == null;
+        return this.getOntModel() != null && ontEx == null;
+    }
+
+    public interface IOntologySaver {
+
+        boolean canContinueEditingAfterSave();
+
+        boolean isFailed();
     }
 
     public class RdfFileTypeDataObjectSavable extends AbstractSavable implements SaveAsCapable, TaskListener {
@@ -384,9 +389,10 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
             return dobj.getName();
         }
 
-        public class OntologySaver extends NotificationThread {
+        public class OntologySaver extends NotificationThread implements IOntologySaver {
 
             ProgressHandle progr;
+            boolean failed = false;
 
             public OntologySaver(ProgressHandle progr) {
                 this.progr = progr;
@@ -396,34 +402,43 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
             public void doWork() {
                 progr.start();
                 progr.progress("Start save.");
-                boolean failed = false;
                 failed = !dobj.getOntModel().getNodes().save();
+
                 try {
-                    dobj.refresh(false);
+                    if (!failed) { //if we failed we want to show the nodes as they were before the failed save
+                        dobj.refresh(false);
+                    }
                 } catch (IOException ex) {
                     Messaging.report("There was a problem reloading the trees after saving.", ex, RdfFileTypeDataObject.class, true);
                 }
                 //unregister();
                 if (!failed) {
                     Messaging.report("The tree has been saved.", Message.State.GOOD, RdfFileTypeDataObject.class, true);
-                } else {
-                    //Messaging.report("There was a problem saving the tree.", Message.State.BAD, RdfFileTypeDataObject.class, true);
                 }
                 progr.finish();
             }
+
+            @Override
+            public boolean isFailed() {
+                return failed;
+            }
+
+            @Override
+            public boolean canContinueEditingAfterSave() {
+                return false;
+            }
         }
 
-        public class OntologySaveAsser extends NotificationThread {
+        public class OntologySaveAsser extends NotificationThread implements IOntologySaver {
 
             ProgressHandle progr;
-            //RdfFileTypeDataObject dobj;
-            String string;
+            String name;
             FileObject destination;
+            boolean failed = false;
 
             public OntologySaveAsser(ProgressHandle progr, FileObject destination, String name) {
                 this.progr = progr;
-                //this.dobj = dobj;
-                this.string = name;
+                this.name = name;
                 this.destination = destination;
             }
 
@@ -431,35 +446,46 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
             public void doWork() {
                 progr.start();
                 progr.progress("Start save as.");
-                boolean failed = false;
-                if (dobj.getOntModel().getScopeMap().equals(ScopeMap.VESSEL_SCOPE)) {
-                    Messaging.report("Trees with vessel scope cannot be saved under another name.", Message.State.BAD, RdfFileTypeDataObject.class, true);
-                    failed = true;
-                }
-                Path path = Paths.get(destination.getPath(), string);
+                Path path = Paths.get(destination.getPath(), name);
                 failed = !dobj.getOntModel().getNodes().saveAs(path);
                 for (DirectoryChangeListener dcl : dobj.getDirectoryChangeListeners()) {
                     ActionEvent e = new ActionEvent(path, 0, "OntologyModel was saved as another file. Please rebuild nodes.");
                     dcl.actionPerformed(e);
                 }
 
-                try {
-                    dobj.refresh(false);
+                /*                try {
+                    //if we failed OR NOT we want to show the nodes as they were before the save as
+                    //dobj.refresh(false);
                 } catch (IOException ex) {
                     Messaging.report("There was a problem reloading the tree.", ex, RdfFileTypeDataObject.class, true);
-                }
-                //dobj.getLookupContent().remove(this);
+                }*/
                 if (!failed) {
-                    Messaging.report("The tree has been saved.", Message.State.GOOD, RdfFileTypeDataObject.class, true);
+                    Messaging.report("The tree has been saved as at " + path.toString(), Message.State.GOOD, RdfFileTypeDataObject.class, true);
                 } else {
                     Messaging.report("There was a problem saving the tree.", Message.State.BAD, RdfFileTypeDataObject.class, true);
                 }
                 progr.finish();
             }
+
+            @Override
+            public boolean isFailed() {
+                return failed;
+            }
+
+            @Override
+            public boolean canContinueEditingAfterSave() {
+                return true;
+            }
         }
 
         @Override
         public void threadComplete(Runnable runner) {
+            IOntologySaver saver = (IOntologySaver) runner;
+            if (!saver.isFailed() && !saver.canContinueEditingAfterSave()) {
+                dobj.lookupContent.remove(this);
+                saveComplete();
+                unregister();
+            }
         }
 
         ProgressHandle progr;
@@ -467,16 +493,19 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
         @Override
         protected void handleSave() throws IOException {
             progr = ProgressHandleFactory.createHandle("Saving tree...");
-            OntologySaver tsk = new OntologySaver(progr);
-            tsk.addListener(this);
-
-            RequestProcessor.getDefault().post(tsk);
+            OntologySaver saver = new OntologySaver(progr);
+            saver.addListener(this);
+            RequestProcessor.getDefault().post(saver);
             progr.finish();
-            dobj.lookupContent.remove(this);
-            saveComplete();
-            unregister();
-            //unregister(); //unregistration is done in super.save()
+        }
 
+        @Override
+        public void saveAs(FileObject destination, String name) throws IOException {
+            progr = ProgressHandleFactory.createHandle("Saving tree (save as)...");
+            OntologySaveAsser saver = new OntologySaveAsser(progr, destination, name);
+            saver.addListener(this);
+            RequestProcessor.getDefault().post(saver);
+            progr.finish();
         }
 
         @Override
@@ -492,21 +521,6 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
         public int hashCode() {
             return this.dobj.hashCode();
         }
-
-        @Override
-        public void saveAs(FileObject destination, String name) throws IOException {
-            progr = ProgressHandleFactory.createHandle("Saving tree (save as)...");
-            OntologySaveAsser tsk = new OntologySaveAsser(progr, destination, name);
-            tsk.addListener(this);
-
-            RequestProcessor.getDefault().post(tsk);
-            progr.finish();
-            dobj.lookupContent.remove(this);
-            saveComplete();
-            unregister();
-
-        }
-
     }
 
 }
