@@ -17,24 +17,9 @@ import org.openide.util.Utilities;
 import org.openide.util.actions.CookieAction;
 import static org.openide.util.actions.CookieAction.MODE_EXACTLY_ONE;
 
-/*@ActionID(
- category = "Edit",
- id = "com.mit.moview.controler.ExpandNodeAction")
- @ActionRegistration(
- // iconBase = "com/mit/moview/controler/expandIcon.png",
- displayName = "#CTL_ExpandNodeAction")
- @ActionReference(
- path = "Toolbars/ExpCol",
- position = 3330)
- @Messages("CTL_ExpandNodeAction=Expand Node")*/
 @ActionID(
         category = "Build",
         id = "be.naturalsciences.bmdc.ears.ontology.browser.RefreshNodeAction")
-/*@ActionReferences({
- @ActionReference(path = "Menu/File", position = 0),
- @ActionReference(path = "Loaders/Languages/Actions", position = 0),
- @ActionReference(path = "Projects/Actions")
- })*/
 @ActionRegistration(
         displayName = "#CTL_RefreshNodeAction",lazy = false)
 
@@ -79,16 +64,6 @@ public class RefreshNodeAction extends CookieAction {
             refreshable.refresh();
         }
     }
-
-   /* public void doAction() {
-        if (context.lookup(Refreshable.class) != null) {
-            this.refreshable = context.lookup(Refreshable.class);
-        }
-
-        if (refreshable != null) {
-            refreshable.refresh();
-        }
-    }*/
 
     @Override
     protected boolean asynchronous() {

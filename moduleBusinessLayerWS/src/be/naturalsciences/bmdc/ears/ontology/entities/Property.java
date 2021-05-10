@@ -102,7 +102,7 @@ public class Property implements IProperty<EarsTerm, EventDefinition, ObjectValu
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn()==null?this.getTermRef().getOrigUrn():this.getTermRef().getPublisherUrn();
     }
 
     @Override

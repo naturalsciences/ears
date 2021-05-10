@@ -143,7 +143,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn() == null ? this.getTermRef().getOrigUrn() : this.getTermRef().getPublisherUrn();
     }
 
     @Override
@@ -443,6 +443,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
                 GenericEventDefinition ge = (GenericEventDefinition) e;
                 if (ge.getToolCategoryRef().equals(tc)) {
                     Process p = ge.getProcess();
+
                     if (p != null && !join.contains(p)) {
                         join.add(p);
                     }
@@ -543,7 +544,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
     /**
      * *
      * Adds a AsConcept childConcept to the children of this, if childConcept is
-     * a Process. If childConcept has no Action associated to it via an
+     * a Process.If childConcept has no Action associated to it via an
      * EventDefinition, a new one is created.
      *
      * @param targetParents The ConceptHierarchy parents of this (so not the
@@ -551,6 +552,8 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
      * @param childConcept The AsConcept childConcept that needs to be added.
      * @param removePreviousBottomUpAssociations Whether to remove existing
      * relations the AsConcept childConcept has.
+     * @param newChildParents The existing parents of the newly added
+     * ChildConcept
      */
     @Override
     public void addToChildren(ConceptHierarchy targetParents, AsConcept childConcept, boolean removePreviousBottomUpAssociations, ConceptHierarchy newChildParents, IAsConceptFactory factory) {
@@ -561,19 +564,19 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
         //int before = this.getSpecificEventDefinitionCollection().size();
         if (childConcept != null && childConcept instanceof Tool) { //i.e. a tool will be added to myself, I become am a hosting tool.
             Tool childTool = (Tool) childConcept;
-           // childTool.setToolCategoryCollection(new ArrayList()); //keep the original categories I was part of
+            // childTool.setToolCategoryCollection(new ArrayList()); //keep the original categories I was part of
             this.hostedCollection.add(childTool);
             childTool.hostsCollection.add(this);
         }
         if (childConcept != null && childConcept instanceof Process) { //TODO check if not has as child 
             // AsConceptFactory f = new AsConceptFactory();
             Process childProcess = (Process) childConcept;
-            Collection<Action> childActions = childProcess.getActionCollectionFromEvent();
+
             Tool originalTool = null;
             if (newChildParents != null) {
                 originalTool = (Tool) newChildParents.getTool();
             }
-
+            Collection<Action> childActions = childProcess.getActionCollectionFromSpecificEvents(originalTool);
             if (childActions.isEmpty()) {
                 try {
                     //force add process by creating dummy dummyAction
@@ -584,44 +587,41 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
                 } catch (Exception ex) {
                     throw new RuntimeException("There was a problem with creating an Action for this Tool.", ex);
                 }
-                // actions = process.getActionCollectionFromEvent();
             } else {
                 for (Action childAction : childActions) {
-                    Collection<Property> propertyCollection = new THashSet<>();
-                    if (originalTool != null) {
-                        List<EventDefinition> eventDefinitionCollection = childProcess.getEventDefinitionCollection(originalTool, childAction);
-                        if (eventDefinitionCollection.size() > 0) {
-                            EventDefinition originalEv = eventDefinitionCollection.get(0);
-                            propertyCollection.addAll(originalEv.getPropertyCollection());
+                    if (!childAction.getTermRef().isDeprecated()) { //don't perpetuate deprecated actions
+                        Collection<Property> propertyCollection = new THashSet<>();
+                        if (originalTool != null) {
+                            List<EventDefinition> eventDefinitionCollection = childProcess.getEventDefinitionCollection(originalTool, childAction);
+                            if (eventDefinitionCollection.size() > 0) {
+                                EventDefinition originalEv = eventDefinitionCollection.get(0);
+                                propertyCollection.addAll(originalEv.getPropertyCollection());
+                            }
                         }
+
+                        SpecificEventDefinition sev = null;
+                        try {
+                            sev = factory.build(SpecificEventDefinition.class);
+                        } catch (Exception ex) {
+                            throw new RuntimeException("There was a problem with creating a Specific Event definition for this Tool.", ex);
+                        }
+                        sev.setToolRef(this);
+
+                        this.getSpecificEventDefinitionCollection().add(sev);
+                        sev.setProcess(childProcess);
+                        sev.setAction(childAction);
+
+                        sev.setPropertyCollection(propertyCollection);
+                    /*    if (removePreviousBottomUpAssociations) { //erase all previous bottom-up associations of the future child
+                            childAction.setEventDefinition(new ArrayList());
+                            childProcess.setEventDefinition(new ArrayList());
+                            childProcess.setActionCollection(new ArrayList());
+                        }*/
+                        childAction.getEventDefinition().add(sev);
+                        childProcess.getEventDefinition().add(sev);
+                        childProcess.getActionCollection().add(childAction);
+
                     }
-
-                    SpecificEventDefinition sev = null;
-                    try {
-                        sev = factory.build(SpecificEventDefinition.class);
-                    } catch (Exception ex) {
-                        throw new RuntimeException("There was a problem with creating a Specific Event definition for this Tool.", ex);
-                    }
-                    sev.setToolRef(this);
-
-                    this.getSpecificEventDefinitionCollection().add(sev);
-                    sev.setProcess(childProcess);
-                    sev.setAction(childAction);
-
-                    sev.setPropertyCollection(propertyCollection);
-                    if (removePreviousBottomUpAssociations) { //erase all previous bottom-up associations of the future child
-                        childAction.setEventDefinition(new ArrayList());
-                        childProcess.setEventDefinition(new ArrayList());
-                        childProcess.setActionCollection(new ArrayList());
-                    }
-                    childAction.getEventDefinition().add(sev);
-                    childProcess.getEventDefinition().add(sev);
-                    childProcess.getActionCollection().add(childAction);
-
-                    //sev.setProcessAction(null);
-                    //pa.getSpecificEventDefinitionCollection().add(sev);
-                    //i++;
-                    //this.refresh();
                 }
             }
         }

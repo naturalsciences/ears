@@ -29,7 +29,7 @@ public class EventExportActionListener implements EventListener {
 
     public boolean PRINT_PROPS_ONTO = false;
 
-    public void actionPerformed(ExportEventAction e) {
+    public void actionPerformed(ExportEventAction exportEventAction) {
 
         Thread thr = new Thread() {
             public void run() {
@@ -67,8 +67,13 @@ public class EventExportActionListener implements EventListener {
 
                     if (userSelection == JFileChooser.APPROVE_OPTION) {
                         URL baseURL = RestClient.getBaseURL();
-                        String cruiseIdentifier = e.getCruise().getName();
-                        FileUtils.copyURLToFile(new URL(baseURL,"ears3/events.csv?cruiseIdentifier="+cruiseIdentifier), fileChooser.getSelectedFile());
+                        if(exportEventAction.getCruise() != null){
+                            String cruiseIdentifier = exportEventAction.getCruise().getName();
+                            FileUtils.copyURLToFile(new URL(baseURL,"ears3/events.csv?cruiseIdentifier="+cruiseIdentifier), fileChooser.getSelectedFile());
+                        }else if (exportEventAction.getProgram() != null){
+                            String programIdentifier = exportEventAction.getProgram().getName();
+                            FileUtils.copyURLToFile(new URL(baseURL,"ears3/events.csv?programIdentifier="+programIdentifier), fileChooser.getSelectedFile());
+                        }
                         Messaging.report("Events exported to " + fileChooser.getSelectedFile().getPath(), Message.State.GOOD, this.getClass(), true);
                     }
                 } catch (IOException ex) {

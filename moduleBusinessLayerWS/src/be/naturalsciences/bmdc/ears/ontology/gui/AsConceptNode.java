@@ -4,6 +4,7 @@ import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.ontology.AsConceptFactory;
 import be.naturalsciences.bmdc.ears.ontology.Individuals;
 import be.naturalsciences.bmdc.ears.ontology.entities.FakeConcept;
+import be.naturalsciences.bmdc.ears.ontology.entities.GenericEventDefinition;
 import be.naturalsciences.bmdc.ears.ontology.entities.SpecificEventDefinition;
 import be.naturalsciences.bmdc.ears.ontology.entities.Tool;
 import be.naturalsciences.bmdc.ears.ontology.entities.ToolCategory;
@@ -40,7 +41,9 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.Action;
 import org.netbeans.core.multiview.MultiViewTopComponent;
 import org.openide.ErrorManager;
@@ -205,6 +208,7 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
         this.behaviour = behaviour;
 
         this.conceptHierarchy = new ConceptHierarchy(this.getParentsAsConcept());
+        this.conceptHierarchy.add(obj);
         this.childFactory = new AsConceptChildFactory(parent, obj, this.conceptHierarchy, ontModel, behaviour);
 
         if (childFactory.hasChildren()) {
@@ -252,7 +256,7 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
     }
 
     public enum PrintChoice {
-        LABEL, URN
+        LABEL, URN, BOTH
     }
 
     /**
@@ -349,6 +353,9 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
                     case URN:
                         r[y][x] = node.getConcept().getUrn();
                         break;
+                    case BOTH:
+                        r[y][x] = node.getDisplayName() == null ? "" : node.getDisplayName() + " (" + node.getConcept().getUrn() + ")";
+                        break;
                 }
                 node = node.parentNode;
             }
@@ -388,6 +395,10 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
             l.addAll(((AsConceptNode) this.parentNode).getParents(l)); //l.addAll(((AsConceptNode) this.getParentNode()).getParents(l));
         }
         return l;
+    }
+
+    private AsConcept getParent() {
+        return ((AsConceptNode) this.parentNode).getConcept();
     }
 
     public static Set<Node> getAllChildren(Node thisNode) {
@@ -464,13 +475,16 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
 
     @Override
     public String getHtmlDisplayName() {
-
         if (this.concept instanceof IToolCategory) {
             return "<font color='#0B486B'>" + getDisplayName() + "</font>";
         } else if (this.concept instanceof ITool) {
             return "<font color='#02779E'>" + getDisplayName() + "</font>";
         } else if (this.concept instanceof IProcess) {
-            return "<font color='#DC4B40'>" + getDisplayName() + "</font>";
+            if (this.conceptHierarchy.isGeneric()) {
+                return "<font color='#DC4B40'>↑ " + getDisplayName() + "</font>";
+            } else {
+                return "<font color='#DC4B40'>" + getDisplayName() + "</font>";
+            }
         } else if (this.concept instanceof IAction) {
             return "<font color='#F59E03'>" + getDisplayName() + "</font>";
         } else if (this.concept instanceof IProperty) {
@@ -489,14 +503,17 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
             String specificInfo = null;
             if (concept instanceof Tool) {
                 Tool tool = (Tool) concept;
-                specificInfo = tool.getToolIdentifier();
+                specificInfo = Stream.of(tool.getSerialNumber(), tool.getToolIdentifier())
+                        .filter(s -> s != null && !s.isEmpty())
+                        .collect(Collectors.joining(","));
+
                 for (Tool parent : tool.getHostsCollection()) {
                     if (parent != null) {
                         prefLabel = prefLabel + " ∈ " + parent.getTermRef().getEarsTermLabel().getPrefLabel();
                     }
                 }
             }
-            if (specificInfo == null || specificInfo.isBlank() || "".equals(specificInfo) || prefLabel.equals(specificInfo)) {
+            if (specificInfo == null || specificInfo.chars().allMatch(Character::isWhitespace) || "".equals(specificInfo) || prefLabel.equals(specificInfo)) {
                 return prefLabel;
             } else {
                 return prefLabel + " (" + specificInfo + ")";
@@ -519,7 +536,7 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
     public final String getShortDescription() {
         if (concept != null && concept.getTermRef() != null) {
             if (concept.getTermRef().getEarsTermLabel().getDefinition() != null) {
-                return concept.getKind() + ": " + concept.getTermRef().getEarsTermLabel().getDefinition().replace("><", "> <");
+                return concept.getKind() + (this.conceptHierarchy.isGeneric() ? " (from tool category)" : "") + ": " + concept.getTermRef().getEarsTermLabel().getDefinition().replace("><", "> <");
             } else {
                 return concept.getKind();
             }
@@ -556,8 +573,8 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
         //  Action a = SystemAction.get(ExpandNodeAction.class);
         if (this.behaviour == EDIT_BEHAVIOUR) {
             return new Action[]{
-                SystemAction.get(DeleteNodeAction.class),
-                SystemAction.get(CreateChildNodeAction.class), //After discussion during ODIP 2 in October 2017 in Galway it was decided to only allow creating new tools or properties.
+                SystemAction.get(DeleteNodeAction.class), //we can only delete stuff that is belonging to SEVs ie this own ontology tree.
+                SystemAction.get(CreateChildNodeAction.class), //After discussion during ODIP 2 in October 2017 in Galway it was decided to only allow creating new tools.
                 SystemAction.get(ExpandNodeAction.class),
                 //SystemAction.get(CollapseNodeAction.class),
                 //SystemAction.get(CreateEventAction.class), //only create events when browsing
@@ -578,7 +595,7 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
     public PasteType getDropType(Transferable t, int arg1, int arg2) {
         if (behaviour == AsConceptNode.EDIT_BEHAVIOUR && t instanceof AsConcept) {
             AsConcept transferred = AsConceptChildFactory.getTransferData(t);
-            boolean dropPermission = AsConceptChildFactory.isDropPermitted(t, concept, transferred);
+            boolean dropPermission = AsConceptChildFactory.isDropPermitted(t, this, transferred);
             if (dropPermission) {
                 return new PasteType() {
                     @Override
@@ -598,8 +615,7 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
                         if (originalTopcomponent instanceof MultiViewTopComponent) { //ugly hack
                             removePreviousBottomUpAssociations = false;
                         }
-                        if (transferredCopy
-                                != null) {
+                        if (transferredCopy != null) {
                             if (transferredCopy instanceof ToolCategory) {
                                 ToolCategory child = (ToolCategory) transferredCopy;
                                 try {
@@ -813,7 +829,7 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
         public void setSerialNumber(String serial) {
             String oldSerial = tool.getSerialNumber();
             tool.setSerialNumber(serial);
-            modifyRowInPropertySheet("serialNumber", oldSerial, serial, false);
+            modifyRowInPropertySheet("serialNumber", oldSerial, serial, true);
         }
     }
 
@@ -866,8 +882,7 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
                         Property serialNumberProp = null;
                         Property toolIdentifierProp = null;
                         Property toolCatProp = null;
-                        CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class
-                        );
+                        CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);
                         String currentVesselCode = null;
                         if (currentVessel
                                 != null && currentVessel.getConcept()

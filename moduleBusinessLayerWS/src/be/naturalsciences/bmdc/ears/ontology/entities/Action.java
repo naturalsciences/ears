@@ -92,7 +92,7 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn() == null ? this.getTermRef().getOrigUrn() : this.getTermRef().getPublisherUrn();
     }
 
     @Override
@@ -193,7 +193,6 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
         }
         return true;
     }*/
-
     @Override
     public Action clone(IdentityHashMap<Object, Object> clonedObjects) throws CloneNotSupportedException {
         be.naturalsciences.bmdc.ears.utils.Cloner<Action> cc = new be.naturalsciences.bmdc.ears.utils.Cloner(this, clonedObjects);
@@ -213,6 +212,9 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
 
     @Override
     public Set<Property> getChildren(ConceptHierarchy parents) {
+        if (this.getTermRef().getPrefLabel().equals("Setup")) {
+            int a = 5;
+        }
         Set<Property> propertyList = new TreeSet<>(new TermLabelComparator());
         if (parents != null) {
             ITool tool = parents.getLowestToolInHierarchy();
@@ -419,7 +421,7 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
      * @param toolCat
      * @param tool
      */
-  /*  void reduceGevsToSevs(ToolCategory toolCat, Tool tool, Process process) throws EarsException {
+    /*  void reduceGevsToSevs(ToolCategory toolCat, Tool tool, Process process) throws EarsException {
         if (process == null) {
             throw new IllegalArgumentException("Process must be provided.");
         }
@@ -436,7 +438,6 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
             }
         }
     }*/
-
     @Override
     public boolean hasChildren() {
         return false;

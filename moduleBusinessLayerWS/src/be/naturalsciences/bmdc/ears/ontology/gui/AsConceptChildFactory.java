@@ -6,13 +6,18 @@
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
 import be.naturalsciences.bmdc.ears.ontology.AsConceptFlavor;
+import be.naturalsciences.bmdc.ears.ontology.entities.Action;
 import be.naturalsciences.bmdc.ears.ontology.entities.FakeConcept;
 import be.naturalsciences.bmdc.ears.ontology.entities.Tool;
 import be.naturalsciences.bmdc.ears.ontology.gui.AsConceptNode.ContextBehaviour;
+import static be.naturalsciences.bmdc.ears.ontology.gui.AsConceptNode.EDIT_BEHAVIOUR;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.IOntologyModel;
 import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
+import be.naturalsciences.bmdc.ontology.entities.IAction;
+import be.naturalsciences.bmdc.ontology.entities.IProcess;
+import be.naturalsciences.bmdc.ontology.entities.IToolCategory;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -90,8 +95,14 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
     @Override
     protected boolean createKeys(List<AsConcept> toPopulate) {
         if (parents != null) {
-            Set<AsConcept> children = concept.getChildren(parents);
-            children.removeIf(c -> c.getTermRef().getStatusName().equals(OntologyConstants.STATUSES.get(OntologyConstants.DEPRECATED)));
+            Set<AsConcept> children = null;
+            if (this.behaviour == EDIT_BEHAVIOUR && this.concept instanceof IToolCategory) { //if we are editing only show toolcats and tools, don't show the processes and actions
+                children = concept.getChildren(parents);
+            } else {
+                children = concept.getChildren(parents);
+            }
+
+            children.removeIf(c -> c.getTermRef() == null || (c.getTermRef().getStatusName() != null && c.getTermRef().getStatusName().equals(OntologyConstants.STATUSES.get(OntologyConstants.DEPRECATED))));
             toPopulate.addAll(children);
         } else {
             return false;
@@ -103,10 +114,23 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
         super.refresh(true);
     }
 
-    public static boolean isDropPermitted(Transferable dropped, AsConcept destination, AsConcept transferred) {
-        if (transferred.equals(destination)) {
+    public static boolean isDropPermitted(Transferable dropped, AsConceptNode destinationNode, AsConcept transferred) {
+        AsConcept destination = destinationNode.getConcept();
+        if (transferred.equals(destination)) { //if something is dropped unto itself
             return false;
         }
+        if (!(transferred instanceof Tool)) { //tools can be added to their own parent multiple times, everything else not
+            for (Node chN : destinationNode.getChildren().getNodes()) {
+                AsConceptNode ch = (AsConceptNode) chN;
+                if (ch.getConcept().equals(transferred)) { //if the destination already contains the transferred.
+                    return false;
+                }
+            }
+        }
+        if (destinationNode.getConcept() instanceof Action && destinationNode.getConcept() instanceof Process && destinationNode.conceptHierarchy.isGeneric()) { //we can't add new actions to existing generic processes and we can't add new properties to existing generic actions
+            return false;
+        }
+
         if (transferred instanceof Tool && destination instanceof Tool) {
             Tool transferredTool = (Tool) transferred;
             Tool destinationTool = (Tool) destination;
@@ -119,11 +143,7 @@ class AsConceptChildFactory extends ChildFactory<AsConcept> implements NodeListe
             droppedFlavor = (AsConceptFlavor) dropped.getTransferDataFlavors()[0];
         }
         AsConceptFlavor destinationFlavor = new AsConceptFlavor(destination.getClass(), destination.getClass().getSimpleName());
-        if (droppedFlavor != null && destinationFlavor.canHaveAsChild(droppedFlavor)) {
-            return true;
-        } else {
-            return false;
-        }
+        return destinationFlavor.canHaveAsChild(droppedFlavor);
     }
 
     @Override

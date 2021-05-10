@@ -41,11 +41,6 @@ public class NewProgramRdfFileTypeAction implements ActionListener {
 
     private RdfFileTypeDataObject context;
 
-    //private final ScopeMap scope = ScopeMap.PROGRAM_SCOPE;
-
-    /*public NewProgramRdfFileTypeAction() {
-
-     }*/
     @Override
     public void actionPerformed(ActionEvent e) {
         CurrentProgram currentProgram = Utilities.actionsGlobalContext().lookup(CurrentProgram.class);

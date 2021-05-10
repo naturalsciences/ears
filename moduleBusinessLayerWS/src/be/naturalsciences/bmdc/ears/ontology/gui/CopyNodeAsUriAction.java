@@ -57,7 +57,7 @@ public class CopyNodeAsUriAction extends CookieAction {
     protected void performAction(Node[] activatedNodes) {
         for (Node n : activatedNodes) {
             AsConceptNode node = (AsConceptNode) n;
-            StringSelection ss = new StringSelection(node.printTable(PrintChoice.LABEL));
+            StringSelection ss = new StringSelection(node.printTable(PrintChoice.BOTH));
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(ss, null);
         }

@@ -100,7 +100,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn()==null?this.getTermRef().getOrigUrn():this.getTermRef().getPublisherUrn();
     }
 
 
@@ -378,7 +378,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
      * @throws be.naturalsciences.bmdc.ontology.EarsException
      */
     public void reduceGevsToSevs(IAsConceptFactory factory) throws EarsException {
-        List<SpecificEventDefinition> sevs =/* new THashSet<>()*/ new ArrayList();
+     /*   List<SpecificEventDefinition> sevs =new ArrayList(); // new THashSet<>()
         Iterator<GenericEventDefinition> iter = this.getGenericEventDefinitionCollection().iterator();
         while (iter.hasNext()) {
             //for (int j = 0; j < this.getGenericEventDefinitionCollection().size(); j++) {
@@ -405,7 +405,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
                 }
             }
         }
-        int a = 5;
+        int a = 5;*/
     }
 
     public void isolate() {

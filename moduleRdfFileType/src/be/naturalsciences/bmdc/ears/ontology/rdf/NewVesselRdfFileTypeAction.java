@@ -41,11 +41,6 @@ public class NewVesselRdfFileTypeAction implements ActionListener {
 
     private RdfFileTypeDataObject context;
 
-    //private final ScopeMap scope = ScopeMap.PROGRAM_SCOPE;
-
-    /*public NewProgramRdfFileTypeAction() {
-
-     }*/
     @Override
     public void actionPerformed(ActionEvent e) {
         CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);

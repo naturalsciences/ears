@@ -45,7 +45,7 @@ public class ScopeNode extends AbstractNode implements DirectoryChangeListener {
     private Set<OntologyNode> goodList = new THashSet();
     private Set<OntologyNode> badList = new THashSet();
 
-    private final static RdfFileTypeLoader LOADER = new RdfFileTypeLoader();
+    public final static RdfFileTypeLoader LOADER = new RdfFileTypeLoader();
 
     private List<String> scopes;
     private File fileOrFolder;
@@ -151,7 +151,7 @@ public class ScopeNode extends AbstractNode implements DirectoryChangeListener {
                 RdfFileTypeDataObject rdfO = (RdfFileTypeDataObject) mdo;
                 rdfO.addDirectoryChangeListener(this);
                 OntologyNode childNode = new OntologyNode(rdfO);
-                Scope fileScope = rdfO.getScope();
+                Scope fileScope = rdfO.getScope().getScope();
                 if (fileScope != null && this.getScope().contains(fileScope.toString())) {
                     goodList.add(childNode);
                 } else {

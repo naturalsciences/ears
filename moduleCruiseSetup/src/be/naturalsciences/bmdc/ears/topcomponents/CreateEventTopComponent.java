@@ -107,7 +107,7 @@ import javax.swing.table.TableCellEditor;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = true)
+@TopComponent.Registration(mode = "editor", openAtStartup = true, position = 3)
 @ActionID(category = "Window", id = "be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent")
 @ActionReferences({
     // @ActionReference(path = "Toolbars/Window", position = 3333,name = "Create/edit events"),

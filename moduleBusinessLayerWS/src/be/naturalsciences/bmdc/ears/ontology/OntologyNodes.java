@@ -420,7 +420,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
         Set<ProcessAction> processActions = new THashSet();//new TreeSet(new ProcessActionComparator()); //sorting is irrelevant
 
         Set<SpecificEventDefinition> specificEventDefinitions = new THashSet(); //sorting is irrelevant
-        Set<GenericEventDefinition> genericEventDefinitions = new THashSet(); //sorting is irrelevant
+        //  Set<GenericEventDefinition> genericEventDefinitions = new THashSet(); //sorting is irrelevant  //all GEVs come from the base ontology
 
         try {
             owlCreator = new EARSOntologyCreator(this.getModel().getScopeMap(), this.getModel().getName());
@@ -435,9 +435,9 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                     if (tool.getSpecificEventDefinitionCollection() != null) {
                         specificEventDefinitions.addAll(tool.getSpecificEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
                     }
-                    if (tool.getGenericEventDefinitionCollection() != null) {
+                    /*   if (tool.getGenericEventDefinitionCollection() != null) {
                         genericEventDefinitions.addAll(tool.getGenericEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
-                    }
+                    }*/  //all GEVs come from the base ontology
                     if (tool.getToolCategoryCollection() != null) { //add all the original tool catagories to be serialized as well.
                         toolCategories.addAll(tool.getToolCategoryCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
                     }
@@ -452,29 +452,31 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                         processActions.add(sev.getProcessAction());
                         properties.addAll(sev.getPropertyCollection());
                     }
-                    for (GenericEventDefinition gev : tool.getGenericEventDefinitionCollection()) {
+                    /*  for (GenericEventDefinition gev : tool.getGenericEventDefinitionCollection()) {
                         genericEventDefinitions.add(gev);
                         processes.add(gev.getProcess());
                         actions.add(gev.getAction());
                         processActions.add(gev.getProcessAction());
                         properties.addAll(gev.getPropertyCollection());
-                    }
+                    }*/  //all GEVs come from the base ontology
                     for (Tool nestedTool : tool.getHostedCollection()) {
                         nestedTool.getToolCategoryCollection().retainAll(toolCategories); // remove any previous categories the nested tool belongs to, unless this category is included in the current ontology itself. Otherwise the category is referenced to but the category entity itself of the previous ontology the tool belonged to does not exist.
-                        for (SpecificEventDefinition sev : nestedTool.getSpecificEventDefinitionCollection()) {
-                            specificEventDefinitions.add(sev);
-                            processes.add(sev.getProcess());
-                            actions.add(sev.getAction());
-                            processActions.add(sev.getProcessAction());
-                            properties.addAll(sev.getPropertyCollection());
+                        if (nestedTool.getSpecificEventDefinitionCollection() != null) {
+                            for (SpecificEventDefinition sev : nestedTool.getSpecificEventDefinitionCollection()) {
+                                specificEventDefinitions.add(sev);
+                                processes.add(sev.getProcess());
+                                actions.add(sev.getAction());
+                                processActions.add(sev.getProcessAction());
+                                properties.addAll(sev.getPropertyCollection());
+                            }
                         }
-                        for (GenericEventDefinition gev : nestedTool.getGenericEventDefinitionCollection()) {
+                        /*   for (GenericEventDefinition gev : nestedTool.getGenericEventDefinitionCollection()) {
                             genericEventDefinitions.add(gev);
                             processes.add(gev.getProcess());
                             actions.add(gev.getAction());
                             processActions.add(gev.getProcessAction());
                             properties.addAll(gev.getPropertyCollection());
-                        }
+                        } */  //all GEVs come from the base ontology
                     }
                 }
             }
@@ -488,9 +490,9 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                     processActions.add(sev.getProcessAction());
                 }
             }
-            for (GenericEventDefinition gev : genericEventDefinitions) {
+            /*  for (GenericEventDefinition gev : genericEventDefinitions) {
                 processActions.add(gev.getProcessAction());
-            }
+            }*/ //all GEVs come from the base ontology
 
             /* testNames(new ArrayList<AsConcept>(toolCategories));
             testNames(new ArrayList<AsConcept>(tools));
@@ -505,7 +507,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
             owlCreator.setActionCollection(actions);
             owlCreator.setPropertyCollection(properties);
             owlCreator.setSevCollection(specificEventDefinitions);
-            owlCreator.setGevCollection(genericEventDefinitions);
+            //  owlCreator.setGevCollection(genericEventDefinitions); //all GEVs come from the base ontology
             owlCreator.setProcessActionCollection(processActions);
 
             int version = this.model.getVersion();
@@ -535,7 +537,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
             processes = null;
             actions = null;
             properties = null;
-            genericEventDefinitions = null;
+            //    genericEventDefinitions = null;
             specificEventDefinitions = null;
             processActions = null;
         }

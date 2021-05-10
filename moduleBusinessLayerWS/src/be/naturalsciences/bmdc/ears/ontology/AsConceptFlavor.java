@@ -58,7 +58,7 @@ public class AsConceptFlavor extends DataFlavor {
      */
     public boolean canHaveAsChild(AsConceptFlavor other) {
         if (other == null) {
-            throw new IllegalArgumentException("other can't be null.");
+            return false;
         }
         Class<? extends AsConcept> thisClass = this.repClass;
         Class<? extends AsConcept> otherClass = other.repClass;

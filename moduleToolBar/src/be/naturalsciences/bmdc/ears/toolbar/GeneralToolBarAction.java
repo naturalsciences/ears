@@ -257,7 +257,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
             populateComboboxes();
         }
 
-        if (currentCruiseResult.matches(ev)) {
+        if (currentCruiseResult !=null && currentCruiseResult.matches(ev)) {
             currentCruise = currentCruiseResult.getCurrent();
             populatePossibleCurrentProgramList();
             GlobalActionContextProxy.getInstance().removeAll(IProgram.class);
@@ -389,7 +389,6 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         if (programComboBox == null) {
             programComboBox = new JComboBox<>();
-
         }
 
         jPanel.add(createCruise);

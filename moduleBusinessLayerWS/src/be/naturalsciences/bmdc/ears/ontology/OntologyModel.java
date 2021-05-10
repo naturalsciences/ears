@@ -225,9 +225,9 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
     }
 
     /**
-     * *
+     * **
      * Empty constructor to create a start object, useful to download the actual
-     * files to later.
+     * models to later.
      *
      * @param localFile
      */
@@ -338,30 +338,37 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
         }
         this.nodes = new OntologyNodes<AsConcept>(this, this.classesOrder, this.killModelAfterNodeCalculation);
 
-        CurrentOntologyModels currentFiles = Utilities.actionsGlobalContext().lookup(CurrentOntologyModels.class);
-        if (currentFiles == null) {
-            LinkedHashSet files = new LinkedHashSet();
-            files.add(this);
-            GlobalActionContextProxy.getInstance().add(CurrentOntologyModels.getInstance(files));
-        } else {
-            currentFiles.getConcept().add(this);
-            GlobalActionContextProxy.getInstance().add(currentFiles);
-        }
+        register();
         //GlobalActionContextProxy.getInstance().add(this.getIndividuals());
-
     }
 
+    /**
+     * Register the model in some central system. IN this case the NB Lookup system.
+     */
+    public void register() {
+        //this block makes the ontologies available for the concept list, overview of all entities
+        CurrentOntologyModels currentModels = Utilities.actionsGlobalContext().lookup(CurrentOntologyModels.class);
+        if (currentModels == null) {
+            LinkedHashSet models = new LinkedHashSet();
+            models.add(this);
+            GlobalActionContextProxy.getInstance().add(CurrentOntologyModels.getInstance(models));
+        } else {
+            currentModels.getConcept().add(this);
+            GlobalActionContextProxy.getInstance().add(currentModels);
+        }
+    }
+
+    /***
+     * Close this model. Remove it from the ontology model registry.
+     * @param operation 
+     */
     public void close(ActionEnum operation) {
         currentActions.remove(operation);
-        //this.opened = false;
-        //this.individuals.removeNodeListeners();
         CurrentOntologyModels currentFiles = Utilities.actionsGlobalContext().lookup(CurrentOntologyModels.class);
         if (currentFiles != null) {
             currentFiles.getConcept().remove(this);
             GlobalActionContextProxy.getInstance().add(currentFiles);
         }
-
-        //GlobalActionContextProxy.getInstance().remove(this.getIndividuals());
         this.nodes = null;
 
     }
@@ -447,7 +454,7 @@ public abstract class OntologyModel implements IOntologyModel, Lookup.Provider {
      * @param sorted
      * @return
      */
-    private <C extends AsConcept> Set<C> getAllIndividuals(Class<C> cls, boolean sorted) {
+    public <C extends AsConcept> Set<C> getAllIndividuals(Class<C> cls, boolean sorted) {
         RDF2Bean reader = new RDF2Bean(getJenaModel());
         Package pack = Package.getPackage("be.naturalsciences.bmdc.ears.ontology.entities");
         reader.bind(pack);

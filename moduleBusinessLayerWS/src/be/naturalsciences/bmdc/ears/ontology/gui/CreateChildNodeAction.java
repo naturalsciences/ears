@@ -40,7 +40,7 @@ public class CreateChildNodeAction extends CookieAction {
     protected boolean enable(Node[] activatedNodes) {
         AsConceptNode node = context.lookup(AsConceptNode.class);
         Class<? extends AsConcept> cls = node != null ? node.getConcept().getClass() : null;
-        return cls != null && (cls.equals(ToolCategory.class) || cls.equals(Action.class)); //new nodes only allowed for new tools and properties
+        return cls != null && (cls.equals(ToolCategory.class)); //new nodes only allowed for new tools
     }
 
     @Override

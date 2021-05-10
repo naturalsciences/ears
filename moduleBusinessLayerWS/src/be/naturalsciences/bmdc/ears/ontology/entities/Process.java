@@ -80,7 +80,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
         eventDefinition = new ArrayList();
         actionCollection = new ArrayList();
         processCollection = new ArrayList();
-       // subjectCollection = new ArrayList();
+        // subjectCollection = new ArrayList();
     }
 
     /*public Process(Long id) {
@@ -115,7 +115,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn() == null ? this.getTermRef().getOrigUrn() : this.getTermRef().getPublisherUrn();
     }
 
     /**
@@ -127,47 +127,65 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
     @Override
     public Collection<Action> getActionCollectionFromEvent() {
         Set<Action> join = new TreeSet(new TermLabelComparator());
-        /*Collection<EventDefinition> events = new ArrayList();
-         while (true) {
-         try {
-         for (EventDefinition e : this.getEventDefinition()) {
-         if (e != null) {
-         events.add(e);
-         }
-         }
-         break;
-         } catch (Exception e) {
-         continue;
-         }
-         }*/
+        join.addAll(getActionCollectionFromGenericEvents(null));
+        join.addAll(getActionCollectionFromSpecificEvents(null));
+        return join;
+    }
 
+    /**
+     * *
+     * Returns the actions this process is involved in via its generic events
+     * and constrain by ToolCategory tc. If tc is null, no constraining happens
+     *
+     * @return
+     */
+    public Collection<Action> getActionCollectionFromGenericEvents(ToolCategory tc) {
+        Set<Action> join = new TreeSet(new TermLabelComparator());
         for (IEventDefinition e : this.getEventDefinition()) {
             if (e != null) {
                 if (e instanceof GenericEventDefinition) {
                     GenericEventDefinition ge = (GenericEventDefinition) e;
-                    if (ge.getAction() != null && ge.getProcess().equals(this)) {
-                        join.add(ge.getAction());
-                    }
-                }
-                if (e instanceof SpecificEventDefinition) {
-                    SpecificEventDefinition se = (SpecificEventDefinition) e;
-                    if (se.getAction() != null && se.getProcess().equals(this)) {
-                        join.add(se.getAction());
+                    if (tc != null) {
+                        if (ge.getAction() != null && ge.getProcess().equals(this) && ge.getToolCategoryRef().equals(tc)) {
+                            join.add(ge.getAction());
+                        }
+                    } else {
+                        if (ge.getAction() != null && ge.getProcess().equals(this)) {
+                            join.add(ge.getAction());
+                        }
                     }
                 }
             }
         }
         return join;
-        /*if (processActionCollection == null) {
-         processActionCollection = new HashSet();
-         }
-         for (Action a : actionCollection) {
-         ProcessAction pa = new ProcessAction(this, a);
-         if (!processActionCollection.contains(pa)) {
-         processActionCollection.add(pa);
-         }
-         }
-         return processActionCollection;*/
+    }
+
+    /**
+     * *
+     * Returns the actions this process is involved in via its specific events
+     * and constrain by Tool t. If t is null, no constraining happens
+     *
+     * @return
+     */
+    public Collection<Action> getActionCollectionFromSpecificEvents(Tool t) {
+        Set<Action> join = new TreeSet(new TermLabelComparator());
+        for (IEventDefinition e : this.getEventDefinition()) {
+            if (e != null) {
+                if (e instanceof SpecificEventDefinition) {
+                    SpecificEventDefinition se = (SpecificEventDefinition) e;
+                    if (t != null) {
+                        if (se.getAction() != null && se.getProcess().equals(this) && se.getToolRef().equals(t)) {
+                            join.add(se.getAction());
+                        }
+                    } else {
+                        if (se.getAction() != null && se.getProcess().equals(this)) {
+                            join.add(se.getAction());
+                        }
+                    }
+                }
+            }
+        }
+        return join;
     }
 
     @Override
@@ -379,8 +397,12 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
                 }
             } else if (e instanceof GenericEventDefinition) {
                 GenericEventDefinition ge = (GenericEventDefinition) e;
-                if (tool.getToolCategoryCollection().contains(ge.getToolCategoryRef()) && ge.getAction().equals(action) && ge.getProcess().equals(this)) {
-                    eventListResult.add(ge);
+                try {
+                    if (tool != null && tool.getToolCategoryCollection().contains(ge.getToolCategoryRef()) && ge.getAction().equals(action) && ge.getProcess().equals(this)) {
+                        eventListResult.add(ge);
+                    }
+                } catch (Exception ex) {
+                    int a = 5;
                 }
             }
         }

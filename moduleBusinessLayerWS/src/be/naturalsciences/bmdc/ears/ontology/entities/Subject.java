@@ -70,7 +70,7 @@ public class Subject implements ISubject<EarsTerm, ToolCategory, Process>, Seria
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn()==null?this.getTermRef().getOrigUrn():this.getTermRef().getPublisherUrn();
     }
 
     @Override

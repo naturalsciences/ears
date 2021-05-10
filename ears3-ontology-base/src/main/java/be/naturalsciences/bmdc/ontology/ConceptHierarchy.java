@@ -9,6 +9,7 @@ import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.IAction;
 import be.naturalsciences.bmdc.ontology.entities.IEventDefinition;
 import be.naturalsciences.bmdc.ontology.entities.IFakeConcept;
+import be.naturalsciences.bmdc.ontology.entities.IGenericEventDefinition;
 import be.naturalsciences.bmdc.ontology.entities.IProcess;
 import be.naturalsciences.bmdc.ontology.entities.IProperty;
 import be.naturalsciences.bmdc.ontology.entities.ITool;
@@ -52,7 +53,6 @@ public class ConceptHierarchy {
 
     public ITool getLowestToolInHierarchy() {
         return (hostedTool == null) ? tool : hostedTool;
-
     }
 
     public void setTool(ITool tool) {
@@ -150,6 +150,16 @@ public class ConceptHierarchy {
         this.root = other.getRoot();
     }
 
+    public boolean isGeneric() {
+        for (Object gevO : this.toolCategory.getGenericEventDefinitionCollection()) {
+            IGenericEventDefinition gev = (IGenericEventDefinition) gevO;
+            if (gev != null && this.process != null && this.process.equals(gev.getProcess())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * *
      * Returns the true direct parent of the given concept.
@@ -186,7 +196,7 @@ public class ConceptHierarchy {
             this.toolCategory = (IToolCategory) concept;
         } else if (concept instanceof ITool && this.tool == null) {
             ITool tool = (ITool) concept;
-            if (!tool.isHostedTool()) {
+            if (!tool.isHostedTool()) { //if I am not part of a larger tool
                 this.tool = tool;
                 //this.hostedTool = null;
             }
@@ -221,13 +231,10 @@ public class ConceptHierarchy {
             ITool tool = (ITool) concept;
             if (!tool.isHostedTool()) {
                 this.tool = null;
+                this.hostedTool = null; //if I am not hosted, i'm either a parent or I have no children. In either case clear the hostedTool.
+            } else if (tool.isHostedTool()) {
+                this.hostedTool = null; 
             }
-        } else if (concept instanceof ITool) {
-            ITool tool = (ITool) concept;
-            if (tool.isHostedTool()) {
-                this.hostedTool = null;
-            }
-
         } else if (concept instanceof IProcess) {
             this.process = null;
         } else if (concept instanceof IAction) {

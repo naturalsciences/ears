@@ -70,7 +70,7 @@ public class Country implements ICountry<EarsTerm>, Serializable/*, od.nature.na
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn()==null?this.getTermRef().getOrigUrn():this.getTermRef().getPublisherUrn();
     }
 
     @Override

@@ -95,6 +95,8 @@ public interface IOntologyModel {
     public Boolean isOutdated(Date date) throws ConnectException, EarsException;
 
     public File downloadLatestVersion(String name);
+    
+    public void register();
 
     public static Map<String, String> getStaticStuff(InputStream is) {
         Scanner scanner = null;

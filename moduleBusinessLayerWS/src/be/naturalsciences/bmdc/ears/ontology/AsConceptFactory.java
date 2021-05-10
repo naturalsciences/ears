@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.http.client.utils.URIBuilder;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
@@ -128,6 +130,8 @@ public class AsConceptFactory implements IAsConceptFactory {
         if (md != null) {
             CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);
             if (currentVessel == null || currentVessel.getConcept() == null || currentVessel.getConcept().getCode() == null || currentVessel.getConcept().getCode().isEmpty()) {
+                NotifyDescriptor.Confirmation confirm = new NotifyDescriptor.Confirmation("The vessel has to be selected first in the options before you can move on.", "Select vessel", NotifyDescriptor.WARNING_MESSAGE);
+                Object result = DialogDisplayer.getDefault().notify(confirm);
                 throw new EarsException("The current vessel is null or empty. Can't set the owner of this new term.");
             }
             String vesselCode = currentVessel.getConcept().getCode();

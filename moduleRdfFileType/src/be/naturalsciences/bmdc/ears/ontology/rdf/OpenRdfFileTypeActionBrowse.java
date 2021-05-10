@@ -5,7 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.ontology.rdf;
 
-import be.naturalsciences.bmdc.ears.ontology.treeviewer.OntologyTreeViewer;
+import be.naturalsciences.bmdc.ears.ontology.treeviewer.BrowseRdfFileTopComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public final class OpenRdfFileTypeActionBrowse implements ActionListener {
     public void actionPerformed(ActionEvent ev) {
         TopComponent tc;
         try {
-            tc = new OntologyTreeViewer(context);
+            tc = new BrowseRdfFileTopComponent(context);
             Mode editor = WindowManager.getDefault().findMode("explorer");
             editor.dockInto(tc);
             tc.open();

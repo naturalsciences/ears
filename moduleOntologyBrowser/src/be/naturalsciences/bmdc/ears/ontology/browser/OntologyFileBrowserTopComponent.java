@@ -118,28 +118,12 @@ public final class OntologyFileBrowserTopComponent extends TopComponent implemen
     RequestProcessor processor = new RequestProcessor("Ontology_retrieval", 3);
 
     public void startOntologyRetrieval(String progressDescription, ScopeNode node) {
-        ProgressHandle progr = ProgressHandleFactory.createSystemHandle(progressDescription);//YS createHandle(progressDescription);
+        ProgressHandle progr = ProgressHandleFactory.createSystemHandle(progressDescription);
         OntologyFileBrowserTopComponent.OntologyRetriever tsk = new OntologyFileBrowserTopComponent.OntologyRetriever(progr, node);
         tsk.addListener(this);
         processor.post(tsk);
     }
 
-    /**
-     * *
-     * Assigns a provided String name, a String scope and a File fileOrFolder to
-     * a provided node and populates the node with its children. Returns the
-     * created ontologyModels. are
-     *
-     * @param node
-     * @param name
-     * @param scope
-     * @param fileOrFolder
-     * @return
-     */
-    /*public static Set<IOntologyModel> open(ScopeNode node) {
-        //node.populateNode();
-        return node.getOntologyModels();
-    }*/
     @Override
     public void threadComplete(Runnable runner) {
         //progr.finish();

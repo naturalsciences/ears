@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.JEditorPane;
 import javax.swing.event.ChangeEvent;
@@ -84,7 +85,7 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
     private OntologyNode node;
 
     private IOntologyModel ontModel;
-    private Scope scope;
+    private ScopeMap scope;
 
     private Exception ontEx = null;
     private Set<ChangeListener> changeListeners = new THashSet<>();
@@ -130,10 +131,11 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
         this.lookupContent = lookupContent;
     }
 
-    public final Scope getScope() {
+    public final ScopeMap getScope() {
         if (scope == null) {
             try {
-                scope = ScopeMap.Scope.valueOf(IOntologyModel.getStaticStuff(getFile()).get(IOntologyModel.SCOPE));
+                Map<String, String> staticStuff = IOntologyModel.getStaticStuff(getFile());
+                scope = new ScopeMap(ScopeMap.Scope.valueOf(staticStuff.get(IOntologyModel.SCOPE)), staticStuff.get(IOntologyModel.SCOPEDTO));
             } catch (FileNotFoundException ex) {
                 scope = null;
             }
@@ -149,14 +151,12 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
 
         this.lookupContent = new InstanceContent();
         this.lookup = new AbstractLookup(this.lookupContent);
-        //if (getSScope() != ScopeMap.Scope.PROGRAM) {
         try {
             refresh(true);
         } catch (IOException ex) {
             ontEx = ex;
             throw ex;
         }
-        //}
 
         this.lookupContent.add(this); //necessary for RdfFileTypeVisualElement
     }
@@ -211,7 +211,8 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
             } else if (getScope() == null) {
                 return "(NO SCOPE) " + ontologyFile.getName();
             } else {
-                return "(" + getScope() + ") " + ontologyFile.getName();
+                String scopedTo = getScope().getScopedTo();
+                return "(" + getScope().getScopeString() + (scopedTo != null && scopedTo.isEmpty() ? ", " + scopedTo : "") + ") " + ontologyFile.getName();
             }
         }
 
@@ -265,8 +266,6 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
     @Override
     public boolean close() {
         nbFilesOpen = 0;
-        //GlobalActionContextProxy.getInstance().remove(new CurrentFiles(this.getFile()));
-        //GlobalActionContextProxy.getInstance().remove(this.ontModel);
         if (getLookup().lookup(RdfFileTypeDataObject.class) == null) {
             this.lookupContent.add(this);
         }
@@ -348,9 +347,6 @@ public class RdfFileTypeDataObject extends MultiDataObject implements OntologyDa
         this.changeListeners.add(listener);
     }
 
-    /*public void addPropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeListeners.add(listener);
-    }*/
     public void addDirectoryChangeListener(DirectoryChangeListener listener) {
         this.directoryChangeListeners.add(listener);
     }
