@@ -51,11 +51,11 @@ public class RestClientEvent extends RestClient {
             throw new EarsException("The base url for the web services is invalid. The events won't work correctly.", ex);
         }
         if (uri != null) {
-            getEventTarget = client.target(uri.resolve("ears3/dto/event"));
-            getEventsTarget = client.target(uri.resolve("ears3/dto/events"));
-            postEventTarget = client.target(uri.resolve("ears3/event"));
-            modifyEventTarget = client.target(uri.resolve("ears3/event"));
-            removeEventTarget = client.target(uri.resolve("ears3/event"));
+            getEventTarget = client.target(uri.resolve("ears3/api/dto/event"));
+            getEventsTarget = client.target(uri.resolve("ears3/api/dto/events"));
+            postEventTarget = client.target(uri.resolve("ears3/api/event"));
+            modifyEventTarget = client.target(uri.resolve("ears3/api/event"));
+            removeEventTarget = client.target(uri.resolve("ears3/api/event"));
         }
     }
 

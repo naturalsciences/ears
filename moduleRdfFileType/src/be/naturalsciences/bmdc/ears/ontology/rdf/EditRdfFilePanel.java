@@ -22,6 +22,7 @@ import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.writer.ScopeMap;
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -95,7 +96,7 @@ public class EditRdfFilePanel extends JPanel implements ExplorerManager.Provider
         this.dataObject.getOntModel().open(OntologyNodes.DEFAULT_ORDER, OntologyModel.ActionEnum.EDITING);
         AsConceptNode rootNode = new AsConceptNode(this.dataObject.getOntModel(), beh);
         mgr.setRootContext(rootNode);
-/*
+
         if (!this.dataObject.getOntModel().getScope().equals(ScopeMap.Scope.BASE.toString())) { //all GEVs are derived from the base ontology
             Set<ToolCategory> theseTCs = this.dataObject.getOntModel().getNodes().getIndividuals(ToolCategory.class, false);
             BaseOntology baseOntology = Utilities.actionsGlobalContext().lookup(BaseOntology.class);
@@ -113,14 +114,17 @@ public class EditRdfFilePanel extends JPanel implements ExplorerManager.Provider
                             gev.setToolCategoryRef(baseTC);
                             gev.getAction().getEventDefinition().add(gev);
                             gev.getProcess().getEventDefinition().add(gev);
-                            for (Property prop : gev.getPropertyCollection()) {
-                                prop.getEventDefinitionCollection().add(gev);
-                            }
+                            /*for (Property prop : gev.getPropertyCollection()) {
+                                if (prop != null && prop.getEventDefinitionCollection() != null) {
+                                    prop.setEventDefinitionCollection(new ArrayList());
+                                    prop.getEventDefinitionCollection().add(gev);
+                                }
+                            }*///exclude this as the ispropertyof is not exposed in the rdf file anyway!
                         }
                     }
                 }
             }
-        }*/
+        }
     }
 
     @Override

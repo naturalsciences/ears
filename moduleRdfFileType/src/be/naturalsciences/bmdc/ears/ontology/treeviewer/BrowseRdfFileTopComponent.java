@@ -30,6 +30,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -39,6 +40,7 @@ import javax.swing.event.ChangeListener;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -151,9 +153,12 @@ public class BrowseRdfFileTopComponent extends TopComponent implements LookupLis
                             gev.setToolCategoryRef(baseTC);
                             gev.getAction().getEventDefinition().add(gev);
                             gev.getProcess().getEventDefinition().add(gev);
-                            for (Property prop : gev.getPropertyCollection()) {
-                                prop.getEventDefinitionCollection().add(gev);
-                            }
+                            /*for (Property prop : gev.getPropertyCollection()) {
+                                if (prop != null && prop.getEventDefinitionCollection() != null) {
+                                    prop.setEventDefinitionCollection(new ArrayList());
+                                    prop.getEventDefinitionCollection().add(gev);
+                                }
+                            }*///exclude this as the ispropertyof is not exposed in the rdf file anyway!
                         }
                     }
                 }

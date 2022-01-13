@@ -66,9 +66,9 @@ public class RestClientCruise extends RestClient {
         if (uri != null) {
             getCruisesTarget = client.target(uri.resolve("ears3/ears2/cruises"));
             getCruiseTarget = client.target(uri.resolve("ears3/ears2/cruise"));
-            postTarget = client.target(uri.resolve("ears3/cruise"));
-            modifyTarget = client.target(uri.resolve("ears3/cruise"));
-            removeTarget = client.target(uri.resolve("ears3/cruise"));
+            postTarget = client.target(uri.resolve("ears3/api/cruise"));
+            modifyTarget = client.target(uri.resolve("ears3/api/cruise"));
+            removeTarget = client.target(uri.resolve("ears3/api/cruise"));
         }/* else {
             throw new EarsException("The base url for the web services has not been set correctly. The cruises .");
         }*/

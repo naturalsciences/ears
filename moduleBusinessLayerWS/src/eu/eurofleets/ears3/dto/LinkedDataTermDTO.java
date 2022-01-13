@@ -30,9 +30,9 @@ public class LinkedDataTermDTO {
     }
 
     public LinkedDataTermDTO(AsConcept concept) {
-        this.identifier = concept.getTermRef().getUri().toString(); //reads the BODC identifier
+        this.identifier = concept.getUri().toString(); //reads the EARS term identifier 
         this.name = concept.getTermRef().getEarsTermLabel().getPrefLabel();
-        this.transitiveIdentifier = concept.getUri().toString(); //reads the EARS identifier
+        this.transitiveIdentifier = concept.getTermRef().getUri().toString(); //reads the BODC identifier or the EARS concept
     }
 
 }

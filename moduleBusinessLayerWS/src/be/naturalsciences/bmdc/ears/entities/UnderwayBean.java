@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UnderwayBean {
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "time")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")
     private String date;
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "turbidity_l")
     private Double turbidity_l;
@@ -155,7 +155,7 @@ public class UnderwayBean {
 
     public OffsetDateTime getOffsetDateTime() {
         if (getDate() != null && !getDate().equals("")) {
-            LocalDateTime ld = LocalDateTime.parse(getDate(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            LocalDateTime ld = LocalDateTime.parse(getDate(), StringUtils.DTF_ISO_DATETIME_FLEX);
             return ld.atOffset(ZoneOffset.UTC);
         } else {
             return null;

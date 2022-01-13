@@ -285,7 +285,7 @@ class EventPropertyDialog extends JDialog implements LookupListener {
 
         contentPane.add(buttonPane, BorderLayout.NORTH);
 
-        Set<PropertyDTO> properties = this.event.getProperties();
+        Collection<PropertyDTO> properties = this.event.getProperties();
 
         JPanel propertyPane = new JPanel();
         propertyPane.setLayout(new MigLayout());

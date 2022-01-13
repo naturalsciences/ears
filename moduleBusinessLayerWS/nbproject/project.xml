@@ -7,20 +7,20 @@
             <suite-component/>
             <module-dependencies>
                 <dependency>
-                    <code-name-base>be.naturalsciences.bmdc.ears.commonLibraries</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>1.0</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
                     <code-name-base>org.netbeans.core.multiview</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>
                         <release-version>1</release-version>
                         <implementation-version/>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.netbeans.libs.junit4</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>1.24</specification-version>
                     </run-dependency>
                 </dependency>
                 <dependency>
@@ -115,6 +115,7 @@
                         <code-name-base>org.netbeans.modules.nbjunit</code-name-base>
                         <recursive/>
                         <compile-dependency/>
+                        <test/>
                     </test-dependency>
                 </test-type>
             </test-dependencies>
@@ -309,10 +310,6 @@
                 <package>javax.xml.stream</package>
                 <package>javax.xml.stream.events</package>
                 <package>javax.xml.stream.util</package>
-                <package>junit.extensions</package>
-                <package>junit.framework</package>
-                <package>junit.runner</package>
-                <package>junit.textui</package>
                 <package>net.jcip.annotations</package>
                 <package>org.apache.commons.collections4</package>
                 <package>org.apache.commons.collections4.queue</package>
@@ -323,6 +320,43 @@
                 <package>org.apache.commons.io.monitor</package>
                 <package>org.apache.commons.io.output</package>
                 <package>org.apache.commons.lang3</package>
+                <package>org.apache.xerces.dom</package>
+                <package>org.apache.xerces.dom.events</package>
+                <package>org.apache.xerces.dom3.as</package>
+                <package>org.apache.xerces.impl</package>
+                <package>org.apache.xerces.impl.dtd</package>
+                <package>org.apache.xerces.impl.dtd.models</package>
+                <package>org.apache.xerces.impl.dv</package>
+                <package>org.apache.xerces.impl.dv.dtd</package>
+                <package>org.apache.xerces.impl.dv.util</package>
+                <package>org.apache.xerces.impl.dv.xs</package>
+                <package>org.apache.xerces.impl.io</package>
+                <package>org.apache.xerces.impl.msg</package>
+                <package>org.apache.xerces.impl.validation</package>
+                <package>org.apache.xerces.impl.xpath</package>
+                <package>org.apache.xerces.impl.xpath.regex</package>
+                <package>org.apache.xerces.impl.xs</package>
+                <package>org.apache.xerces.impl.xs.identity</package>
+                <package>org.apache.xerces.impl.xs.models</package>
+                <package>org.apache.xerces.impl.xs.opti</package>
+                <package>org.apache.xerces.impl.xs.traversers</package>
+                <package>org.apache.xerces.impl.xs.util</package>
+                <package>org.apache.xerces.jaxp</package>
+                <package>org.apache.xerces.jaxp.datatype</package>
+                <package>org.apache.xerces.jaxp.validation</package>
+                <package>org.apache.xerces.parsers</package>
+                <package>org.apache.xerces.stax</package>
+                <package>org.apache.xerces.stax.events</package>
+                <package>org.apache.xerces.util</package>
+                <package>org.apache.xerces.xinclude</package>
+                <package>org.apache.xerces.xni</package>
+                <package>org.apache.xerces.xni.grammars</package>
+                <package>org.apache.xerces.xni.parser</package>
+                <package>org.apache.xerces.xpointer</package>
+                <package>org.apache.xerces.xs</package>
+                <package>org.apache.xerces.xs.datatypes</package>
+                <package>org.apache.xml.serialize</package>
+                <package>org.apache.xmlcommons</package>
                 <package>org.codehaus.jackson</package>
                 <package>org.codehaus.jackson.annotate</package>
                 <package>org.codehaus.jackson.format</package>
@@ -419,32 +453,6 @@
                 <package>org.jboss.resteasy.spi.validation</package>
                 <package>org.jboss.resteasy.test</package>
                 <package>org.jboss.resteasy.util</package>
-                <package>org.junit</package>
-                <package>org.junit.experimental</package>
-                <package>org.junit.experimental.categories</package>
-                <package>org.junit.experimental.max</package>
-                <package>org.junit.experimental.results</package>
-                <package>org.junit.experimental.runners</package>
-                <package>org.junit.experimental.theories</package>
-                <package>org.junit.experimental.theories.internal</package>
-                <package>org.junit.experimental.theories.suppliers</package>
-                <package>org.junit.internal</package>
-                <package>org.junit.internal.builders</package>
-                <package>org.junit.internal.matchers</package>
-                <package>org.junit.internal.requests</package>
-                <package>org.junit.internal.runners</package>
-                <package>org.junit.internal.runners.model</package>
-                <package>org.junit.internal.runners.rules</package>
-                <package>org.junit.internal.runners.statements</package>
-                <package>org.junit.matchers</package>
-                <package>org.junit.rules</package>
-                <package>org.junit.runner</package>
-                <package>org.junit.runner.manipulation</package>
-                <package>org.junit.runner.notification</package>
-                <package>org.junit.runners</package>
-                <package>org.junit.runners.model</package>
-                <package>org.junit.runners.parameterized</package>
-                <package>org.junit.validator</package>
                 <package>org.jvnet.fastinfoset</package>
                 <package>org.jvnet.fastinfoset.sax</package>
                 <package>org.jvnet.fastinfoset.sax.helpers</package>
@@ -632,6 +640,10 @@
                 <binary-origin>release/modules/ext/javax.ws.rs-api-2.0.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
+                <runtime-relative-path>ext/xercesImpl-2.12.0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/xercesImpl-2.12.0.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
                 <runtime-relative-path>ext/uber-ears3-ontology-base-0.9-SNAPSHOT.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/uber-ears3-ontology-base-0.9-SNAPSHOT.jar</binary-origin>
             </class-path-extension>
@@ -660,12 +672,12 @@
                 <binary-origin>release/modules/ext/httpmime-4.2.6.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/slf4j-simple-1.7.6.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/slf4j-simple-1.7.6.jar</binary-origin>
+                <runtime-relative-path>ext/bmdc-utils-1.0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/bmdc-utils-1.0.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/junit-4.12.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/junit-4.12.jar</binary-origin>
+                <runtime-relative-path>ext/slf4j-simple-1.7.6.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/slf4j-simple-1.7.6.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>

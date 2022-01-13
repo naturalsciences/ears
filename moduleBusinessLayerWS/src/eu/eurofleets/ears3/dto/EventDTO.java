@@ -32,6 +32,8 @@ public class EventDTO implements EARSConcept {
 
     public String identifier;
     public String eventDefinitionId;
+    public String label;
+    public String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
     @XmlJavaTypeAdapter(value = OffsetDateTimeAdapter.class)
     public OffsetDateTime timeStamp;
@@ -41,12 +43,11 @@ public class EventDTO implements EARSConcept {
     public LinkedDataTermDTO toolCategory;
     public LinkedDataTermDTO process;
     public LinkedDataTermDTO action;
-    public Set<PropertyDTO> properties;
+    public Collection<PropertyDTO> properties;
     public String program;
     public String platform;
     public Collection<NavigationDTO> navigation;
     public Collection<ThermosalDTO> thermosal;
-
     public Collection<WeatherDTO> weather;
 
     public EventDTO() {
@@ -120,7 +121,7 @@ public class EventDTO implements EARSConcept {
         return action;
     }
 
-    public Set<PropertyDTO> getProperties() {
+    public Collection<PropertyDTO> getProperties() {
         return properties;
     }
 
@@ -181,6 +182,22 @@ public class EventDTO implements EARSConcept {
     }
 
     public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /*public String getLabel() {
         if (this.properties != null && !this.properties.isEmpty()) {
             Set<String> values = getPropertyValues(EventBean.Prop.LABEL);
             return values.toArray(new String[1])[0];
@@ -188,13 +205,13 @@ public class EventDTO implements EARSConcept {
             return "";
 
         }
-    }
+    }*/
 
     public Set<String> getPropertyValues(Enum prop) {
         String url = (String) PROPERTY_URLS.get(prop);
         Set<String> r = new THashSet<>();
         for (PropertyDTO property : getProperties()) {
-            if (url.equals(property.key.transitiveIdentifier)) {
+            if (url.equals(property.key.transitiveIdentifier) || url.equals(property.key.identifier)) {
                 r.add(property.value);
             }
         }

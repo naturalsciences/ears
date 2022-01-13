@@ -1,4 +1,4 @@
-package be.naturalsciences.bmdc.ears.entities;//ys
+package be.naturalsciences.bmdc.ears.entities;
 
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.io.Serializable;
@@ -22,7 +22,7 @@ public class NavBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "time")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")
     private String timestamp;
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "longitude")
     private String lon;
@@ -112,7 +112,7 @@ public class NavBean implements Serializable {
      */
     public OffsetDateTime getOffsetDateTime() {
         if (getTimeStamp() != null && !getTimeStamp().equals("")) {
-            LocalDateTime ld = LocalDateTime.parse(getTimeStamp(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            LocalDateTime ld = LocalDateTime.parse(getTimeStamp(), StringUtils.DTF_ISO_DATETIME_FLEX); //
             return ld.atOffset(ZoneOffset.UTC);
         } else {
             return null;

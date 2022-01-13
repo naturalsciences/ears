@@ -5,6 +5,7 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
+import be.naturalsciences.bmdc.ears.entities.EARSConcept;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
 import be.naturalsciences.bmdc.ears.utils.Message;
@@ -244,8 +245,8 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
         if (!response.isBad()) {
             String identifier = response.getIdentifier();
             e.setIdentifier(identifier);
-            if(response.getEntity()!=null){
-                OffsetDateTime timeStamp = response.getEntity().getTimeStamp();
+            if(response.getObject()!=null){
+                OffsetDateTime timeStamp = response.getObject().getTimeStamp();
                 e.setTimeStamp(timeStamp);
             }
             entities.add(e);

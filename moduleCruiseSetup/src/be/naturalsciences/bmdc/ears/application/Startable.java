@@ -131,7 +131,7 @@ public class Startable implements Runnable, LookupListener {
                 GlobalActionContextProxy.getInstance().add(currentUrl2);
                 currentUrl = configUrl;
 
-                if (!WebserviceUtils.testWS("ears3/alive")) {
+                if (!WebserviceUtils.testWS("ears3/api/alive")) {
                     Messaging.report("Note that the ears3 webservices are offline. This application won't function properly.", Message.State.BAD, this.getClass(), true);
                 }
                 if (!WebserviceUtils.testWS("ears3Nav/nav/getLast/datagram")) {

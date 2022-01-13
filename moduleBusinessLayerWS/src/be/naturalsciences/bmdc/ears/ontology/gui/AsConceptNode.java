@@ -858,8 +858,8 @@ public class AsConceptNode extends AbstractNode implements NodeListener, AsConce
 
                 Term term = this.concept.getTermRef();
                 if (term != null) {
-                    URI transitiveUri = this.concept.getUri();
-                    URI uri = term.getUri();
+                    URI transitiveUri = term.getUri();
+                    URI uri = this.concept.getUri();
                     be.naturalsciences.bmdc.ears.ontology.entities.Property infoProperty = null;
 
                     EarsToolIdModifier toolIdModifier = null;

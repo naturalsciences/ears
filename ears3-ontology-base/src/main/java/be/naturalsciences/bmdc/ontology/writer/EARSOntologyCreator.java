@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -124,6 +125,34 @@ public class EARSOntologyCreator {
     private Collection<? extends IOrganisation> organisationCollection;
     private Collection<? extends ICountry> countryCollection;
     private Collection<? extends IProject> projectCollection;
+    
+    public List<AsConcept> getAllConceptsOfKind(String kindCode) {
+        List<AsConcept> result = new ArrayList();
+        switch (kindCode) {
+            case "PRO":
+                result.addAll(getProcessCollection());
+                break;
+            case "ACT":
+                result.addAll(getActionCollection());
+                break;
+            case "SUJ":
+                break;
+            case "DEV":
+                result.addAll(getToolCollection());
+                break;
+            case "PRY":
+                result.addAll(getPropertyCollection());
+                break;
+            case "SEV":
+                break;
+            case "CTG":
+                result.addAll(getToolCategoryCollection());
+                break;
+            default:
+                return null;
+        }
+        return result;
+    }
 
     public Collection<? extends IToolCategory> getToolCategoryCollection() {
         return toolCategoryCollection;
@@ -418,12 +447,19 @@ public class EARSOntologyCreator {
              OWLLiteral controllerLiteral = factory.getOWLLiteral(term.getController(), OWL2Datatype.XSD_STRING);
              OWLDataPropertyAssertionAxiom controllerAssertion = factory.getOWLDataPropertyAssertionAxiom(controllerProp, individualConcept, controllerLiteral);
              axioms.add(controllerAssertion);*/
-            if (term.getSubstituteRef() != null) {
-                OWLObjectProperty substituteProp = factory.getOWLObjectProperty(":supersededBy", pm);
-                OWLNamedIndividual substituteIndividual = factory.getOWLNamedIndividual(":concept_" + term.getSubstituteRef().getId(), pm);
-                OWLObjectPropertyAssertionAxiom substituteAssertion = factory.getOWLObjectPropertyAssertionAxiom(substituteProp, individualConcept, substituteIndividual);
-                axioms.add(substituteAssertion);
-
+ /*somehow here it is important to not store references top terms that are undefined and WILL never be defined*/
+            if (term.getSubstituteRef() != null && !term.equals(term.getSubstituteRef())) { //I have a substitute, so I am an old term; but I am not the same as that term
+               // List<AsConcept> allConceptsOfKind = getAllConceptsOfKind(term.getKind());
+               // boolean 
+               // for (AsConcept concept : allConceptsOfKind) {
+               //     if (concept.getTermRef().getId().equals(term.getId()))
+               // }
+               // if (allConcepts.contains(term)) { //the old term that has been replaced is actually present in the list of provided terms during class instantiation. If not we do nothing, else we would have an illegal tree
+                    OWLObjectProperty substituteProp = factory.getOWLObjectProperty(":supersededBy", pm);
+                    OWLNamedIndividual substituteIndividual = factory.getOWLNamedIndividual(":concept_" + term.getSubstituteRef().getId(), pm);
+                    OWLObjectPropertyAssertionAxiom substituteAssertion = factory.getOWLObjectPropertyAssertionAxiom(substituteProp, individualConcept, substituteIndividual);
+                    axioms.add(substituteAssertion);
+               // }
             }
             /* TODO
              if (term.getSynonymRef() != null) {
@@ -1053,6 +1089,9 @@ public class EARSOntologyCreator {
                     // Create the relations of categories
                     // ===============================================================
                     Set<OWLAxiom> axioms = new THashSet();
+                    if(hostTool.getTermRef().getEarsTermLabel().getPrefLabel().contains("PumpProbe")){
+                        int a =5;
+                    }
                     OWLObjectProperty isMemberOf = factory.getOWLObjectProperty(":isMemberOf", pm);
                     if (hostTool.getToolCategoryCollection() != null) {
                         for (Object object : hostTool.getToolCategoryCollection()) {  //CONVERT TO INTERFACE  for (IToolCategory tc) {
@@ -1806,10 +1845,12 @@ public class EARSOntologyCreator {
         }
     }
 
-    /***
+    /**
+     * *
      * Store all the EDMERP projects in the ontology
+     *
      * @param onto
-     * @throws OWLOntologyCreationException 
+     * @throws OWLOntologyCreationException
      */
     private void saveProjects(OWLOntology onto) throws OWLOntologyCreationException {
         if (onto != null) {
@@ -1885,13 +1926,15 @@ public class EARSOntologyCreator {
      * Null-config method. Create an rdf-based ontology file for the path, group
      * and permissions. Uses RDF serialization.
      *
-     * @param importOrPaste whether to paste the owl individuals or to inlude them as an owl:imports header
-     * @param axiomaFile the ontology that contains the rdf schema without any individuals
-     * @param owner the unix owner 
+     * @param importOrPaste whether to paste the owl individuals or to inlude
+     * them as an owl:imports header
+     * @param axiomaFile the ontology that contains the rdf schema without any
+     * individuals
+     * @param owner the unix owner
      * @param fullPath the full path where the ontology will be stored
-     * @param perm the unix rwx permissions 
+     * @param perm the unix rwx permissions
      * @param group the unix group
-     * @return 
+     * @return
      * @throws OWLOntologyCreationException
      */
     public BufferedOutputStream createOntoFile(LoadOnto importOrPaste, File axiomaFile, int newVersion, Path fullPath, String owner, String perm, String group, boolean overwriteIfExists) throws OWLOntologyCreationException {
@@ -1913,11 +1956,12 @@ public class EARSOntologyCreator {
 
     /**
      * Combine two owl ontologies and provide them using a new name
+     *
      * @param oo1 The first ontology
      * @param oo2 The second ontology
      * @param name The new name of the new ontology
      * @return
-     * @throws OWLOntologyCreationException 
+     * @throws OWLOntologyCreationException
      */
     public OWLOntology mergeOntology(OWLOntology oo1, OWLOntology oo2, String name) throws OWLOntologyCreationException {
         OWLOntologyManager m = OWLManager.createOWLOntologyManager();

@@ -258,7 +258,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
         boolean killHostedToolNode = true;
         if (hostedToolNode != null && processNode != null) {
             for (SpecificEventDefinition sev : hostedToolNode.getSpecificEventDefinitionCollection()) {
-                if (sev.getProcess() == c || sev.getAction() == c || (sev.getProcess() == processNode && sev.getAction() == actionNode)) {
+                if (sev != null && (sev.getProcess() == c || sev.getAction() == c || (sev.getProcess() == processNode && sev.getAction() == actionNode))) {
                     killHostedToolNode = false;
                 }
             }
@@ -420,7 +420,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
         Set<ProcessAction> processActions = new THashSet();//new TreeSet(new ProcessActionComparator()); //sorting is irrelevant
 
         Set<SpecificEventDefinition> specificEventDefinitions = new THashSet(); //sorting is irrelevant
-        //  Set<GenericEventDefinition> genericEventDefinitions = new THashSet(); //sorting is irrelevant  //all GEVs come from the base ontology
+        Set<GenericEventDefinition> genericEventDefinitions = new THashSet(); //sorting is irrelevant  //all GEVs come from the base ontology
 
         try {
             owlCreator = new EARSOntologyCreator(this.getModel().getScopeMap(), this.getModel().getName());
@@ -435,9 +435,9 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                     if (tool.getSpecificEventDefinitionCollection() != null) {
                         specificEventDefinitions.addAll(tool.getSpecificEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
                     }
-                    /*   if (tool.getGenericEventDefinitionCollection() != null) {
+                    if (tool.getGenericEventDefinitionCollection() != null) {
                         genericEventDefinitions.addAll(tool.getGenericEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
-                    }*/  //all GEVs come from the base ontology
+                    }  //all GEVs come from the base ontology
                     if (tool.getToolCategoryCollection() != null) { //add all the original tool catagories to be serialized as well.
                         toolCategories.addAll(tool.getToolCategoryCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
                     }
@@ -463,11 +463,13 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                         nestedTool.getToolCategoryCollection().retainAll(toolCategories); // remove any previous categories the nested tool belongs to, unless this category is included in the current ontology itself. Otherwise the category is referenced to but the category entity itself of the previous ontology the tool belonged to does not exist.
                         if (nestedTool.getSpecificEventDefinitionCollection() != null) {
                             for (SpecificEventDefinition sev : nestedTool.getSpecificEventDefinitionCollection()) {
-                                specificEventDefinitions.add(sev);
-                                processes.add(sev.getProcess());
-                                actions.add(sev.getAction());
-                                processActions.add(sev.getProcessAction());
-                                properties.addAll(sev.getPropertyCollection());
+                                if (sev != null) {
+                                    specificEventDefinitions.add(sev);
+                                    processes.add(sev.getProcess());
+                                    actions.add(sev.getAction());
+                                    processActions.add(sev.getProcessAction());
+                                    properties.addAll(sev.getPropertyCollection());
+                                }
                             }
                         }
                         /*   for (GenericEventDefinition gev : nestedTool.getGenericEventDefinitionCollection()) {
@@ -507,7 +509,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
             owlCreator.setActionCollection(actions);
             owlCreator.setPropertyCollection(properties);
             owlCreator.setSevCollection(specificEventDefinitions);
-            //  owlCreator.setGevCollection(genericEventDefinitions); //all GEVs come from the base ontology
+            owlCreator.setGevCollection(genericEventDefinitions); //all GEVs come from the base ontology
             owlCreator.setProcessActionCollection(processActions);
 
             int version = this.model.getVersion();

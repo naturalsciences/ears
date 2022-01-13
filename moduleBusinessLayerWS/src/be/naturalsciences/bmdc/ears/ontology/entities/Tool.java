@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -566,6 +567,11 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
             Tool childTool = (Tool) childConcept;
             // childTool.setToolCategoryCollection(new ArrayList()); //keep the original categories I was part of
             this.hostedCollection.add(childTool);
+            for (ToolCategory toolCategory : childTool.toolCategoryCollection) {
+                toolCategory.getToolCollection().clear();
+                toolCategory.getToolCollection().add(childTool);
+            }
+            targetParents.getRoot().getChildren(targetParents).addAll(childTool.toolCategoryCollection);
             childTool.hostsCollection.add(this);
         }
         if (childConcept != null && childConcept instanceof Process) { //TODO check if not has as child 
@@ -612,7 +618,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
                         sev.setAction(childAction);
 
                         sev.setPropertyCollection(propertyCollection);
-                    /*    if (removePreviousBottomUpAssociations) { //erase all previous bottom-up associations of the future child
+                        /*    if (removePreviousBottomUpAssociations) { //erase all previous bottom-up associations of the future child
                             childAction.setEventDefinition(new ArrayList());
                             childProcess.setEventDefinition(new ArrayList());
                             childProcess.setActionCollection(new ArrayList());
@@ -672,14 +678,24 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
 
         ITool parentTool = parents.getTool();
         if (parentTool != null && this.hostsCollection.contains(parentTool)) { //I am a hosted tool because I appear in the hosted tools of my parents
+            parents.setTool(null);
             this.removeFromHostsCollection(parentTool);
         }
-
+        Set<ToolCategory> toolCategoryBackup = new HashSet<>();
         if (toolCategoryCollection != null && toolCategoryCollection.size() > 0) {
+
             for (ToolCategory tc : toolCategoryCollection) {
+                toolCategoryBackup.add(tc);
                 tc.removeTool(this);
             }
             toolCategoryCollection = null;
+        }
+
+        for (ToolCategory tc : toolCategoryBackup) {
+            if (!tc.hasChildren()) { //the tool was the only child biut has been deleted in the previous step
+                parents.getRoot().getChildren(parents).remove(tc); // then remove them from the whole tree}
+            }
+
         }
 
         /*uri = null;

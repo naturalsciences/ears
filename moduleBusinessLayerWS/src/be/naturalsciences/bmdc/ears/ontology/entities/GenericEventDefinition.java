@@ -477,4 +477,5 @@ public class GenericEventDefinition extends EventDefinition implements IGenericE
     public List<String> broadMatch() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
 }

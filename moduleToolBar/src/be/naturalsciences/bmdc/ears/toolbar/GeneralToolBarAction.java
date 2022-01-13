@@ -149,7 +149,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         currentProgram = getCurrentProgram();
         //initialiseStaticMetadata(true);
 
-        if (WebserviceUtils.testWS("ears3/alive")) {
+        if (WebserviceUtils.testWS("ears3/api/alive")) {
             try {
                 cruiseClient = new RestClientCruise();
                 programClient = new RestClientProgram();
@@ -200,7 +200,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
     }
 
     private void populateCruiseList() {
-        if (cruiseClient != null && currentVessel != null && WebserviceUtils.testWS("ears3/alive")) {
+        if (cruiseClient != null && currentVessel != null && WebserviceUtils.testWS("ears3/api/alive")) {
             try {
                 //  if (cruises == null) {
                 cruises = new TreeSet<>(cruiseClient.getCruiseByPlatform(currentVessel.getConcept()));
@@ -216,7 +216,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
     }
 
     private void populatePossibleCurrentProgramList() {
-        if (programClient != null && WebserviceUtils.testWS("ears3/alive")) {
+        if (programClient != null && WebserviceUtils.testWS("ears3/api/alive")) {
             currentCruise = currentCruiseResult.getCurrent();
             if (currentCruise != null && currentCruise.getConcept() != null) {
                 try {

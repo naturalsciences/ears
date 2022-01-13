@@ -48,5 +48,7 @@ public interface IEventDefinition<E extends IEarsTerm, PR extends IProperty, EV 
     public void setTriggeredCollection(Collection<EV> triggeredCollection);
 
     public void setSubjectCollection(Collection<S> subjectCollection);
+    
+    // public E getTermRef();
 
 }

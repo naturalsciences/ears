@@ -156,26 +156,7 @@ public final class InfoBar implements LookupListener {
             }
         }
         messageResult.addLookupListener(this);
-        Timer t = new Timer(60 * 1000, (ActionEvent event) -> {
-            OffsetTime localTimeInUtc = OffsetTime.now(Clock.systemUTC());
-            OffsetTime localTime = OffsetTime.now(Clock.systemDefaultZone());
-            timeLabel.setText("Computer UTC: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTimeInUtc) + SEPARATOR + "Computer local: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTime) + " ");
-            try {
-                if (restNav != null) {
-                    NavBean lastNav = restNav.getLastNavXml();
-                    if (lastNav != null && lastNav.getTimeStamp() != null && !lastNav.getTimeStamp().equals("")) {
-                        String lastCentralTime = lastNav.getTimeStamp();
-                        LocalDateTime localDate = LocalDateTime.parse(lastCentralTime, StringUtils.DTF_ISO_DATETIME_ZONE);
-                        centralTimeLabel.setText("Server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
-                        locationLabel.setText("Location: " + lastNav.getLatitudeDMS(false) + " " + lastNav.getLongitudeDMS(false));
-                    }
-                }
-            } catch (ConnectException ex) {
-                Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
-            }
-        });
 
-        t.start();
         this.timeLabel = new JLabel();
         this.centralTimeLabel = new JLabel();
         this.locationLabel = new JLabel();
@@ -195,6 +176,31 @@ public final class InfoBar implements LookupListener {
         panel.add(locationLabelPanel);
         panel.add(centralTimeLabelPanel);
         panel.add(timeLabelPanel);
+
+        Timer t1 = new Timer(5 * 100, (ActionEvent event) -> {  //0.5 seconds
+            OffsetTime localTimeInUtc = OffsetTime.now(Clock.systemUTC());
+            OffsetTime localTime = OffsetTime.now(Clock.systemDefaultZone());
+            timeLabel.setText("Computer UTC: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTimeInUtc) + SEPARATOR + "Computer local: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTime) + " ");
+        });
+        
+        /*Timer t2 = new Timer(5 * 1000, (ActionEvent event) -> {  //5 seconds
+             try {
+                if (restNav != null) {
+                    NavBean lastNav = restNav.getLastNavXml();
+                    if (lastNav != null && lastNav.getTimeStamp() != null && !lastNav.getTimeStamp().equals("")) {
+                        String lastCentralTime = lastNav.getTimeStamp();
+                        LocalDateTime localDate = LocalDateTime.parse(lastCentralTime, StringUtils.DTF_ISO_DATETIME_FLEX);
+                        centralTimeLabel.setText("Server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
+                        locationLabel.setText("Location: " + lastNav.getLatitudeDMS(false) + " " + lastNav.getLongitudeDMS(false));
+                    }
+                }
+            } catch (ConnectException ex) {
+                Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
+            }
+        });*/
+
+        t1.start();
+       // t2.start();
     }
 
     /**

@@ -62,8 +62,8 @@ public class RestClientProgram extends RestClient {
         if (uri != null) {
             getProgramsTarget = client.target(uri.resolve("ears3/ears2/programs"));
             getProgramTarget = client.target(uri.resolve("ears3/ears2/program"));
-            postTarget = client.target(uri.resolve("ears3/program"));;
-            removeTarget = client.target(uri.resolve("ears3/program"));
+            postTarget = client.target(uri.resolve("ears3/api/program"));;
+            removeTarget = client.target(uri.resolve("ears3/api/program"));
         }
     }
     

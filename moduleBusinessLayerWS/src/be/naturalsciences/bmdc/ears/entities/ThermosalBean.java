@@ -21,7 +21,7 @@ public class ThermosalBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "time")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")
     private String date;
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "salinity")
@@ -106,7 +106,7 @@ public class ThermosalBean implements Serializable {
 
     public OffsetDateTime getOffsetDateTime() {
         if (getInstrumentTime() != null && !getInstrumentTime().equals("")) {
-            LocalDateTime ld = LocalDateTime.parse(getInstrumentTime(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            LocalDateTime ld = LocalDateTime.parse(getInstrumentTime(), StringUtils.DTF_ISO_DATETIME_FLEX);
             return ld.atOffset(ZoneOffset.UTC);
         } else {
             return null;

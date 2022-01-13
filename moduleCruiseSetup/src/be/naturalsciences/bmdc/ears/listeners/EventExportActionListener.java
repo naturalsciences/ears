@@ -69,10 +69,10 @@ public class EventExportActionListener implements EventListener {
                         URL baseURL = RestClient.getBaseURL();
                         if(exportEventAction.getCruise() != null){
                             String cruiseIdentifier = exportEventAction.getCruise().getName();
-                            FileUtils.copyURLToFile(new URL(baseURL,"ears3/events.csv?cruiseIdentifier="+cruiseIdentifier), fileChooser.getSelectedFile());
+                            FileUtils.copyURLToFile(new URL(baseURL,"ears3/api/events.csv?cruiseIdentifier="+cruiseIdentifier), fileChooser.getSelectedFile());
                         }else if (exportEventAction.getProgram() != null){
                             String programIdentifier = exportEventAction.getProgram().getName();
-                            FileUtils.copyURLToFile(new URL(baseURL,"ears3/events.csv?programIdentifier="+programIdentifier), fileChooser.getSelectedFile());
+                            FileUtils.copyURLToFile(new URL(baseURL,"ears3/api/events.csv?programIdentifier="+programIdentifier), fileChooser.getSelectedFile());
                         }
                         Messaging.report("Events exported to " + fileChooser.getSelectedFile().getPath(), Message.State.GOOD, this.getClass(), true);
                     }

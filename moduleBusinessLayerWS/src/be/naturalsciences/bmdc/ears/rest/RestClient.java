@@ -97,7 +97,7 @@ public abstract class RestClient implements Serializable {
 
     private boolean isOnline() {
 
-        return getBaseURL() != null && WebserviceUtils.testWS("ears3/alive");
+        return getBaseURL() != null && WebserviceUtils.testWS("ears3/api/alive");
     }
 
     protected static URL baseURL;
@@ -177,7 +177,7 @@ public abstract class RestClient implements Serializable {
                 if (responseMessage.isOk()) {
                     responseMessage.setMessage(cls.getSimpleName() + " " + responseMessage.getIdentifier() + " created/modified");
                 } else {
-                    responseMessage.setMessage(response.getStatusInfo().getReasonPhrase() + " (" + responseMessage.getExceptionType() + ") - " + cls.getSimpleName() + " not created/modified");
+                    responseMessage.setMessage(response.getStatusInfo().getReasonPhrase() + " (" + responseMessage.getMessage() + ") - " + cls.getSimpleName() + " not created/modified");
                 }
             } catch (Exception e) {
                 responseMessage = new RestMessage(response.getStatus(), response.getStatus() + " (" + response.getStatusInfo().getReasonPhrase() + ")");

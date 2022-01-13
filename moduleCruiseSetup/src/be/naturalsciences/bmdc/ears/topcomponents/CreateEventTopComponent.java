@@ -794,7 +794,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     }
 
     private void populateEventModel() {
-        List<EventDTO> events = null;
+        List<EventDTO> events = new ArrayList();
         if (restClientEvent != null) {
             if (currentCruiseResult.getCurrent() != null && currentCruiseResult.getCurrent().getConcept() != null) { //there is a current cruise
                 CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
@@ -879,9 +879,9 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             actors.add(new PersonDTO(actor));
         }
 
-        for (EventDTO event : this.getModel().getEntities()) {
+        /*for (EventDTO event : this.getModel().getEntities()) {
             actors.add(event.getActor());
-        }
+        }*/ //disable this as it causes java.lang.ClassCastException: javax.swing.table.DefaultTableModel cannot be cast to be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel
         for (PersonDTO actor : actors) {
             actorCombobox.addItem(actor);
         }

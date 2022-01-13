@@ -88,7 +88,9 @@ public interface ToEventConvertible {
                         //tools.add(cng.getHostedTool());
                         parentTool = new LinkedDataTermDTO(cng.getTool());
                         tool = new ToolDTO(new LinkedDataTermDTO(cng.getHostedTool()), parentTool);
-                        toolCategory = new LinkedDataTermDTO((ToolCategory) cng.getHostedTool().getToolCategoryCollection().toArray()[0]); //TODO when creating nested tools, pick ONE tool catageory instedad of all.
+                        if (cng.getHostedTool().getToolCategoryCollection() != null && !cng.getHostedTool().getToolCategoryCollection().isEmpty()) {
+                            toolCategory = new LinkedDataTermDTO((ToolCategory) cng.getHostedTool().getToolCategoryCollection().toArray()[0]); //TODO when creating nested tools, pick ONE tool catageory instedad of all.
+                        }
                     } else { // I am not in a hierarchy of a host tool, but I may appear in another place in one 
                         parentTool = cng.getTool().getHostsCollection().isEmpty() ? null : new LinkedDataTermDTO((Tool) cng.getTool().getHostsCollection().toArray()[0]);
                         tool = new ToolDTO(new LinkedDataTermDTO(cng.getTool()), parentTool);
@@ -97,8 +99,8 @@ public interface ToEventConvertible {
 
                     // EventDTO event = new EventBean(eventDefinition.getUri().toString(), currentVessel, currentProgram, cng.getToolCategory(), tool, cng.getProcess(), cng.getAction(), properties, actor);
                     LinkedDataTermDTO subject = new LinkedDataTermDTO("http://vocab.nerc.ac.uk/collection/C77/current/M05", null, "Occasional standard measurements"); //TODO change this.
-
-                    EventDTO event = new EventDTO(null, eventDefinition.getUri().toString(), null, currentActor, subject, toolCategory, tool, new LinkedDataTermDTO(cng.getProcess()), new LinkedDataTermDTO(cng.getAction()), propertyDTOs, currentProgram.getName(), currentVessel.getCode());
+                    String EventDefinitionId = eventDefinition.getUri().toString().replace("http://ontologies.ef-ears.eu/ears2/1/#sev_", "ears:sev::");
+                    EventDTO event = new EventDTO(null, EventDefinitionId, null, currentActor, subject, toolCategory, tool, new LinkedDataTermDTO(cng.getProcess()), new LinkedDataTermDTO(cng.getAction()), propertyDTOs, currentProgram.getName(), currentVessel.getCode());
                     //  GlobalActionContextProxy.getInstance().addEnsureOne(event);
                     GlobalActionContextProxy.getInstance().add(CurrentEvent.getInstance(event));
                 } else {

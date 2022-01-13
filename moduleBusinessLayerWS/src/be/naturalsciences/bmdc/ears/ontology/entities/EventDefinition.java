@@ -14,7 +14,7 @@ import thewebsemantic.RdfType;
 @Namespace("http://ontologies.ef-ears.eu/ears2/1#")
 @RdfType("EventDefinition")
 //public abstract class EventDefinition<E extends IEarsTerm, PR extends IProperty, EV extends IEventDefinition> implements IEventDefinition<E, PR, EV> {public abstract class EventDefinition<E extends IEarsTerm, PR extends IProperty, EV extends IEventDefinition> implements IEventDefinition<E, PR, EV> {
-public class EventDefinition implements IEventDefinition<EarsTerm, Property, EventDefinition, Subject>, Serializable {
+public abstract class EventDefinition implements IEventDefinition<EarsTerm, Property, EventDefinition, Subject>, Serializable {
 
     //private static final long serialVersionUID = 1L;
     @Id

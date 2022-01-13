@@ -7,7 +7,10 @@ package be.naturalsciences.bmdc.ontology.writer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -21,27 +24,37 @@ import java.util.Map;
  * @author Thomas Vandenberghe
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
-    
-    public static final  SimpleDateFormat SDF_ISO_DATETIME = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public static final SimpleDateFormat SDF_ISO_DATETIME = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static final SimpleDateFormat SDF_SIMPLE_DATE = new SimpleDateFormat("yyyyMMdd");
 
     public static final SimpleDateFormat SDF_ISO_DATE = new SimpleDateFormat("yyyy-MM-dd");
 
     public static final SimpleDateFormat SDF_FULL_ISO_DATETIME = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-    
+
     public static final DateTimeFormatter DTF_TIME_FORMAT_HOURS_MINS = DateTimeFormatter.ofPattern("HH:mm", Locale.FRANCE);
-    
+
     public static final DateTimeFormatter DTF_TIME_FORMAT_HOURS_MINS_SECS = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.FRANCE);
-    
+
     public static final DateTimeFormatter DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE = DateTimeFormatter.ofPattern("HH:mm:ssX", Locale.FRANCE);
 
-    public static final DateTimeFormatter DTF_FULL_ISO_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.FRANCE);
-    
+    public static final DateTimeFormatter DTF_FULL_ISO_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+
     public static final DateTimeFormatter DTF_ISO_DATETIME_ZONE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
-    
+
     public static final DateTimeFormatter DTF_ISO_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-   
+
+    public static final DateTimeFormatter DTF_ISO_DATETIME_FLEX;
+
+    static {
+        DateTimeFormatter DTF_ISO_DATETIME_ZONE_INT = new DateTimeFormatterBuilder()
+                .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+                .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true)
+                .appendZoneId()
+                .toFormatter();
+        DTF_ISO_DATETIME_FLEX = DTF_ISO_DATETIME_ZONE_INT;
+    }
 
     public static String concatString(Collection<String> strings, String separator) {
         StringBuilder sb = new StringBuilder();

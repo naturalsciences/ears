@@ -150,6 +150,10 @@ public class ConceptHierarchy {
         this.root = other.getRoot();
     }
 
+    /**
+     * Test if the hierarchy is built from a generic event definition in the toolcategory
+     * @return 
+     */
     public boolean isGeneric() {
         for (Object gevO : this.toolCategory.getGenericEventDefinitionCollection()) {
             IGenericEventDefinition gev = (IGenericEventDefinition) gevO;

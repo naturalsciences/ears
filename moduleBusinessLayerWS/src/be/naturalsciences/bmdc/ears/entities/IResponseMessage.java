@@ -5,6 +5,8 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
+import java.util.List;
+
 /**
  *
  * @author Thomas Vandenberghe
@@ -27,9 +29,11 @@ public interface IResponseMessage<E> {
 
     public void setMessage(String message);
 
-    public E getEntity();
+    public E getObject();
 
-    public void setEntity(E entity);
+    public void setObject(E entity);
+    
+    public List<String> getMessages();
 
     public boolean isBad();
 
