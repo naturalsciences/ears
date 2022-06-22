@@ -2,8 +2,8 @@ package be.naturalsciences.bmdc.ears.rest;//ys
 
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
-import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import eu.eurofleets.ears3.dto.EventDTO;
@@ -124,8 +124,8 @@ public class RestClientEvent extends RestClient {
         return events;
 
     }
-    
-        /**
+
+    /**
      * *
      * A web method to retrieve the events of one cruise. Is not implemented at
      * the level of the web services but indirectly via the date range of the
@@ -150,8 +150,6 @@ public class RestClientEvent extends RestClient {
         return events;
 
     }
-    
-    
 
     public IResponseMessage<EventDTO> postEvent(EventDTO event) {
         //  EventDTO clone = event.clone();

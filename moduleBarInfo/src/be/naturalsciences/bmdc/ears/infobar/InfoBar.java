@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.infobar;
 
-import be.naturalsciences.bmdc.ears.entities.NavBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.rest.RestClientNav;
 import be.naturalsciences.bmdc.ears.utils.Message;
@@ -18,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.net.ConnectException;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -102,12 +100,10 @@ public final class InfoBar implements LookupListener {
     private static final InputOutput EXCEPTIONS = IOProvider.getDefault().getIO("Exceptions", true);
 
     private JPanel panel = new JPanel();
-    // private final JLabel connectionLabel;
 
     private Lookup.Result<Message> messageResult;
-    private JLabel locationLabel;
     private JLabel timeLabel;
-    private JLabel centralTimeLabel;
+    
 
     private static ConnectionState latestConnectionState;
 
@@ -158,23 +154,11 @@ public final class InfoBar implements LookupListener {
         messageResult.addLookupListener(this);
 
         this.timeLabel = new JLabel();
-        this.centralTimeLabel = new JLabel();
-        this.locationLabel = new JLabel();
 
         Border border = new LineBorder(Color.BLUE);
-
-        JPanel locationLabelPanel = new JPanel();
-        locationLabelPanel.setBorder(border);
-        JPanel centralTimeLabelPanel = new JPanel();
-        centralTimeLabelPanel.setBorder(border);
         JPanel timeLabelPanel = new JPanel();
         timeLabelPanel.setBorder(border);
-
-        locationLabelPanel.add(locationLabel);
-        centralTimeLabelPanel.add(this.centralTimeLabel);
         timeLabelPanel.add(this.timeLabel);
-        panel.add(locationLabelPanel);
-        panel.add(centralTimeLabelPanel);
         panel.add(timeLabelPanel);
 
         Timer t1 = new Timer(5 * 100, (ActionEvent event) -> {  //0.5 seconds
@@ -182,25 +166,8 @@ public final class InfoBar implements LookupListener {
             OffsetTime localTime = OffsetTime.now(Clock.systemDefaultZone());
             timeLabel.setText("Computer UTC: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTimeInUtc) + SEPARATOR + "Computer local: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTime) + " ");
         });
-        
-        /*Timer t2 = new Timer(5 * 1000, (ActionEvent event) -> {  //5 seconds
-             try {
-                if (restNav != null) {
-                    NavBean lastNav = restNav.getLastNavXml();
-                    if (lastNav != null && lastNav.getTimeStamp() != null && !lastNav.getTimeStamp().equals("")) {
-                        String lastCentralTime = lastNav.getTimeStamp();
-                        LocalDateTime localDate = LocalDateTime.parse(lastCentralTime, StringUtils.DTF_ISO_DATETIME_FLEX);
-                        centralTimeLabel.setText("Server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
-                        locationLabel.setText("Location: " + lastNav.getLatitudeDMS(false) + " " + lastNav.getLongitudeDMS(false));
-                    }
-                }
-            } catch (ConnectException ex) {
-                Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
-            }
-        });*/
 
         t1.start();
-       // t2.start();
     }
 
     /**

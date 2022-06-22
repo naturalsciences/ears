@@ -452,13 +452,13 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                         processActions.add(sev.getProcessAction());
                         properties.addAll(sev.getPropertyCollection());
                     }
-                    /*  for (GenericEventDefinition gev : tool.getGenericEventDefinitionCollection()) {
+                      for (GenericEventDefinition gev : tool.getGenericEventDefinitionCollection()) {
                         genericEventDefinitions.add(gev);
                         processes.add(gev.getProcess());
                         actions.add(gev.getAction());
                         processActions.add(gev.getProcessAction());
                         properties.addAll(gev.getPropertyCollection());
-                    }*/  //all GEVs come from the base ontology
+                    }  //all GEVs come from the base ontology
                     for (Tool nestedTool : tool.getHostedCollection()) {
                         nestedTool.getToolCategoryCollection().retainAll(toolCategories); // remove any previous categories the nested tool belongs to, unless this category is included in the current ontology itself. Otherwise the category is referenced to but the category entity itself of the previous ontology the tool belonged to does not exist.
                         if (nestedTool.getSpecificEventDefinitionCollection() != null) {

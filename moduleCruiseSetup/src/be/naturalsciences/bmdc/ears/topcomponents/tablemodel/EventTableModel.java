@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents.tablemodel;
 
-import be.naturalsciences.bmdc.ears.entities.EARSConcept;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
 import be.naturalsciences.bmdc.ears.utils.Message;
@@ -116,7 +115,7 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
             case PROGRAM:
                 return true;
             case LABEL:
-                return false;
+                return true;
             /* case DELETE:
                 return true;*/
             case PROPERTIES:
@@ -219,6 +218,17 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
                     }
                 }
                 break;
+                
+            case LABEL:
+                if (value != null && !value.equals(originalValue)) {
+                    event.setLabel((String)value);
+                    IResponseMessage response = restClientEvent.modifyEvent(event);
+                    Messaging.report(response.getMessage(), response.isBad()?Message.State.BAD:Message.State.GOOD, this.getClass(), true);
+                    if (response.isBad()) {          
+                        event.setLabel((String)originalValue);
+                    }
+                }
+                break;    
         }
     }
 

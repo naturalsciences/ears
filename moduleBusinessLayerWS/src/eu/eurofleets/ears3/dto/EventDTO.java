@@ -1,7 +1,6 @@
 package eu.eurofleets.ears3.dto;
 
 import be.naturalsciences.bmdc.ears.entities.EARSConcept;
-import be.naturalsciences.bmdc.ears.entities.EventBean;
 import static be.naturalsciences.bmdc.ears.entities.EventBean.PROPERTY_URLS;
 import be.naturalsciences.bmdc.ontology.entities.IProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -53,7 +52,7 @@ public class EventDTO implements EARSConcept {
     public EventDTO() {
     }
 
-    public EventDTO(String identifier, String eventDefinitionId, OffsetDateTime timeStamp, PersonDTO actor, LinkedDataTermDTO subject, LinkedDataTermDTO toolCategory, ToolDTO tool, LinkedDataTermDTO process, LinkedDataTermDTO action, Set<PropertyDTO> properties, String program, String platform) {
+    public EventDTO(String identifier, String eventDefinitionId, OffsetDateTime timeStamp, PersonDTO actor, LinkedDataTermDTO subject, LinkedDataTermDTO toolCategory, ToolDTO tool, LinkedDataTermDTO process, LinkedDataTermDTO action, Set<PropertyDTO> properties, String program, String platform, String label) {
         this.identifier = identifier;
         this.eventDefinitionId = eventDefinitionId;
         this.timeStamp = timeStamp;
@@ -66,6 +65,7 @@ public class EventDTO implements EARSConcept {
         this.properties = properties;
         this.program = program;
         this.platform = platform;
+        this.label = label;
     }
 
     /* public EventDTO(EventBean event) {
@@ -206,7 +206,6 @@ public class EventDTO implements EARSConcept {
 
         }
     }*/
-
     public Set<String> getPropertyValues(Enum prop) {
         String url = (String) PROPERTY_URLS.get(prop);
         Set<String> r = new THashSet<>();
@@ -265,7 +264,8 @@ public class EventDTO implements EARSConcept {
                 this.action,
                 this.properties != null ? new HashSet<>(this.properties) : null,
                 this.program,
-                this.platform);
+                this.platform,
+                this.label);
         return clone;
     }
 
@@ -287,6 +287,7 @@ public class EventDTO implements EARSConcept {
         hash = 17 * hash + Objects.hashCode(this.navigation);
         hash = 17 * hash + Objects.hashCode(this.thermosal);
         hash = 17 * hash + Objects.hashCode(this.weather);
+        hash = 17 * hash + Objects.hashCode(this.label);
         return hash;
     }
 
@@ -345,6 +346,9 @@ public class EventDTO implements EARSConcept {
             return false;
         }
         if (!Objects.equals(this.weather, other.weather)) {
+            return false;
+        }
+        if (!Objects.equals(this.label, other.label)) {
             return false;
         }
         return true;

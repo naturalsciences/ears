@@ -5,8 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
-import be.naturalsciences.bmdc.ears.listeners.EventExportActionListener;
-import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
 import be.naturalsciences.bmdc.ears.comparator.PersonDTOComparator;
 import be.naturalsciences.bmdc.ears.entities.Actor;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
@@ -15,11 +13,11 @@ import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
 import be.naturalsciences.bmdc.ears.entities.CurrentEvent;
 import be.naturalsciences.bmdc.ears.entities.CurrentProgram;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
-//import be.naturalsciences.bmdc.ears.entities.EventDTO;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.IProgram;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.listeners.EventExportActionListener;
 import be.naturalsciences.bmdc.ears.listeners.SelectOnClickPopupMenuListener;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
@@ -30,6 +28,7 @@ import be.naturalsciences.bmdc.ears.ontology.entities.Property;
 import be.naturalsciences.bmdc.ears.ontology.entities.SpecificEventDefinition;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.SwingUtils;
 import be.naturalsciences.bmdc.ears.utils.TableColumnAdjuster;
@@ -38,6 +37,9 @@ import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import com.github.lgooddatepicker.tableeditors.DateTableEditor;
 import com.github.lgooddatepicker.tableeditors.TimeTableEditor;
 import com.github.lgooddatepicker.zinternaltools.InternalUtilities;
+import eu.eurofleets.ears3.dto.EventDTO;
+import eu.eurofleets.ears3.dto.PersonDTO;
+import eu.eurofleets.ears3.dto.PropertyDTO;
 import gnu.trove.map.hash.THashMap;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -57,6 +59,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,11 +67,13 @@ import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -86,14 +91,6 @@ import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
-
-import eu.eurofleets.ears3.dto.EventDTO;
-import eu.eurofleets.ears3.dto.PersonDTO;
-import eu.eurofleets.ears3.dto.PropertyDTO;
-import java.util.HashSet;
-import javax.swing.AbstractCellEditor;
-import javax.swing.JComboBox;
-import javax.swing.table.TableCellEditor;
 
 /**
  * Top component which displays something.
@@ -549,13 +546,14 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         jToolBar1.add(exportEventButton);
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPane1.setMaximumSize(new java.awt.Dimension(1252, 700));
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(1252, 700));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(1252, 700));
+        jScrollPane1.setMaximumSize(new java.awt.Dimension(1252, 850));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(1252, 850));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(1252, 850));
 
-        eventsTable2.setMaximumSize(new java.awt.Dimension(1252, 700));
-        eventsTable2.setMinimumSize(new java.awt.Dimension(1252, 700));
-        eventsTable2.setPreferredSize(new java.awt.Dimension(1252, 700));
+        eventsTable2.setMaximumSize(new java.awt.Dimension(1252, 750));
+        eventsTable2.setMinimumSize(new java.awt.Dimension(1252, 750));
+        eventsTable2.setName(""); // NOI18N
+        eventsTable2.setPreferredSize(new java.awt.Dimension(1252, 750));
         jScrollPane1.setViewportView(eventsTable2);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -564,19 +562,20 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1279, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1279, Short.MAX_VALUE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(0, 34, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(47, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 628, Short.MAX_VALUE)
+                .addContainerGap(25, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addContainerGap()

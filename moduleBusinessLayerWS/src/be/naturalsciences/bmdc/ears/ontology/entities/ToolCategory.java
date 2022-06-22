@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import org.openide.util.Exceptions;
 import thewebsemantic.Id;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
@@ -100,13 +102,12 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn()==null?this.getTermRef().getOrigUrn():this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn() == null ? this.getTermRef().getOrigUrn() : this.getTermRef().getPublisherUrn();
     }
-
 
     @Override
     public Collection<Tool> getToolCollection() {
-        return toolCollection;
+        return new ArrayList<>(toolCollection); //required because otherwise we get weird concurrentmodificationerrors caused by other threads trying to modify the collection.
     }
 
     @Override
@@ -272,21 +273,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
     @Override
     public Set<Tool> getChildren(ConceptHierarchy parents) {
         Set<Tool> l = new TreeSet(new TermLabelUriComparator());
-
-        // List two = new ArrayList(getToolCollection());
-        // l.addAll(getToolCollection());
-        //getToolCollection()
-        //for (Tool tool : getToolCollection()) { //https://bugs.openjdk.java.net/browse/JDK-8150808 and https://stackoverflow.com/questions/26184532/concurrentmodificationexception-add-vs-addall
-        //   l.add(tool);
-        // }
-        Iterator<Tool> iterator = getToolCollection().iterator();
-        while (iterator.hasNext()) {
-            Tool tool = iterator.next();
-            l.add(tool);
-
-        }
-        // getToolCollection());
-        //Collections.sort(l, new TermUriComparator());
+        l.addAll(getToolCollection());
         return l;
     }
 
@@ -378,7 +365,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
      * @throws be.naturalsciences.bmdc.ontology.EarsException
      */
     public void reduceGevsToSevs(IAsConceptFactory factory) throws EarsException {
-     /*   List<SpecificEventDefinition> sevs =new ArrayList(); // new THashSet<>()
+        /*   List<SpecificEventDefinition> sevs =new ArrayList(); // new THashSet<>()
         Iterator<GenericEventDefinition> iter = this.getGenericEventDefinitionCollection().iterator();
         while (iter.hasNext()) {
             //for (int j = 0; j < this.getGenericEventDefinitionCollection().size(); j++) {

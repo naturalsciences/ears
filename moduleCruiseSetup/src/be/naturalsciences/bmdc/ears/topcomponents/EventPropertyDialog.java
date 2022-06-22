@@ -6,6 +6,8 @@
 package be.naturalsciences.bmdc.ears.topcomponents;
 
 import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
+import be.naturalsciences.bmdc.ears.entities.EventBean;
+import static be.naturalsciences.bmdc.ears.entities.EventBean.PROPERTY_URLS;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
@@ -26,14 +28,11 @@ import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -139,7 +138,7 @@ class EventPropertyDialog extends JDialog implements LookupListener {
 
     private JComponent getPropertyValueField(PropertyDTO property, Object defaultValue) {
         JComponent propertyValueField = null;
-        if (property.valueClass == null) {
+        if (property.valueClass == null && !property.key.identifier.equals(PROPERTY_URLS.get(EventBean.Prop.LABEL))) { //exclude label properties
             JTextField propertyValueTextField = new JTextField(20);
             propertyValueField = propertyValueTextField;
             if (property.value != null) {
@@ -173,7 +172,8 @@ class EventPropertyDialog extends JDialog implements LookupListener {
 
             });
 
-        } else if (property.valueClass.equals("Program")) {
+        }
+        /*else if (property.valueClass.equals("Program")) {
 
             JComboBox propertyValueComboBox = new JComboBox();
             propertyValueComboBox.setName(property.key.identifier);
@@ -231,7 +231,11 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                     }
                 }
             });
-            /*((JTextComponent) propertyValueComboBox.getEditor().getEditorComponent()).getDocument().addDocumentListener(new DocumentListener() {
+        }*/
+        return propertyValueField;
+    }
+
+    /*((JTextComponent) propertyValueComboBox.getEditor().getEditorComponent()).getDocument().addDocumentListener(new DocumentListener() {
                 public void changedUpdate(DocumentEvent e) {
                     update();
                 }
@@ -273,11 +277,6 @@ class EventPropertyDialog extends JDialog implements LookupListener {
                 }
 
             });*/
-
-        }
-        return propertyValueField;
-    }
-
     protected void init(ActionListener okListener, ActionListener cancelListener) {
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
@@ -291,48 +290,52 @@ class EventPropertyDialog extends JDialog implements LookupListener {
         propertyPane.setLayout(new MigLayout());
 
         contentPane.add(propertyPane);
+        //   propertyPane.add(getPropertyValueField(new PropertyDTO(new LinkedDataTermDTO("Label", "", ""), this.event.label, ""), ""));
         for (PropertyDTO property : properties) {
-            JLabel propertyKeyLabel = new JLabel(property.key.name);
-
-            propertyPane.add(propertyKeyLabel);
             JComponent propertyValueField = null;
             if (property.valueClass == null) {
                 propertyValueField = getPropertyValueField(property, "");
             } else {
                 propertyValueField = getPropertyValueField(property, "No " + property.valueClass);
             }
-            if (property.multiple) {
-                multipleSelectionFields.put(property.key.identifier, 1);
-                boolean addButtonCondition = true;
-                boolean minusButtonCondition = true;
-                int maximum = 5;
-                if (propertyValueField instanceof JComboBox) {
-                    JComboBox propertyValueComboBox = (JComboBox) propertyValueField;
-                    maximum = propertyValueComboBox.getItemCount();
-                    if (multipleSelectionFields.get(property.key.identifier) > propertyValueComboBox.getItemCount()) {
-                        addButtonCondition = false;
-                    }
-                    if (multipleSelectionFields.get(property.key.identifier) > 1) {
-                        minusButtonCondition = false;
-                    }
-                }
+            if (propertyValueField != null) {
+                JLabel propertyKeyLabel = new JLabel(property.key.name);
 
-                if (addButtonCondition) {
-                    propertyPane.add(propertyValueField);
-                    JButton addButton = getAddButton(propertyPane, property, maximum);
-                    if (minusButtonCondition) {
-                        propertyPane.add(addButton);
-                        JButton minusButton = getMinusButton(propertyPane, property, propertyKeyLabel, propertyValueField, addButton, null);
-                        propertyPane.add(minusButton, "wrap");
+                propertyPane.add(propertyKeyLabel);
+
+                if (property.multiple) {
+                    multipleSelectionFields.put(property.key.identifier, 1);
+                    boolean addButtonCondition = true;
+                    boolean minusButtonCondition = true;
+                    int maximum = 5;
+                    if (propertyValueField instanceof JComboBox) {
+                        JComboBox propertyValueComboBox = (JComboBox) propertyValueField;
+                        maximum = propertyValueComboBox.getItemCount();
+                        if (multipleSelectionFields.get(property.key.identifier) > propertyValueComboBox.getItemCount()) {
+                            addButtonCondition = false;
+                        }
+                        if (multipleSelectionFields.get(property.key.identifier) > 1) {
+                            minusButtonCondition = false;
+                        }
+                    }
+
+                    if (addButtonCondition) {
+                        propertyPane.add(propertyValueField);
+                        JButton addButton = getAddButton(propertyPane, property, maximum);
+                        if (minusButtonCondition) {
+                            propertyPane.add(addButton);
+                            JButton minusButton = getMinusButton(propertyPane, property, propertyKeyLabel, propertyValueField, addButton, null);
+                            propertyPane.add(minusButton, "wrap");
+                        } else {
+                            propertyPane.add(addButton, "wrap");
+                        }
+
                     } else {
-                        propertyPane.add(addButton, "wrap");
+                        propertyPane.add(propertyValueField);
                     }
-
                 } else {
-                    propertyPane.add(propertyValueField);
+                    propertyPane.add(propertyValueField, "wrap");
                 }
-            } else {
-                propertyPane.add(propertyValueField, "wrap");
             }
         }
     }
