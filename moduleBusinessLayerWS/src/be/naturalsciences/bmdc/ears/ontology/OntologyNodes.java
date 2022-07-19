@@ -487,6 +487,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                     processActions.add(sev.getProcessAction());
                     processes.add(sev.getProcess());
                     actions.add(sev.getAction());
+                    properties.addAll(sev.getPropertyCollection());
                 } catch (NullPointerException e) {
                     Messaging.report("A problem occured during saving the tree at " + destPath + " for the specificevent about " + sev.getProcess().getUri() + " & " + sev.getAction().getUri() + " & " + sev.getToolRef().getUri(), e, this.getClass(), false);
                     processActions.add(sev.getProcessAction());

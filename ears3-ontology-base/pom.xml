@@ -199,11 +199,6 @@
             <version>1.18</version>
             <type>jar</type>
         </dependency>
-     <!--   <dependency>
-            <groupId>be.naturalsciences.bmdc</groupId>
-            <artifactId>bmdc-utils</artifactId>
-            <version>1.0</version>
-        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ears3-ontology-ext</artifactId>

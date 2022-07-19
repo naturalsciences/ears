@@ -220,6 +220,9 @@ public class EventTableModel extends EntityTableModel<EventDTO> {
                 break;
                 
             case LABEL:
+                if(originalValue==null){
+                    originalValue="";
+                }
                 if (value != null && !value.equals(originalValue)) {
                     event.setLabel((String)value);
                     IResponseMessage response = restClientEvent.modifyEvent(event);
