@@ -5,25 +5,28 @@
  */
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
-import be.naturalsciences.bmdc.ears.entities.Actor;
-import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.CurrentActor;
-import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
+import be.naturalsciences.bmdc.ears.entities.CurrentEvent;
 import be.naturalsciences.bmdc.ears.entities.CurrentProgram;
-import be.naturalsciences.bmdc.ears.entities.EventBean;
+import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.entities.VesselBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
-import be.naturalsciences.bmdc.ears.properties.Configs;
+import be.naturalsciences.bmdc.ears.ontology.entities.Tool;
+import be.naturalsciences.bmdc.ears.ontology.entities.ToolCategory;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.IOntologyModel;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.IEventDefinition;
 import be.naturalsciences.bmdc.ontology.entities.IProperty;
-import be.naturalsciences.bmdc.ontology.entities.ITool;
+import eu.eurofleets.ears3.dto.EventDTO;
+import eu.eurofleets.ears3.dto.LinkedDataTermDTO;
+import eu.eurofleets.ears3.dto.PersonDTO;
+import eu.eurofleets.ears3.dto.PropertyDTO;
+import eu.eurofleets.ears3.dto.ToolDTO;
 import gnu.trove.set.hash.THashSet;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.openide.util.Utilities;
@@ -50,39 +53,56 @@ public interface ToEventConvertible {
             la.add(node.getConcept());
             ConceptHierarchy cng = new ConceptHierarchy(la);
             Set<IProperty> properties = new THashSet<>(action.getChildren(cng));
+            Set<PropertyDTO> propertyDTOs = new THashSet<>();
+            for (IProperty property : properties) {
+                PropertyDTO propertyDTO = new PropertyDTO(new LinkedDataTermDTO(property), null, property.getUnit());
+                propertyDTOs.add(propertyDTO);
+            }
             IEventDefinition eventDefinition = cng.getEvent();
 
             cng = new ConceptHierarchy(la);
 
             ProgramBean currentProgram = null;
-            CruiseBean currentCruise = null;
-            Actor currentActor = null;
+            VesselBean currentVessel = null;
+            PersonDTO currentActor = null;
             CurrentProgram cProgram = Utilities.actionsGlobalContext().lookup(CurrentProgram.class);
             CurrentActor cActor = Utilities.actionsGlobalContext().lookup(CurrentActor.class);
-            CurrentCruise cCruise = Utilities.actionsGlobalContext().lookup(CurrentCruise.class);
+            CurrentVessel cVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);
             if (cProgram != null) {
                 currentProgram = cProgram.getConcept();
             }
-            if (cCruise != null) {
-                currentCruise = cCruise.getConcept();
+            if (cVessel != null) {
+                currentVessel = cVessel.getConcept();
             }
             if (cActor != null) {
                 currentActor = cActor.getConcept();
             }
             if (currentProgram != null) {
-                boolean overrideAnonymous = Configs.getOverrideEventsAsAnonymous();
-                if (currentActor != null || overrideAnonymous) {
-                    LinkedHashSet<ITool> tools = new LinkedHashSet<>();
-                    tools.add(cng.getTool());
-                    if (cng.getHostedTool() != null) {
-                        tools.add(cng.getHostedTool());
+                // boolean overrideAnonymous = Configs.getOverrideEventsAsAnonymous();
+                if (currentActor != null/* || overrideAnonymous*/) { //no more anonymous events in ears3
+                    LinkedDataTermDTO parentTool = null;
+                    ToolDTO tool = null;
+                    LinkedDataTermDTO toolCategory = null;
+
+                    if (cng.getHostedTool() != null) { //I am in a hierarchy of a host tool.
+                        //tools.add(cng.getHostedTool());
+                        parentTool = new LinkedDataTermDTO(cng.getTool());
+                        tool = new ToolDTO(new LinkedDataTermDTO(cng.getHostedTool()), parentTool);
+                        if (cng.getHostedTool().getToolCategoryCollection() != null && !cng.getHostedTool().getToolCategoryCollection().isEmpty()) {
+                            toolCategory = new LinkedDataTermDTO((ToolCategory) cng.getHostedTool().getToolCategoryCollection().toArray()[0]); //TODO when creating nested tools, pick ONE tool catageory instedad of all.
+                        }
+                    } else { // I am not in a hierarchy of a host tool, but I may appear in another place in one 
+                        parentTool = cng.getTool().getHostsCollection().isEmpty() ? null : new LinkedDataTermDTO((Tool) cng.getTool().getHostsCollection().toArray()[0]);
+                        tool = new ToolDTO(new LinkedDataTermDTO(cng.getTool()), parentTool);
+                        toolCategory = new LinkedDataTermDTO(cng.getToolCategory());
                     }
-                    String actor = null;
-                    if (!overrideAnonymous) {
-                        actor = currentActor.getLastNameFirstName();
-                    }
-                    EventBean event = new EventBean(eventDefinition.getUri().toString(), currentProgram, currentCruise, cng.getToolCategory(), tools, cng.getProcess(), cng.getAction(), properties, actor);
-                    GlobalActionContextProxy.getInstance().addEnsureOne(event);
+
+                    // EventDTO event = new EventBean(eventDefinition.getUri().toString(), currentVessel, currentProgram, cng.getToolCategory(), tool, cng.getProcess(), cng.getAction(), properties, actor);
+                    LinkedDataTermDTO subject = new LinkedDataTermDTO("http://vocab.nerc.ac.uk/collection/C77/current/M05", null, "Occasional standard measurements"); //TODO change this.
+                    String EventDefinitionId = eventDefinition.getUri().toString().replace("http://ontologies.ef-ears.eu/ears2/1/#sev_", "ears:sev::");
+                    EventDTO event = new EventDTO(null, EventDefinitionId, null, currentActor, subject, toolCategory, tool, new LinkedDataTermDTO(cng.getProcess()), new LinkedDataTermDTO(cng.getAction()), propertyDTOs, currentProgram.getName(), currentVessel.getCode(),null);
+                    //  GlobalActionContextProxy.getInstance().addEnsureOne(event);
+                    GlobalActionContextProxy.getInstance().add(CurrentEvent.getInstance(event));
                 } else {
                     throw new EarsException("There is no current actor selected. Please (create and) select the current actor first.");
                 }

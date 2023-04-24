@@ -9,19 +9,18 @@ import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ProjectTableModel;
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
 import be.naturalsciences.bmdc.ears.comparator.CountryComparator;
 import be.naturalsciences.bmdc.ears.entities.CountryBean;
-import be.naturalsciences.bmdc.ears.entities.CruiseBean;
-import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
 import be.naturalsciences.bmdc.ears.entities.ICountry;
-import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.IOrganisation;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
 import be.naturalsciences.bmdc.ears.entities.OrganisationBean;
+import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
-import be.naturalsciences.bmdc.ears.rest.RestClientCruise;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ChiefScientistTableModel;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.NotificationThread;
@@ -35,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -45,8 +43,6 @@ import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.validation.api.Problem;
 import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
 import org.netbeans.validation.api.ui.ValidationGroup;
-import org.openide.util.Exceptions;
-import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 
@@ -54,18 +50,11 @@ import org.openide.windows.TopComponent;
  *
  * @author Thomas Vandenberghe
  */
-public abstract class AbstractProgramTopComponent extends TopComponent implements LookupListener, SaveButtonDisablerOnValidationFailure {
+public abstract class AbstractProgramTopComponent extends TopComponent implements SaveButtonDisablerOnValidationFailure, LookupListener {
 
-    //protected InputOutput io;
     protected ProgramBean actualProgram;
 
-    RestClientCruise cruiseClient;
-    //RestClientProgram programClient;
-
-    Set<? extends ICruise> cruises;
-
-    protected SingletonResult<CurrentVessel, IVessel> currentVesselResult;
-    protected SingletonResult<CurrentCruise, ICruise> currentCruiseResult;
+    protected final SingletonResult<CurrentVessel, IVessel> currentVesselResult;
 
     ComboBoxColumnEditor projectCountryList;
     ComboBoxColumnEditor projectOrganisationList;
@@ -74,52 +63,14 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
     ProjectTableModel projectTableModel;
 
     public ValidationGroup getValidationGroup() {
-        return group;
+        return validationGroup;
     }
 
     protected abstract void __initComponents();
 
     public AbstractProgramTopComponent() {
         __initComponents();
-
-        try {
-            cruiseClient = new RestClientCruise();
-            // programClient = new RestClientProgram();
-        } catch (ConnectException ex) {
-            Messaging.report("Note that the webservices are offline. The program can't be saved or edited.", ex, this.getClass(), true);
-        } catch (EarsException ex) {
-            Messaging.report(ex.getMessage(), ex, this.getClass(), true);
-        }
-
-        currentVesselResult = new SingletonResult(CurrentVessel.class, this);
-        currentCruiseResult = new SingletonResult(CurrentCruise.class, this);
-
-        if (getCurrentVessel() != null && cruiseClient != null) {
-            try {
-                cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
-            } catch (ConnectException ex) {
-                Messaging.report("Note that the webservices are offline. The program can't be saved or edited.", ex, this.getClass(), true);
-            }
-        }
-
-    }
-
-    /*protected CurrentCruise getCurrentCruise() {
-     if (currentCruiseResult.allInstances().size() > 0) {
-     return ((CurrentCruise) new ArrayList(currentCruiseResult.allInstances()).get(0));
-     }
-     return null;
-     }*/
-    protected CurrentVessel getCurrentVessel() {
-        if (currentVesselResult.allInstances().size() > 0) {
-            return ((CurrentVessel) new ArrayList(currentVesselResult.allInstances()).get(0));
-        }
-        return null;
-    }
-
-    protected void cruiseComboBoxActionPerformedP(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-
+        currentVesselResult = new SingletonResult<>(CurrentVessel.class, this);
     }
 
     protected void projectEdmerpTableFocusLostP(java.awt.event.FocusEvent evt) {
@@ -148,26 +99,26 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
     }
 
     protected void collateCentreListPrincipalActionPerformedP(java.awt.event.ActionEvent evt) {
-        collateCentreListSecondary.removeAllItems();
-        collateCentreListSecondary.addItem("Choose organisation");
-        Object o = collateCentreListPrincipal.getSelectedItem();
+        piOrganisationSecondary.removeAllItems();
+        piOrganisationSecondary.addItem(ChiefScientistTableModel.BASE_ACTION);
+        Object o = piOrganisationCountry.getSelectedItem();
         if (o != null && o instanceof CountryBean) {
             CountryBean selectedCountry = (CountryBean) o;
             for (IOrganisation org : StaticMetadataSearcher.getInstance().getOrganisations(true)) {
                 if (org.getCountryObject().equals(selectedCountry)) {
-                    collateCentreListSecondary.addItem(org);
+                    piOrganisationSecondary.addItem(org);
                 }
             }
         }
     }
 
     protected void collateCentreListSecondaryActionPerformedP(java.awt.event.ActionEvent evt) {
-        Object o = collateCentreListSecondary.getSelectedItem();
+        Object o = piOrganisationSecondary.getSelectedItem();
         if (o != null && o instanceof OrganisationBean) {
             OrganisationBean selectedOrganisation = (OrganisationBean) o;
-            o_collateCentreResult.setText(selectedOrganisation.getCode());
+            piOrgGreyTextField.setText(selectedOrganisation.getCode());
         } else if (o instanceof String) {
-            o_collateCentreResult.setText("");
+            piOrgGreyTextField.setText("");
         }
     }
 
@@ -180,19 +131,19 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
     }
 
     protected javax.swing.JButton addProject;
-    protected javax.swing.JComboBox collateCentreListPrincipal;
-    protected javax.swing.JComboBox collateCentreListSecondary;
-    protected javax.swing.JComboBox cruiseComboBox;
+    protected javax.swing.JComboBox piOrganisationCountry;
+    protected javax.swing.JComboBox piOrganisationSecondary;
     protected javax.swing.JPanel jPanel1;
     protected javax.swing.JPanel jPanel2;
     protected javax.swing.JPanel jPanelCollateCentre;
     protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JScrollPane jScrollPane2;
     protected javax.swing.JScrollPane jScrollPane3;
-    protected javax.swing.JTextField o_collateCentreResult;
-    protected javax.swing.JTextArea o_description;
-    protected javax.swing.JTextField o_piName;
-    protected javax.swing.JTextField o_programId_Attribut;
+    protected javax.swing.JTextField piOrgGreyTextField;
+    protected javax.swing.JTextArea descriptionTextField;
+    protected javax.swing.JTextField piLastNameTextField;
+    protected javax.swing.JTextField piFirstNameTextField;
+    protected javax.swing.JTextField programIdTextField;
     protected javax.swing.JPanel programIdentifier;
     protected javax.swing.JPanel programIdentifier1;
     protected javax.swing.JPanel programIdentifier3;
@@ -202,62 +153,50 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
 
     protected org.netbeans.validation.api.ui.swing.ValidationPanel validationPanel1;
 
-    protected ValidationGroup group = null;
+    protected ValidationGroup validationGroup = null;
 
     // End of variables declaration                   
     @Override
     public void componentOpened() {
-        collateCentreListPrincipal.addItem("Choose country to limit organisation");
+        piOrganisationCountry.addItem("Choose country to limit organisation");
 
-        DefaultComboBoxModel collateCentreListPrincipalModel = new DefaultComboBoxModel();
-        collateCentreListPrincipal.setModel(collateCentreListPrincipalModel);
+        DefaultComboBoxModel piOrganisationCountryModel = new DefaultComboBoxModel();
+        piOrganisationCountry.setModel(piOrganisationCountryModel);
 
         for (OrganisationBean organisation : StaticMetadataSearcher.getInstance().getOrganisations(true)) {
-            collateCentreListSecondary.addItem(organisation);
-            SwingUtils.addToComboBox(collateCentreListPrincipalModel, organisation.getCountryObject());
+            piOrganisationSecondary.addItem(organisation);
+            SwingUtils.addToComboBox(piOrganisationCountryModel, organisation.getCountryObject());
         }
 
-        if (getCurrentVessel() != null && cruiseClient != null) {
-            try {
-                cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
-            } catch (ConnectException ex) {
-                Messaging.report("Note that the webservices are offline. The program can't be saved or edited.", ex, this.getClass(), true);
-            }
-        }
-
-        /* if (cruises.size() == 1) {
-         cruiseComboBox.setSelectedItem();
-         }*/
         projectTableModel = (ProjectTableModel) projectEdmerpTable.getModel();
         projectTableModel.setTable(projectEdmerpTable);
         setUpProjectColumn();
 
-        cruiseComboBox.setName("Cruise name");
-        o_programId_Attribut.setName("Program name (identifier)");
-        o_piName.setName("Principal investigator name");
-        collateCentreListSecondary.setName("Collate centre");
-        o_description.setName("Description");
+        programIdTextField.setName("Program name (identifier)");
+        piFirstNameTextField.setName("Principal investigator first name");
+        piLastNameTextField.setName("Principal investigator last name");
+        piOrganisationSecondary.setName("Collate centre");
+        descriptionTextField.setName("Description");
 
-        cruiseComboBox.setEditable(true);
-        o_programId_Attribut.setEditable(true);
-        o_piName.setEditable(true);
-        o_description.setEditable(true);
-        collateCentreListPrincipal.setEditable(true);
-        collateCentreListSecondary.setEditable(true);
+        programIdTextField.setEditable(true);
+        piFirstNameTextField.setEditable(true);
+        piLastNameTextField.setEditable(true);
+        descriptionTextField.setEditable(true);
+        piOrganisationCountry.setEditable(true);
+        piOrganisationSecondary.setEditable(true);
 
-        AutoCompleteDecorator.decorate(cruiseComboBox);
-        AutoCompleteDecorator.decorate(collateCentreListSecondary);
+        AutoCompleteDecorator.decorate(piOrganisationSecondary);
 
-        group.add(cruiseComboBox, StringValidators.REQUIRE_NON_EMPTY_STRING);
-        group.add(o_programId_Attribut, StringValidators.REQUIRE_NON_EMPTY_STRING);
-        group.add(o_piName, StringValidators.REQUIRE_NON_EMPTY_STRING);
-        group.add(collateCentreListSecondary, new OrganisationValidator());
+        validationGroup.add(programIdTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
+        validationGroup.add(piFirstNameTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
+        validationGroup.add(piLastNameTextField, StringValidators.REQUIRE_NON_EMPTY_STRING);
+        validationGroup.add(piOrgGreyTextField, new OrganisationValidator());
         //associated project
 
-        enableThatButtonGreysOutOnValidationFailure((JTextField) cruiseComboBox.getEditor().getEditorComponent(), group);
-        enableThatButtonGreysOutOnValidationFailure(o_programId_Attribut, group);
-        enableThatButtonGreysOutOnValidationFailure(o_piName, group);
-        enableThatButtonGreysOutOnValidationFailure((JTextField) collateCentreListSecondary.getEditor().getEditorComponent(), group);
+        enableThatButtonGreysOutOnValidationFailure(programIdTextField, validationGroup);
+        enableThatButtonGreysOutOnValidationFailure(piFirstNameTextField, validationGroup);
+        enableThatButtonGreysOutOnValidationFailure(piLastNameTextField, validationGroup);
+        enableThatButtonGreysOutOnValidationFailure(piOrgGreyTextField, validationGroup);
 
         String scrollSpeedString = org.openide.util.NbBundle.getMessage(AbstractCruiseTopComponent.class, "AbstractCruiseTopComponent.ScrollSpeed");
         int scrollSpeed = Integer.parseInt(scrollSpeedString);
@@ -265,8 +204,7 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
         SwingUtils.setScrollSpeed(jScrollPane2, scrollSpeed);
         SwingUtils.setScrollSpeed(jScrollPane3, scrollSpeed);
 
-        cruiseComboBox.setMaximumRowCount(SwingUtils.COMBOBOX_MAX_ROW_COUNT);
-        collateCentreListSecondary.setMaximumRowCount(SwingUtils.COMBOBOX_MAX_ROW_COUNT);
+        piOrganisationSecondary.setMaximumRowCount(SwingUtils.COMBOBOX_MAX_ROW_COUNT);
     }
 
     private Map<JTextComponent, DocumentListener> componentsWithDocumentListener = new THashMap<>();
@@ -322,46 +260,9 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
         for (IOrganisation org : StaticMetadataSearcher.getInstance().getOrganisations(true)) {
             countries.add(org.getCountryObject());
         }
-        projectCountryList = new ComboBoxColumnEditor(countries, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.COUNTRY), "You can choose a country to narrow down organisations.", this);
-        projectOrganisationList = new ComboBoxColumnEditor(null, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.ORG), "Choose an organisation.", this);
-        projectList = new ComboBoxColumnEditor(null, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.NAME), "Choose a project.", this);
-    }
-
-    @Override
-    public void resultChanged(LookupEvent le) {
-        if (currentVesselResult.matches(le)) {
-            if (getCurrentVessel() != null && cruiseClient != null) {
-                try {
-                    cruises = new TreeSet(cruiseClient.getCruiseByPlatform(getCurrentVessel().getConcept()));
-                } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
-                }
-            }
-            populateCruiseCombobox();
-        }
-    }
-
-    /**
-     * *
-     * Instantiate the cruisecombobox if needed and populate or repopulate it.
-     */
-    protected void populateCruiseCombobox() {
-        if (cruiseComboBox == null) {
-            cruiseComboBox = new JComboBox();
-        }
-        if (cruiseComboBox.getItemCount() > 0) {
-            cruiseComboBox.removeAllItems();
-        }
-        if (cruises != null) {
-            if (cruises.size() > 0) {
-                for (ICruise cruise : cruises) {
-                    cruiseComboBox.addItem(cruise);
-                }
-            } else {
-                cruiseComboBox.addItem("No cruises for selected vessel");
-            }
-        }
-
+        projectCountryList = new ComboBoxColumnEditor("Country", countries, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.COUNTRY), "You can choose a country to narrow down organisations.", this);
+        projectOrganisationList = new ComboBoxColumnEditor("Project", null, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.ORG), "Choose an organisation.", this);
+        projectList = new ComboBoxColumnEditor("Project", null, projectEdmerpTable, ProjectTableModel.findColumnStatic(ProjectTableModel.NAME), "Choose a project.", this);
     }
 
     public class ProgramPoster extends NotificationThread {
@@ -381,44 +282,74 @@ public abstract class AbstractProgramTopComponent extends TopComponent implement
             try {
                 client = new RestClientProgram();
             } catch (ConnectException ex) {
-                Messaging.report("Posting the new cruise to the webservice failed because it is offline or its url is incorrect.", ex, this.getClass(), true);
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
             } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
             }
             if (client != null) {
                 response = client.postProgram(actualProgram);
                 progr.progress("Program info sent");
 
                 if (response.isBad()) {
-                    Messaging.report("Posting the new program to the webservice failed: " + response.getSummary(), Message.State.BAD, this.getClass(), true);
+                    Messaging.report("Posting the new program to the webservice failed: " + response.getMessage(), Message.State.BAD, this.getClass(), true);
                 } else {
-                    Messaging.report(response.getSummary(), Message.State.GOOD, this.getClass(), true);
+                    Messaging.report(response.getMessage(), Message.State.GOOD, this.getClass(), true);
+                    GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
+
+                }
+            }
+        }
+    }
+
+    public class ProgramModifier extends NotificationThread {
+
+        ProgressHandle progr;
+        IResponseMessage response;
+
+        public ProgramModifier(ProgressHandle progr, IResponseMessage response) {
+            this.progr = progr;
+            this.response = response;
+        }
+
+        @Override
+        public void doWork() {
+            progr.start();
+            RestClientProgram client = null;
+            try {
+                client = new RestClientProgram();
+            } catch (ConnectException ex) {
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
+            } catch (EarsException ex) {
+                Messaging.report("There is a problem reaching the webservices.", ex, this.getClass(), true);
+            }
+            if (client != null) {
+                response = client.modifyProgram(actualProgram);
+                progr.progress("Program info sent");
+
+                if (response.isBad()) {
+                    Messaging.report("Posting the modified program to the webservice failed: " + response.getMessage(), Message.State.BAD, this.getClass(), true);
+                } else {
+                    Messaging.report(response.getMessage(), Message.State.GOOD, this.getClass(), true);
+                    GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
                 }
             }
         }
     }
 
     protected boolean formValidates() {
-        Problem validateAll = group.performValidation();
+        Problem validateAll = validationGroup.performValidation();
         return !(validateAll != null && validateAll.isFatal());
     }
 
     public ProgramBean createProgramFromInput() {
         ProgramBean program = new ProgramBean();
 
-        
-        try {
-            System.out.println("YS"+cruiseClient.getAllCruises().size());
-        } catch (ConnectException ex) {
-            System.out.println("YS"+ex);
-        }
-        
-        program.setCruiseId(((CruiseBean) cruiseComboBox.getSelectedItem()).getRealId()); //YS error if no cruise predefini
-        program.setProgramId(o_programId_Attribut.getText());
-        program.setOriginatorCode(o_collateCentreResult.getText());
-        program.setDescription(o_description.getText());
-        program.setPiName(o_piName.getText());
-
+        //   program.setCruiseId(((CruiseBean) cruiseComboBox.getSelectedItem()).getIdentifier()); //YS error if no cruise predefini
+        program.setProgramId(programIdTextField.getText());
+        Person pi = new Person(piFirstNameTextField.getText(), piLastNameTextField.getText(), piOrgGreyTextField.getText(), null, null);
+        program.setPrincipalInvestigators(new ArrayList<>());
+        program.getPrincipalInvestigators().add(pi);
+        program.setDescription(descriptionTextField.getText());
         program.setProjects(projectTableModel.getEntitiesSet());
         return program;
     }

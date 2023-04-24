@@ -36,4 +36,9 @@ public class CurrentURL implements IProgram, CurrentSingleton<URL> {
     public boolean isLegal() {
         return true;
     }
+
+    @Override
+    public String getName() {
+        return currentUrl.toString();
+    }
 }

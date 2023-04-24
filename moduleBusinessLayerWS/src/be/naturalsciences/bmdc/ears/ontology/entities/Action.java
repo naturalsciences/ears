@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -91,7 +92,7 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn() == null ? this.getTermRef().getOrigUrn() : this.getTermRef().getPublisherUrn();
     }
 
     @Override
@@ -192,7 +193,6 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
         }
         return true;
     }*/
-
     @Override
     public Action clone(IdentityHashMap<Object, Object> clonedObjects) throws CloneNotSupportedException {
         be.naturalsciences.bmdc.ears.utils.Cloner<Action> cc = new be.naturalsciences.bmdc.ears.utils.Cloner(this, clonedObjects);
@@ -212,6 +212,9 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
 
     @Override
     public Set<Property> getChildren(ConceptHierarchy parents) {
+        if (this.getTermRef().getPrefLabel().equals("Setup")) {
+            int a = 5;
+        }
         Set<Property> propertyList = new TreeSet<>(new TermLabelComparator());
         if (parents != null) {
             ITool tool = parents.getLowestToolInHierarchy();
@@ -418,7 +421,7 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
      * @param toolCat
      * @param tool
      */
-  /*  void reduceGevsToSevs(ToolCategory toolCat, Tool tool, Process process) throws EarsException {
+    /*  void reduceGevsToSevs(ToolCategory toolCat, Tool tool, Process process) throws EarsException {
         if (process == null) {
             throw new IllegalArgumentException("Process must be provided.");
         }
@@ -435,7 +438,6 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
             }
         }
     }*/
-
     @Override
     public boolean hasChildren() {
         return false;
@@ -460,5 +462,50 @@ public class Action implements IAction<EarsTerm, ProcessAction>, Transferable, S
         if (eventDefinition != null) {
             eventDefinition.clear();
         }
+    }
+
+    @Override
+    public String getDefinitionEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getAltLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getPrefLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getIdentifierString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getVersionString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getModifiedDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getCreationDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Boolean isIsDeprecated() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<String> broadMatch() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

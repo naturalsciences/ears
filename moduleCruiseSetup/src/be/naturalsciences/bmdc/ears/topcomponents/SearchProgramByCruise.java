@@ -18,6 +18,6 @@ public class SearchProgramByCruise extends SearchTextVisitor {
 
     public SearchProgramByCruise(SearchTextField field, FilterableTableModel model, JTable table, TableRowSorter<ProgramTableModel> sorter) {
         super(field, model, table, sorter);
-        this.column = UpdateProgramTopComponent.ProgramTableModel.CRUISE;
+        this.column = "Cruise";
     }
 }

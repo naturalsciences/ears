@@ -7,6 +7,7 @@ import be.naturalsciences.bmdc.ontology.entities.ISubject;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class Subject implements ISubject<EarsTerm, ToolCategory, Process>, Seria
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn()==null?this.getTermRef().getOrigUrn():this.getTermRef().getPublisherUrn();
     }
 
     @Override
@@ -189,6 +190,51 @@ public class Subject implements ISubject<EarsTerm, ToolCategory, Process>, Seria
 
     @Override
     public void isolate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getDefinitionEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getAltLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getPrefLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getIdentifierString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getVersionString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getModifiedDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getCreationDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Boolean isIsDeprecated() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<String> broadMatch() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

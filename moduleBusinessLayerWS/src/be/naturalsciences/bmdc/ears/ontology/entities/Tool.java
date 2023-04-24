@@ -6,6 +6,7 @@ import be.naturalsciences.bmdc.ears.ontology.AsConceptFlavor;
 import be.naturalsciences.bmdc.ears.utils.Cloner;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.IAsConceptFactory;
+import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.ITool;
 import gnu.trove.map.hash.THashMap;
@@ -18,6 +19,8 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +28,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.ws.rs.core.UriBuilder;
 import thewebsemantic.Id;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
@@ -142,7 +144,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn() == null ? this.getTermRef().getOrigUrn() : this.getTermRef().getPublisherUrn();
     }
 
     @Override
@@ -232,63 +234,29 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash ^= (getId() != null ? getId().hashCode() : 0);
-        hash ^= (uri != null ? uri.hashCode() : 0);
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.uri);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (this == object) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(object instanceof Tool)) {
+        if (obj == null) {
             return false;
         }
-        Tool other = (Tool) object;
-        /*    if (!(this.getId() == null && other.getId() == null) && ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId())))) {
-            return false;
-        }*/
-        if (!Objects.equals(this.getId(), other.getId())) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        if ((this.uri == null && other.uri != null) || (this.uri != null && !this.uri.equals(other.uri))) {
-            return false;
-        }
-        
-        if (!Objects.equals(this.serialNumber, other.serialNumber)) {
-            return false;
-        }
-        if (!Objects.equals(this.toolIdentifier, other.toolIdentifier)) {
+        final Tool other = (Tool) obj;
+        if (!Objects.equals(this.uri, other.uri)) {
             return false;
         }
         return true;
     }
 
-    /*boolean equalsNbChildren(Tool otherTool, ConceptHierarchy thisParents, ConceptHierarchy otherParents) {
-        thisParents.add(this);
-        otherParents.add(otherTool);
-        if (!this.equals(otherTool)) {
-            return false;
-        }
-        boolean allLevelsTrue = true;
-        if (this.getChildren(thisParents).size() != otherTool.getChildren(otherParents).size()) {
-            return false;
-        }
-        if (this.getChildren(thisParents).size() > 0) {
-            for (Process process : this.getChildren(thisParents)) {
-                for (Process otherProcess : otherTool.getChildren(otherParents)) {
-                    if (process.equals(otherProcess)) {
-                        return process.equalsNbChildren(otherProcess, thisParents, otherParents);
-                    }
-                }
-
-            }
-        }
-        return true;
-    }*/
     @Override
     public String toString() {
         return "id=" + getId() + ";hash=" + System.identityHashCode(this) + ";name=" + ((this.getTermRef() != null) ? this.getTermRef().getName() : "no name");
@@ -476,6 +444,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
                 GenericEventDefinition ge = (GenericEventDefinition) e;
                 if (ge.getToolCategoryRef().equals(tc)) {
                     Process p = ge.getProcess();
+
                     if (p != null && !join.contains(p)) {
                         join.add(p);
                     }
@@ -576,7 +545,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
     /**
      * *
      * Adds a AsConcept childConcept to the children of this, if childConcept is
-     * a Process. If childConcept has no Action associated to it via an
+     * a Process.If childConcept has no Action associated to it via an
      * EventDefinition, a new one is created.
      *
      * @param targetParents The ConceptHierarchy parents of this (so not the
@@ -584,6 +553,8 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
      * @param childConcept The AsConcept childConcept that needs to be added.
      * @param removePreviousBottomUpAssociations Whether to remove existing
      * relations the AsConcept childConcept has.
+     * @param newChildParents The existing parents of the newly added
+     * ChildConcept
      */
     @Override
     public void addToChildren(ConceptHierarchy targetParents, AsConcept childConcept, boolean removePreviousBottomUpAssociations, ConceptHierarchy newChildParents, IAsConceptFactory factory) {
@@ -592,70 +563,71 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
          }*/
         // Set<Process> children = this.getChildren(targetParents);
         //int before = this.getSpecificEventDefinitionCollection().size();
-        if (childConcept != null && childConcept instanceof Tool) { //i.e. a tool will be added to myself, I become am a hosted tool.
+        if (childConcept != null && childConcept instanceof Tool) { //i.e. a tool will be added to myself, I become am a hosting tool.
             Tool childTool = (Tool) childConcept;
-            childTool.setToolCategoryCollection(new ArrayList());
+            // childTool.setToolCategoryCollection(new ArrayList()); //keep the original categories I was part of
             this.hostedCollection.add(childTool);
+            for (ToolCategory toolCategory : childTool.toolCategoryCollection) {
+                toolCategory.getToolCollection().clear();
+                toolCategory.getToolCollection().add(childTool);
+            }
+            targetParents.getRoot().getChildren(targetParents).addAll(childTool.toolCategoryCollection);
             childTool.hostsCollection.add(this);
         }
         if (childConcept != null && childConcept instanceof Process) { //TODO check if not has as child 
             // AsConceptFactory f = new AsConceptFactory();
             Process childProcess = (Process) childConcept;
-            Collection<Action> childActions = childProcess.getActionCollectionFromEvent();
+
             Tool originalTool = null;
             if (newChildParents != null) {
                 originalTool = (Tool) newChildParents.getTool();
             }
-
+            Collection<Action> childActions = childProcess.getActionCollectionFromSpecificEvents(originalTool);
             if (childActions.isEmpty()) {
                 try {
-                    //force add process by creating dummy action
-                    //Action a = Action.createDummyAction();
-                    //process.getActionCollection().add(a);
-                    AsConcept action = factory.buildChild(childProcess);
+                    //force add process by creating dummy dummyAction
+                    AsConcept dummyAction = factory.buildChild(childProcess);
                     targetParents.add(this);
-                    childProcess.addToChildren(targetParents, action, false, newChildParents, factory);
+                    childProcess.addToChildren(targetParents, dummyAction, false, newChildParents, factory);
+                    dummyAction.getTermRef().setStatusName(OntologyConstants.DEPRECATED); //this ensures this dummy action is never displayed!
                 } catch (Exception ex) {
                     throw new RuntimeException("There was a problem with creating an Action for this Tool.", ex);
                 }
-                // actions = process.getActionCollectionFromEvent();
             } else {
                 for (Action childAction : childActions) {
-                    Collection<Property> propertyCollection = new THashSet<>();
-                    if (originalTool != null) {
-                        List<EventDefinition> eventDefinitionCollection = childProcess.getEventDefinitionCollection(originalTool, childAction);
-                        if (eventDefinitionCollection.size() > 0) {
-                            EventDefinition originalEv = eventDefinitionCollection.get(0);
-                            propertyCollection.addAll(originalEv.getPropertyCollection());
+                    if (!childAction.getTermRef().isDeprecated()) { //don't perpetuate deprecated actions
+                        Collection<Property> propertyCollection = new THashSet<>();
+                        if (originalTool != null) {
+                            List<EventDefinition> eventDefinitionCollection = childProcess.getEventDefinitionCollection(originalTool, childAction);
+                            if (eventDefinitionCollection.size() > 0) {
+                                EventDefinition originalEv = eventDefinitionCollection.get(0);
+                                propertyCollection.addAll(originalEv.getPropertyCollection());
+                            }
                         }
+
+                        SpecificEventDefinition sev = null;
+                        try {
+                            sev = factory.build(SpecificEventDefinition.class);
+                        } catch (Exception ex) {
+                            throw new RuntimeException("There was a problem with creating a Specific Event definition for this Tool.", ex);
+                        }
+                        sev.setToolRef(this);
+
+                        this.getSpecificEventDefinitionCollection().add(sev);
+                        sev.setProcess(childProcess);
+                        sev.setAction(childAction);
+
+                        sev.setPropertyCollection(propertyCollection);
+                        /*    if (removePreviousBottomUpAssociations) { //erase all previous bottom-up associations of the future child
+                            childAction.setEventDefinition(new ArrayList());
+                            childProcess.setEventDefinition(new ArrayList());
+                            childProcess.setActionCollection(new ArrayList());
+                        }*/
+                        childAction.getEventDefinition().add(sev);
+                        childProcess.getEventDefinition().add(sev);
+                        childProcess.getActionCollection().add(childAction);
+
                     }
-
-                    SpecificEventDefinition sev = null;
-                    try {
-                        sev = factory.build(SpecificEventDefinition.class);
-                    } catch (Exception ex) {
-                        throw new RuntimeException("There was a problem with creating a Specific Event definition for this Tool.", ex);
-                    }
-                    sev.setToolRef(this);
-
-                    this.getSpecificEventDefinitionCollection().add(sev);
-                    sev.setProcess(childProcess);
-                    sev.setAction(childAction);
-
-                    sev.setPropertyCollection(propertyCollection);
-                    if (removePreviousBottomUpAssociations) { //erase all previous bottom-up associations of the future child
-                        childAction.setEventDefinition(new ArrayList());
-                        childProcess.setEventDefinition(new ArrayList());
-                        childProcess.setActionCollection(new ArrayList());
-                    }
-                    childAction.getEventDefinition().add(sev);
-                    childProcess.getEventDefinition().add(sev);
-                    childProcess.getActionCollection().add(childAction);
-
-                    //sev.setProcessAction(null);
-                    //pa.getSpecificEventDefinitionCollection().add(sev);
-                    //i++;
-                    //this.refresh();
                 }
             }
         }
@@ -692,17 +664,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
     @Override
 
     public void delete(ConceptHierarchy parents) {
-        ITool parentTool = parents.getTool();
-        if (parentTool != null && this.hostsCollection.contains(parentTool)) { //I am a hosted tool because I appear in the hosted tools of my parents
-            this.removeFromHostsCollection(parentTool);
-        }
 
-        if (toolCategoryCollection != null && toolCategoryCollection.size() > 0) {
-            for (ToolCategory tc : toolCategoryCollection) {
-                tc.removeTool(this);
-            }
-            toolCategoryCollection = null;
-        }
         if (specificEventDefinitionCollection != null && specificEventDefinitionCollection.size() > 0) {
             Iterator<SpecificEventDefinition> iter = this.getSpecificEventDefinitionCollection().iterator();
             while (iter.hasNext()) {
@@ -712,6 +674,28 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
                 sev.safeDelete(null, this, iter);
             }
             specificEventDefinitionCollection = null;
+        }
+
+        ITool parentTool = parents.getTool();
+        if (parentTool != null && this.hostsCollection.contains(parentTool)) { //I am a hosted tool because I appear in the hosted tools of my parents
+            parents.setTool(null);
+            this.removeFromHostsCollection(parentTool);
+        }
+        Set<ToolCategory> toolCategoryBackup = new HashSet<>();
+        if (toolCategoryCollection != null && toolCategoryCollection.size() > 0) {
+
+            for (ToolCategory tc : toolCategoryCollection) {
+                toolCategoryBackup.add(tc);
+                tc.removeTool(this);
+            }
+            toolCategoryCollection = null;
+        }
+
+        for (ToolCategory tc : toolCategoryBackup) {
+            if (!tc.hasChildren()) { //the tool was the only child biut has been deleted in the previous step
+                parents.getRoot().getChildren(parents).remove(tc); // then remove them from the whole tree}
+            }
+
         }
 
         /*uri = null;
@@ -746,8 +730,8 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
     }
 
     /**
-     * *
-     * For the provided process and/or action, delete the
+     * **
+     * For the provided process and/or dummyAction, delete the
      * SpecificEventDefinitions of this.
      *
      * @param process
@@ -767,7 +751,7 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
         }
         /*for (int j = 0; j < this.getSpecificEventDefinitionCollection().size(); j++) {
          SpecificEventDefinition sev = (SpecificEventDefinition) new ArrayList(this.getSpecificEventDefinitionCollection()).get(j);
-         if (sev.getProcess().equals(process) && (action != null ? sev.getAction().equals(action) : true)) {
+         if (sev.getProcess().equals(process) && (dummyAction != null ? sev.getAction().equals(dummyAction) : true)) {
          sev.delete(null);
          this.specificEventDefinitionCollection.remove(sev);
          j = (j - 1 < 0 ? 0 : j - 1);
@@ -855,25 +839,48 @@ public class Tool implements Transferable, ITool<EarsTerm, ToolCategory, Tool, P
         }
     }
 
-    public String getDeckIdentifier() {
-        if (this.getSerialNumber() != null) {
-            return this.getSerialNumber();
-        } else {
-            return this.getDeckIdentifier();
-        }
+    @Override
+    public String getDefinitionEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public URI buildUri() {
-        URI uri = getUri();
+    @Override
+    public String getAltLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-        String fragment = uri.getFragment();
-        if (!fragment.contains("/")) {
-            URI newUri = UriBuilder.fromUri(uri).fragment(fragment + "/" + getDeckIdentifier()).build();
-            this.setUri(newUri);
-            return newUri;
-        } else {
-            return uri;
-        }
+    @Override
+    public String getPrefLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
+    @Override
+    public String getIdentifierString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getVersionString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getModifiedDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getCreationDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Boolean isIsDeprecated() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<String> broadMatch() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

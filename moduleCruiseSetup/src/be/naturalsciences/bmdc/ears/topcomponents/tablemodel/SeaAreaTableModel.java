@@ -51,6 +51,13 @@ public class SeaAreaTableModel extends EntityTableModel<SeaAreaBean> {
                 return null;
         }
     }
+    
+    public SeaAreaBean getEntityWithName(String name) {
+        for (SeaAreaBean e : entities) {
+                if(e.getName().equals(name)){return e;}
+        }
+            return null;
+    }
 
     @Override
     public void setValueAt(Object value, int row, int column) {

@@ -6,22 +6,22 @@
 package be.naturalsciences.bmdc.ears.rest;
 
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
-import be.naturalsciences.bmdc.ears.entities.ExceptionMessage;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
+import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.entities.ProjectBean;
 import be.naturalsciences.bmdc.ears.entities.VesselBean;
 import static be.naturalsciences.bmdc.ears.rest.RestClient.createAllTrustingClient;
-import static be.naturalsciences.bmdc.ears.rest.RestClient.printResponse;
-import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
+import eu.eurofleets.ears3.dto.PersonDTO;
+import eu.eurofleets.ears3.dto.ProgramDTO;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -32,11 +32,13 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.openide.util.Exceptions;
 
 public class RestClientProgram extends RestClient {
-
+    
     protected ResteasyClient client;// = new ResteasyClientBuilder().build();
-    protected ResteasyWebTarget getTarget;
+    protected ResteasyWebTarget getProgramsTarget;
+    protected ResteasyWebTarget getProgramTarget;
     protected ResteasyWebTarget postTarget;
-
+    protected ResteasyWebTarget removeTarget;
+    
     public RestClientProgram() throws ConnectException, EarsException {
         super(false);
         if (isHttps) {
@@ -58,121 +60,94 @@ public class RestClientProgram extends RestClient {
             throw new EarsException("The base url for the web services is invalid. The programs won't work correctly.", ex);
         }
         if (uri != null) {
-            getTarget = client.target(uri.resolve("ears2/getProgram"));
-            postTarget = client.target(uri.resolve("ears2/insertProgram"));;
+            getProgramsTarget = client.target(uri.resolve("ears3/ears2/programs"));
+            getProgramTarget = client.target(uri.resolve("ears3/ears2/program"));
+            postTarget = client.target(uri.resolve("ears3/api/program"));;
+            removeTarget = client.target(uri.resolve("ears3/api/program"));
         }
     }
-
+    
     public Collection<ProgramBean> getAllPrograms() throws ConnectException {
         Collection<ProgramBean> programs = new ArrayList();
-        if (online) {
-
-            Response response = getTarget.request(MediaType.APPLICATION_XML).get();
-            if (response.getStatus() != 200) {
-                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
-            }
-            programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {
-            });
-            response.close();
-
+        
+        Response response = getProgramsTarget.request(MediaType.APPLICATION_XML).get();
+        if (response.getStatus() != 200) {
+            throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") - " + getProgramsTarget.getUri().toString() + ")");
         }
+        programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {
+        });
+        response.close();
+        
         return programs;
     }
-
+    
     private ProgramBean getProgram(ResteasyWebTarget target) throws ConnectException {
         ProgramBean program = null;//new ProgramBean();
         Response response = null;
-        if (online) {
-            try {
-                response = target.request().get();
-                if (response.getStatus() != 200) {
-                    throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
-                }
+        
+        try {
+            response = target.request().get();
+            if (response.getStatus() == 404) {
+                return null;
+            } else if (response.getStatus() != 200) {
+                RestMessage message = response.readEntity(RestMessage.class);
+                throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") -" + message.getMessage());
+            } else {
                 program = response.readEntity(ProgramBean.class);
-                response.close();
-            } catch (ConnectException e) {
-                throw e;
-            } catch (ProcessingException e) {
-                if (response != null && response.getLength() == -1) { //empty content because web service is not propertly set up
-                    return null;
-                }
-                response = target.request(MediaType.APPLICATION_XML).get();
-                IResponseMessage responseMessage = null;
-                try {
-                    responseMessage = response.readEntity(ExceptionMessage.class);
-                } catch (ProcessingException e2) {
-                    responseMessage = new ExceptionMessage(new Date().toString(), e2);
-                }
-                printResponse(target, response, this.getClass(), responseMessage);
+                
             }
+        } finally {
+            response.close();
         }
+        
         return program;
     }
-
-    public ProgramBean getProgram(String programId) throws ConnectException {
-        ResteasyWebTarget target = getTarget.queryParam("id", programId);
+    
+    private ProgramBean getProgramByIdentifier(String programIdentifier) throws ConnectException {
+        ResteasyWebTarget target = getProgramTarget.queryParam("identifier", programIdentifier);
         return getProgram(target);
     }
-
-    public ProgramBean getProgram(String programId, String cruiseId) throws ConnectException {
-        ResteasyWebTarget target = getTarget.queryParam("id", programId);
-        target = target.queryParam("cruiseId", cruiseId);
-        ProgramBean result = getProgram(target);
-        if (result != null && result.getCruiseId().equals(cruiseId)) {
-            return result;
-        } else {
-            return null;
-        }
-    }
-
+    
     public Collection<ProgramBean> getProgramByCruise(CruiseBean cruise) throws ConnectException {
         if (cruise != null) {
-            return getProgramByCruiseId(cruise.getRealId());
+            return getProgramByCruiseId(cruise.getIdentifier());
         } else {
             return new ArrayList();
         }
     }
-
+    
     public Collection<ProgramBean> getProgramByCruise(Collection<CruiseBean> cruises) throws ConnectException {
         Collection<ProgramBean> result = new ArrayList();
-        if (online) {
-            for (CruiseBean cruise : cruises) {
-                result.addAll(getProgramByCruise(cruise));
-            }
+        
+        for (CruiseBean cruise : cruises) {
+            result.addAll(getProgramByCruise(cruise));
         }
+        
         return result;
     }
-
-    public Collection<ProgramBean> getProgramByCruiseId(String cruiseId) throws ConnectException {
-
+    
+    private Collection<ProgramBean> getProgramByCruiseId(String cruiseId) throws ConnectException {
         Collection<ProgramBean> programs = new ArrayList();
-        if (online) {
-
-            ResteasyClient client = new ResteasyClientBuilder().build();
-
-            //ResteasyWebTarget target = client.target(getBaseURL().resolve("getProgram"));
-            Response response = getTarget.queryParam("cruiseId", cruiseId).request().get();
-            //Check Status
+        Response response = getProgramsTarget.queryParam("cruiseIdentifier", cruiseId).request().get();
+        try {
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getTarget.getUri().toString() + ")");
+                throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") - " + getProgramsTarget.getUri().toString() + ")");
             }
-            // Read output in string format
             programs = (Collection<ProgramBean>) response.readEntity(new GenericType<Collection<ProgramBean>>() {
-
             });
-
+        } finally {
             response.close();
-
         }
+        
         return programs;
     }
-
+    
     public Collection<ProgramBean> getProgramByVessel(VesselBean vessel) throws EarsException, ConnectException {
         if (vessel != null) {
             RestClientCruise cruiseClient = null;
-
+            
             cruiseClient = new RestClientCruise();
-
+            
             Collection<CruiseBean> cruises;
             if (cruiseClient != null) {
                 cruises = cruiseClient.getCruiseByPlatform(vessel);
@@ -184,37 +159,81 @@ public class RestClientProgram extends RestClient {
             return new ArrayList();
         }
     }
-
-    public IResponseMessage postProgram(ProgramBean pProgram) {
-        if (online) {
-            if (pProgram.isLegal()) {
-                ResteasyClient client = new ResteasyClientBuilder().build();
-                //ResteasyWebTarget target = client.target(getBaseURL().resolve("insertProgram"));
-
-                ResteasyWebTarget target = postTarget
-                        .queryParam("cruiseId", pProgram.getCruiseId())
-                        .queryParam("description", pProgram.getDescription())
-                        .queryParam("originatorCode", pProgram.getOriginatorCode())
-                        .queryParam("PIName", pProgram.getPiName())
-                        .queryParam("id", pProgram.getProgramId())
-                        .queryParam("projects", pProgram.getProjectIds()
-                        );
-
-                try {
-                    if (getProgram(pProgram.getProgramId(), pProgram.getCruiseId()) == null) { //if this program has not been created before for this cruise!
-                        return performGetWhichIsActuallyAPost(target, CruiseBean.class
-                        );
-                    } else {
-                        return new ExceptionMessage(new Date().toString(), "Could not create this program because a program with the same programId already exists for this cruise");
-                    }
-                } catch (Exception e) {
-                    return new ExceptionMessage(new Date().toString(), "Could not create this program because an exception occured: " + e.getLocalizedMessage());
-                }
-            } else {
-                return new ExceptionMessage(new Date().toString(), "Could not create this program because it is illegal");
-            }
+    
+    private ProgramDTO ProgramToDTO(ProgramBean pb) {
+        ProgramDTO p = new ProgramDTO();
+        p.description = pb.getDescription();
+        p.identifier = pb.getProgramId();
+        p.name = pb.getProgramId();
+        p.principalInvestigators = new ArrayList<>();
+        for (Person pib : pb.getPrincipalInvestigators()) {
+            PersonDTO pi = new PersonDTO(pib);
+            p.principalInvestigators.add(pi);
         }
-        return new ExceptionMessage(new Date().toString(), "Could not create this program because the web service is not available.");
+        
+        p.projects = new ArrayList<>();
+        for (ProjectBean pr : pb.getProjects()) {
+            p.projects.add(pr.getCode());
+        }
+        return p;
+    }
+    
+    public IResponseMessage<ProgramDTO> postProgram(ProgramBean program) {
+        if (program.isLegal()) {
+            ProgramDTO programDTO = ProgramToDTO(program);
+            
+            try {
+                if (getProgramByIdentifier(program.getProgramId()) == null) { //if this program has not been created before!
+                    return performPost(postTarget, ProgramDTO.class, programDTO);
+                } else {
+                    return new RestMessage(10, "Could not create this program because a program with the same programId already exists!");
+                }
+            } catch (Exception e) {
+                return new RestMessage(10, "Could not create this program because an exception occured: " + e.getLocalizedMessage());
+            }
+        } else {
+            return new RestMessage(10, "Could not create this program because it is illegal");
+        }
+        
+    }
+    
+    public IResponseMessage<ProgramDTO> modifyProgram(ProgramBean program) {
+        
+        if (program.isLegal()) {
+            ProgramDTO programDTO = ProgramToDTO(program);
+            try {
+                return performPost(postTarget, ProgramDTO.class, programDTO);
+            } catch (Exception e) {
+                return new RestMessage("Could not modify this program because a " + e.getClass().getSimpleName() + " occured: " + e.getLocalizedMessage(), e);
+            }
+        } else {
+            return new RestMessage("Could not modify this program because it is illegal");
+        }
+    }
+    
+    public IResponseMessage removeProgram(ProgramBean program) {
+        return removeProgram(program.getName());
     }
 
+    /**
+     * *
+     * Removes a cruise via the API by true cruise id, not the internal id.
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public IResponseMessage removeProgram(String programIdentifier) {
+        ResteasyWebTarget target = removeTarget.queryParam("identifier", programIdentifier);
+        Response response = target.request().delete();
+        RestMessage res = null;
+        if (response.getStatus() <= 400) {
+            res = new RestMessage("Program " + programIdentifier + " removed ", response.getStatus(), programIdentifier, null, null);
+        } else {
+            res = new RestMessage("Program " + programIdentifier + " not removed, because there are events associated with it: " + response.readEntity(RestMessage.class).message, response.getStatus(), programIdentifier, null, null);
+        }
+        response.close();
+        return res;
+    }
+    
 }

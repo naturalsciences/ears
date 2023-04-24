@@ -1,31 +1,16 @@
 package be.naturalsciences.bmdc.ears.entities;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "tool")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class ToolBean {
 
-    public ToolBean() {
-        super();
-    }
-
-    @XmlElementWrapper(namespace = "http://www.eurofleets.eu/", name = "tools")
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "tool")
-    private Set<ToolBean> tools = new HashSet<ToolBean>();
+    private String name;
+    private String identifier;
+    private ToolBean parentTool;
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "name")
-    private String name;
-
-    private static StringBuilder dir = new StringBuilder("+");
-    private static StringBuilder space = new StringBuilder(" ");
-
     public String getName() {
         return name;
     }
@@ -34,32 +19,52 @@ public class ToolBean {
         this.name = name;
     }
 
-    public Set<ToolBean> getTools() {
-        return tools;
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "identifier")
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setTools(Set<ToolBean> st) {
-        this.tools = st;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "parentTool")
+    public ToolBean getParentTool() {
+        return parentTool;
+    }
+
+    public void setParentTool(ToolBean parentTool) {
+        this.parentTool = parentTool;
+    }
+
+    public ToolBean() {
+    }
+
+    public ToolBean(ToolBean tool) {
+        this.name = tool.name;
+        this.identifier = tool.identifier;
+        if (tool.parentTool != null) {
+            this.parentTool = new ToolBean(tool.parentTool);
+        }
+    }
+
+    public ToolBean(String name, String identifier, ToolBean parentTool) {
+        this.name = name;
+        this.identifier = identifier;
+        this.parentTool = parentTool;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.dir).append("Tool Name....:").append(this.getName());
-        sb.append("\n");
-
-        if (!this.tools.isEmpty()) {
-            sb.append(this.space).append("Number of Tools....").append(this.getTools().size());
-            sb.append("\n");
-            sb.append(this.space).append("**** Tools ******\n");
-
-            for (ToolBean tool : this.getTools()) {
-                sb.append(this.space).append(tool.toString());
-            }
-            sb.append(this.space).append("**** End Tools******\n");
-            sb.append("\n");
-        }
-
-        return sb.toString();
+        return "ToolBean{" + "name=" + name + '}';
     }
+
+    public String fullName() {
+        String r = this.name;
+        if (getParentTool() != null) {
+            r = r + " ∈ " + getParentTool().getName();
+        }
+        return r;
+    }
+
 }

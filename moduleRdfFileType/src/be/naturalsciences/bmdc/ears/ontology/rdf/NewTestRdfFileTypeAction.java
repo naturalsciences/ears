@@ -7,7 +7,6 @@ package be.naturalsciences.bmdc.ears.ontology.rdf;
 
 import be.naturalsciences.bmdc.ears.ontology.TestOntology;
 import be.naturalsciences.bmdc.ears.properties.Constants;
-import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.writer.EARSOntologyCreator;
 import be.naturalsciences.bmdc.ontology.writer.EARSOntologyCreator.LoadOnto;
@@ -24,7 +23,6 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;

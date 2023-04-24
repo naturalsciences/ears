@@ -1,6 +1,6 @@
 package be.naturalsciences.bmdc.ears.ontology.entities;
 
-import be.naturalsciences.bmdc.ears.comparator.TermLabelAndDeckIdentifierComparator;
+import be.naturalsciences.bmdc.ears.comparator.TermLabelUriComparator;
 import be.naturalsciences.bmdc.ears.ontology.AsConceptFlavor;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.EarsException;
@@ -16,12 +16,15 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import org.openide.util.Exceptions;
 import thewebsemantic.Id;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfProperty;
@@ -45,8 +48,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
     @Id
     protected URI uri;
 
-    private Collection<Subject> subjectCollection;
-
     @RdfProperty(value = "http://ontologies.ef-ears.eu/ears2/1#contains", inverseOf = "http://ontologies.ef-ears.eu/ears2/1#isMemberOf")
     private Collection<Tool> toolCollection;
 
@@ -64,7 +65,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
     @Override
     public void init() {
         toolCollection = new ArrayList();
-        subjectCollection = new ArrayList();
+        //subjectCollection = new ArrayList();
         //vesselCollection = new ArrayList();
         genericEventDefinitionCollection = new ArrayList();
     }
@@ -101,22 +102,12 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
-    }
-
-    @Override
-    public Collection<Subject> getSubjectCollection() {
-        return subjectCollection;
-    }
-
-    @Override
-    public void setSubjectCollection(Collection<Subject> subjectCollection) {
-        this.subjectCollection = subjectCollection;
+        return this.getTermRef().getPublisherUrn() == null ? this.getTermRef().getOrigUrn() : this.getTermRef().getPublisherUrn();
     }
 
     @Override
     public Collection<Tool> getToolCollection() {
-        return toolCollection;
+        return new ArrayList<>(toolCollection); //required because otherwise we get weird concurrentmodificationerrors caused by other threads trying to modify the collection.
     }
 
     @Override
@@ -213,7 +204,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
         }
         return true;
     }*/
-
     @Override
     public String toString() {
         return "id=" + getId() + "; hash=" + System.identityHashCode(this) + "; name=" + ((this.getTermRef() != null) ? this.getTermRef().getName() : "no name");
@@ -225,7 +215,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
         ToolCategory shallowClone = cc.cloneOriginal();
 
         Map<Collection, Collection> collectionIdentityHashMap = new THashMap<>();
-        collectionIdentityHashMap.put(this.subjectCollection, shallowClone.subjectCollection);
+//        collectionIdentityHashMap.put(this.subjectCollection, shallowClone.subjectCollection);
         collectionIdentityHashMap.put(this.toolCollection, shallowClone.toolCollection);
         collectionIdentityHashMap.put(this.genericEventDefinitionCollection, shallowClone.genericEventDefinitionCollection);
         cc.cloneCollection(collectionIdentityHashMap);
@@ -282,12 +272,8 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
 
     @Override
     public Set<Tool> getChildren(ConceptHierarchy parents) {
-        Set<Tool> l = new TreeSet(new TermLabelAndDeckIdentifierComparator());
-
-        List two = new ArrayList(getToolCollection());
-        l.addAll(two);
-        // getToolCollection());
-        //Collections.sort(l, new TermUriComparator());
+        Set<Tool> l = new TreeSet(new TermLabelUriComparator());
+        l.addAll(getToolCollection());
         return l;
     }
 
@@ -351,7 +337,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
      * @param process
      * @param action
      */
-  /*  void reduceGevsToSevs(Process process, Action action) throws EarsException {
+    /*  void reduceGevsToSevs(Process process, Action action) throws EarsException {
         if (process == null) {
             throw new IllegalArgumentException("Process must be provided.");
         }
@@ -370,7 +356,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
             }
         }
     }*/
-
     /**
      * *
      * Convert the GenericEventDefinitions of this ToolCategory to
@@ -380,7 +365,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
      * @throws be.naturalsciences.bmdc.ontology.EarsException
      */
     public void reduceGevsToSevs(IAsConceptFactory factory) throws EarsException {
-        List<SpecificEventDefinition> sevs =/* new THashSet<>()*/ new ArrayList();
+        /*   List<SpecificEventDefinition> sevs =new ArrayList(); // new THashSet<>()
         Iterator<GenericEventDefinition> iter = this.getGenericEventDefinitionCollection().iterator();
         while (iter.hasNext()) {
             //for (int j = 0; j < this.getGenericEventDefinitionCollection().size(); j++) {
@@ -407,7 +392,7 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
                 }
             }
         }
-        int a = 5;
+        int a = 5;*/
     }
 
     public void isolate() {
@@ -416,9 +401,6 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
         }
         if (this.toolCollection != null) {
             this.toolCollection.clear();
-        }
-        if (this.subjectCollection != null) {
-            this.subjectCollection.clear();
         }
     }
 
@@ -464,12 +446,11 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
 
     @Override
     public void delete(ConceptHierarchy parents) {
-        parents.getRoot().getChildren(null).remove(this);
+
         /*for (AsConcept oldParentToolCategory : this.getParents()) {
          FakeConcept root = (FakeConcept) oldParentToolCategory;
          root.setChildren(null);
          }*/
-
         Iterator<Tool> iter = this.getToolCollection().iterator();
         while (iter.hasNext()) {
             // for (int i = 0; i < eventDefinition.size(); i++) {
@@ -484,10 +465,56 @@ public class ToolCategory implements IToolCategory<EarsTerm, Tool, Vessel, Gener
             //}
 
         }
+        parents.getRoot().getChildren(null).remove(this);
     }
 
     @Override
     public boolean hasChildren() {
         return toolCollection != null && toolCollection.size() > 0;
+    }
+
+    @Override
+    public String getDefinitionEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getAltLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getPrefLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getIdentifierString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getVersionString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getModifiedDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getCreationDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Boolean isIsDeprecated() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<String> broadMatch() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

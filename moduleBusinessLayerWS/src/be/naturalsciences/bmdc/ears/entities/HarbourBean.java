@@ -2,6 +2,7 @@ package be.naturalsciences.bmdc.ears.entities;//ys
 
 import be.naturalsciences.bmdc.ears.utils.SetterField;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -86,7 +87,8 @@ public class HarbourBean implements Serializable, IHarbour, Comparable<HarbourBe
 
     @Override
     public int compareTo(HarbourBean other) {
-        return this.getName().compareTo(other.getName());
+        return Comparator.comparing((HarbourBean b) -> b.getName())
+                .thenComparing((HarbourBean b) -> b.getCode()).compare(this, other);
     }
 
     @Override

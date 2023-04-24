@@ -6,6 +6,7 @@
 package be.naturalsciences.bmdc.ears.validators;
 
 import be.naturalsciences.bmdc.ears.base.StaticMetadataSearcher;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.ChiefScientistTableModel;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
 
@@ -18,7 +19,7 @@ public final class OrganisationValidator implements Validator<String> {
 
     @Override
     public void validate(Problems problems, String compName, String q) {
-        if (StaticMetadataSearcher.getInstance().getOrganisationByName(q) == null) {
+        if (!ChiefScientistTableModel.BASE_ACTION.equals(q) && StaticMetadataSearcher.getInstance().getOrganisationByName(q) == null) {
             problems.add("Choose a principal investigator organisation.");
         }
 

@@ -7,8 +7,8 @@ import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.ISpecificEventDefinition;
 import gnu.trove.map.hash.THashMap;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -52,7 +52,7 @@ public class SpecificEventDefinition extends EventDefinition implements ISpecifi
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
+        return this.getTermRef().getPublisherUrn()==null?this.getTermRef().getOrigUrn():this.getTermRef().getPublisherUrn();
     }
 
     @Override
@@ -184,18 +184,11 @@ public class SpecificEventDefinition extends EventDefinition implements ISpecifi
     }
 
     public boolean equals(EventBean event) {
-        if (event == null || event.getToolUris() == null) {
+        if (event == null) {
             return false;
         }
-        List<String> toolUris = new ArrayList(event.getToolUris().keySet());
-        String toolUri = null;
-        if (toolUris.size() == 1) {
-            toolUri = toolUris.get(0);
-        } else if (toolUris.size() == 2) { 
-            toolUri = toolUris.get(1);
-        }
-
-        return (this.getToolRef().getUri().toString().equals(toolUri))
+       
+        return (this.getToolRef().getUri().toString().equals(event.getTool().getIdentifier()))
                 && this.getProcess().getUri().toString().equals(event.getProcessUri())
                 && this.getAction().getUri().toString().equals(event.getActionUri());
     }
@@ -228,7 +221,7 @@ public class SpecificEventDefinition extends EventDefinition implements ISpecifi
             collectionIdentityHashMap.put(this.process.getEventDefinition(), shallowProcess.getEventDefinition());
             collectionIdentityHashMap.put(this.process.getActionCollection(), shallowProcess.getActionCollection());
             collectionIdentityHashMap.put(this.process.getProcessCollection(), shallowProcess.getProcessCollection());
-            collectionIdentityHashMap.put(this.process.getSubjectCollection(), shallowProcess.getSubjectCollection());
+//            collectionIdentityHashMap.put(this.process.getSubjectCollection(), shallowProcess.getSubjectCollection());
             ccProcess.cloneCollection(collectionIdentityHashMap);
 
             Map<Collection, Collection> collectionIdentityHashMap2 = new THashMap<>();
@@ -438,6 +431,51 @@ public class SpecificEventDefinition extends EventDefinition implements ISpecifi
 
     @Override
     public void isolate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getDefinitionEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getAltLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getPrefLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getIdentifierString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getVersionString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getModifiedDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getCreationDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Boolean isIsDeprecated() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<String> broadMatch() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

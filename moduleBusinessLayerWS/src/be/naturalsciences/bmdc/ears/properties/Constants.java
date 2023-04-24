@@ -53,6 +53,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.Exceptions;
 
@@ -110,8 +112,10 @@ public class Constants {
         try {
             EARS_ONTOLOGY_RETRIEVER = new EARSOntologyRetriever();
         } catch (ConnectException | EARSOntologyRetrievalException | MalformedURLException ex) {
+            Logger.getLogger(Constants.class.getName()).log(Level.SEVERE, "ConnectException | EARSOntologyRetrievalException | MalformedURLException", ex);
             EARS_ONTOLOGY_RETRIEVER = null;
         } catch (Exception ex) {
+            Logger.getLogger(Constants.class.getName()).log(Level.SEVERE, "Exception", ex);
             EARS_ONTOLOGY_RETRIEVER = null;
         }
         if (new File(System.getProperty("user.dir"), "bin").exists()) {

@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
-import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import org.jdesktop.swingx.calendar.SingleDaySelectionModel;
 import org.jdesktop.swingx.JXDatePicker;
 
@@ -33,7 +32,7 @@ public class DateTimePicker extends JXDatePicker {
 
     public DateTimePicker() {
         super();
-        this.setFormats(StringUtils.SDF_ISO_DATETIME);
+        this.setFormats(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         getMonthView().setSelectionModel(new SingleDaySelectionModel());
     }
 

@@ -5,6 +5,7 @@
  */
 package od.nature.naturalsciences.be.bmdc.services.cruise;
 
+import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.entities.ProjectBean;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
@@ -42,12 +43,9 @@ public class TestRestClientProgram extends TestCase {
     public void testPostProgramByParamsBean() {
         ProgramBean programToSend = new ProgramBean();
 
-        programToSend.setCruiseId("fin");
         programToSend.setProgramId("fin");
-        programToSend.setOriginatorCode("SDN:EDMO::2287");
         programToSend.setDescription("modifyCruisemodifyCruisemodifyCruisemodifyCruise");
-        programToSend.setPiName("Principal Investigator");
-
+        programToSend.getPrincipalInvestigators().add(new Person("Essai", "Tester", "SDN:EDMO::2287", null, null));
         Set<ProjectBean> collectionProjects = new HashSet();
 
         ProjectBean projectsAssociatedToProgram = new ProjectBean();

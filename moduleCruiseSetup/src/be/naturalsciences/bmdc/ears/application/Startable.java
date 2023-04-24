@@ -21,8 +21,13 @@ import be.naturalsciences.bmdc.ears.entities.User;
 import be.naturalsciences.bmdc.ears.entities.VesselBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
+import be.naturalsciences.bmdc.ears.ontology.BaseOntology;
 import be.naturalsciences.bmdc.ears.ontology.OntologySynchronizer;
+import be.naturalsciences.bmdc.ears.ontology.browser.ScopeNode;
+import be.naturalsciences.bmdc.ears.ontology.rdf.RdfFileTypeDataObject;
+import be.naturalsciences.bmdc.ears.ontology.rdf.RdfFileTypeLoader;
 import be.naturalsciences.bmdc.ears.properties.Configs;
+import be.naturalsciences.bmdc.ears.properties.Constants;
 import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
@@ -30,6 +35,7 @@ import be.naturalsciences.bmdc.ontology.EarsException;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -37,8 +43,10 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Set;
+import org.openide.loaders.MultiDataObject;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
+import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 
@@ -123,14 +131,11 @@ public class Startable implements Runnable, LookupListener {
                 GlobalActionContextProxy.getInstance().add(currentUrl2);
                 currentUrl = configUrl;
 
-                if (!WebserviceUtils.testWS("ears2/getCruise")) {
-                    Messaging.report("Note that the ears2 webservices are offline. This application won't function properly.", Message.State.BAD, this.getClass(), true);
+                if (!WebserviceUtils.testWS("ears3/api/alive")) {
+                    Messaging.report("Note that the ears3 webservices are offline. This application won't function properly.", Message.State.BAD, this.getClass(), true);
                 }
-                if (!WebserviceUtils.testWS("ears2Nav/getLastNavXml")) {
-                    Messaging.report("Note that the ears2Nav webservices are offline. This doesn't impact the application.", Message.State.BAD, this.getClass(), true);
-                }
-                if (!WebserviceUtils.testWS("ears2Ont/authenticate")) { //works even if there is no vessel ontology stored
-                    Messaging.report("Note that the ears2Ont webservices are offline. You will not be able to edit any tree and will be using possibly outdated ones.", Message.State.BAD, this.getClass(), true);
+                if (!WebserviceUtils.testWS("ears3Nav/nav/getLast/datagram")) {
+                    Messaging.report("Note that the ears3Nav webservices are offline. This doesn't impact the application.", Message.State.BAD, this.getClass(), true);
                 }
             } else {
                 Messaging.report("The web service URL is not set in the settings.", Message.State.BAD, Startable.class, true);
@@ -195,6 +200,18 @@ public class Startable implements Runnable, LookupListener {
         countryMetadataManager = new StaticMetadataManager<>(CountryBean.class);
 
         retrieveMetadataFiles();
+
+        RdfFileTypeLoader loader = ScopeNode.LOADER;//RdfFileTypeLoader();
+        try {
+            MultiDataObject mdo = loader.createMultiObject(Constants.BASE_ONTOLOGY_LOCATION);
+            if (mdo != null && mdo instanceof RdfFileTypeDataObject) {
+                RdfFileTypeDataObject rdf = (RdfFileTypeDataObject) mdo;
+                rdf.loadOntology();
+                GlobalActionContextProxy.getInstance().add((BaseOntology) (rdf.getOntModel())); //add the base ontology to the lookup forever
+            }
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
 
     }
 

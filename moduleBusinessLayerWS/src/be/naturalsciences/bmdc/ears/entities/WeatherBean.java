@@ -1,6 +1,6 @@
 package be.naturalsciences.bmdc.ears.entities;//ys
 
-import be.naturalsciences.bmdc.utils.StringUtils;
+import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "last_weather_data")
+@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "met")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WeatherBean implements Serializable {
 
@@ -21,7 +21,7 @@ public class WeatherBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "date_time")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")
     private String date;
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "wind_speed")
@@ -36,13 +36,13 @@ public class WeatherBean implements Serializable {
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "air_temperature")
     private Double airTemperature;
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = " humidity")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "humidity")
     private Double humidity;
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "solar_radiation")
     private Double solarRadiation;
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "air_preassure")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "air_pressure")
     private Double airPressure;
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "surface_water_temperature")
@@ -138,7 +138,7 @@ public class WeatherBean implements Serializable {
      */
     public OffsetDateTime getOffsetDateTime() {
         if (getInstrumentTime() != null && !getInstrumentTime().equals("")) {
-            LocalDateTime ld = LocalDateTime.parse(getInstrumentTime(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            LocalDateTime ld = LocalDateTime.parse(getInstrumentTime(), StringUtils.DTF_ISO_DATETIME_FLEX);
             return ld.atOffset(ZoneOffset.UTC);
         } else {
             return null;

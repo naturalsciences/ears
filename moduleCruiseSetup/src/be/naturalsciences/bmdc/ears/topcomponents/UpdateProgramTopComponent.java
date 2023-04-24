@@ -8,14 +8,20 @@ package be.naturalsciences.bmdc.ears.topcomponents;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.FilterableTableModel;
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
+import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
+import be.naturalsciences.bmdc.ears.entities.Person;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
+import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ontology.EarsException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +74,13 @@ import org.openide.windows.WindowManager;
 })
 public final class UpdateProgramTopComponent extends TopComponent implements LookupListener {
 
+    private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
+        
     ProgramTableModel model;
     private InputOutput io;
     private static UpdateProgramTopComponent instance;
 
-    private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
+    //private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
 
     RestClientProgram restClientProgram;
 
@@ -81,7 +89,7 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
         try {
             restClientProgram = new RestClientProgram();
         } catch (ConnectException ex) {
-            Messaging.report("Note that the webservices are offline. The programs can't be retrieved.", ex, this.getClass(), true);
+            Messaging.report("The webservices are offline. The programs can't be retrieved.", ex, this.getClass(), true);
         } catch (EarsException ex) {
             Messaging.report(ex.getMessage(), ex, this.getClass(), true);
         }
@@ -227,15 +235,21 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
     }//GEN-LAST:event_o_editProgramActionPerformed
 
     private void o_refreshListProgramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_o_refreshListProgramActionPerformed
-        if (currentVesselResult.getCurrent() != null) {
+            /*    if (currentVesselResult.getCurrent() != null) {
             try {
-                model.refresh(restClientProgram.getProgramByVessel(currentVesselResult.getCurrent().getConcept()));
+            model.refresh(restClientProgram.getProgramByVessel(currentVesselResult.getCurrent().getConcept()));
             } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+            Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             } catch (ConnectException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+            Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }
             o_Program.repaint();
+            }*/
+        try {
+            model.refresh(restClientProgram.getAllPrograms());
+            o_Program.repaint();
+        } catch (ConnectException ex) {
+           Messaging.report(ex.getMessage(), ex, this.getClass(), true);
         }
     }//GEN-LAST:event_o_refreshListProgramActionPerformed
 
@@ -267,24 +281,10 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        // TODO add custom code on component opening
-
-        /*if (EditCruiseSetupTopComponent.getInstance() instanceof EditCruiseSetupTopComponent) {//ys01
-         EditCruiseSetupTopComponent currentCruiseTopComponent = EditCruiseSetupTopComponent.getInstance();//ys01
-         currentCruiseTopComponent.close();//ys01
-         }*/
- /*if (UpdateCruiseTopComponent.getInstance() instanceof UpdateCruiseTopComponent) {
-         UpdateCruiseTopComponent currentUpdateCruiseTopComponent = UpdateCruiseTopComponent.getInstance();
-         currentUpdateCruiseTopComponent.close();//ys01
-         }*/
-        //Create a table with a sorter.
-        //client = new RestClientProgram();
         List list = null;
-        if (currentVesselResult.getCurrent() != null && restClientProgram != null) {
+        if (restClientProgram != null) {
             try {
-                list = new ArrayList(restClientProgram.getProgramByVessel(currentVesselResult.getCurrent().getConcept()));
-            } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+                list = new ArrayList(restClientProgram.getAllPrograms());
             } catch (ConnectException ex) {
                 Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }
@@ -303,34 +303,38 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
             final JPopupMenu popupMenu = new JPopupMenu();
             JMenuItem editItem = new JMenuItem("Edit");
             JSeparator sep = new JSeparator();
-
             JMenuItem deleteItem = new JMenuItem("Delete");
+            
+            o_Program.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    if (me.getClickCount() == 2) {     // to detect doble click events
+                        editProgram();
+                    }
+                }
+            });
 
             editItem.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                     editProgram();
                 }
             });
             deleteItem.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
-                    NotifyDescriptor.Confirmation confirm = new NotifyDescriptor.Confirmation("Do you want to delete this program? Unfortunately this is not possible as the functionality is not provided in the EARS web services", "Delete program", NotifyDescriptor.YES_NO_OPTION);
+                    NotifyDescriptor.Confirmation confirm = new NotifyDescriptor.Confirmation("Do you want to delete this program? This operation cannot be undone.", "Delete program", NotifyDescriptor.YES_NO_OPTION);
 
                     Object result = DialogDisplayer.getDefault().notify(confirm);
                     if (result != NotifyDescriptor.YES_OPTION) {
                         return;
                     }
-                    //JOptionPane.showMessageDialog(UpdateCruiseTopComponent.this, "Right-click performed on table and choose DELETE");
-                    /*ProgramBean program = model.getEntityAt(o_Program.getSelectedRow());
+                    int row = o_Program.convertRowIndexToModel(o_Program.getSelectedRow());
+                    ProgramBean program = model.getEntityAt(row);
                     TopComponent tc = findTopComponent(program);
                     if (tc != null) {
                         tc.close();
                     }
-                    removeProgram(program); //remove from ws*/
+                    removeProgram(program);
                 }
             });
             popupMenu.add(editItem);
@@ -356,11 +360,25 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
         }
         return null;
     }
+    
+        private void removeProgram(ProgramBean program) {
+        IResponseMessage removeProgramMessage = restClientProgram.removeProgram(program);
+        if (!removeProgramMessage.isBad()) {
+           if (currentVesselResult.getCurrent() != null) {
+            try {
+                model.refresh(restClientProgram.getAllPrograms());
+            } catch (ConnectException ex) {
+                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+            }
+            o_Program.repaint();
+            GlobalActionContextProxy.getInstance().add(currentVesselResult.getCurrent()); //causes the vessel to be changed to itself, causing vessel listeners to update their cruise list
+           }
+        }else{Messaging.report(removeProgramMessage.getMessage(), Message.State.BAD, this.getClass(), true);}
+    }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        //instance.close();//ys01
         instance = null;
     }
 
@@ -378,11 +396,10 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
 
     @Override
     public void resultChanged(LookupEvent le) {
+        
         if (currentVesselResult.getCurrent() != null) {
             try {
-                model.refresh(restClientProgram.getProgramByVessel(currentVesselResult.getCurrent().getConcept()));
-            } catch (EarsException ex) {
-                Messaging.report(ex.getMessage(), ex, this.getClass(), true);
+                model.refresh(restClientProgram.getAllPrograms());
             } catch (ConnectException ex) {
                 Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }
@@ -398,7 +415,7 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
 
             TopComponent tc = findTopComponent(currentlyEditedProgram);
             if (tc == null) {
-                tc = new EditProgramSetupTopComponent(currentlyEditedProgram);
+                tc = new EditProgramTopComponent(currentlyEditedProgram);
                 tc.open();
             }
             tc.requestActive();
@@ -406,14 +423,15 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
         }
     }
 
-    private final static String[] columnNames = {ProgramTableModel.CRUISE,
-        ProgramTableModel.PROGRAM_NAME, ProgramTableModel.PI};
+    private final static String[] columnNames = {
+        ProgramTableModel.PROGRAM_NAME, ProgramTableModel.PI_FIRST_NAME,ProgramTableModel.PI_LAST_NAME};
 
     public class ProgramTableModel extends EntityTableModel<ProgramBean> implements FilterableTableModel {
 
-        public final static String CRUISE = "Cruise name (code)";
+      //  public final static String CRUISE = "Cruise name (code)";
         public final static String PROGRAM_NAME = "Program name";
-        public final static String PI = "Principal investigator";
+        public final static String PI_FIRST_NAME = "Principal investigator first name";
+        public final static String PI_LAST_NAME = "Principal investigator last name";
 
         public ProgramTableModel() {
             super(null, null);
@@ -435,17 +453,26 @@ public final class UpdateProgramTopComponent extends TopComponent implements Loo
 
         @Override
         public Object getValueAt(ProgramBean entity, int columnIndex) {
-
+            Person pi = entity.getPrincipalInvestigators().isEmpty()?null:entity.getPrincipalInvestigators().get(0);
             switch (getColumnName(columnIndex)) {
-                case CRUISE:
-                    return entity.getCruiseId();
+             /* case CRUISE:
+                    return entity.getCruiseId();*/
                 case PROGRAM_NAME:
                     return entity.getProgramId();
-                case PI:
-                    return entity.getPiName();
+                case PI_FIRST_NAME:
+                    return pi==null?null:pi.firstName;
+                case PI_LAST_NAME:
+                    return pi==null?null:pi.lastName;
                 default:
                     return null;
             }
+        }
+        
+        public ProgramBean getEntityWithName(String name) {
+            for (ProgramBean e : entities) {
+                if(e.getProgramId().equals(name)){return e;}
+            }
+            return null;
         }
 
         @Override

@@ -5,24 +5,26 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
+import eu.eurofleets.ears3.dto.PersonDTO;
+
 /**
  *
  * @author Thomas Vandenberghe
  */
 public class CurrentActor implements IActor, CurrentSingleton<IActor> {
 
-    private Actor currentActor;
+    private PersonDTO currentActor;
 
     private static final CurrentActor instance = new CurrentActor();
 
     private CurrentActor() {
     }
 
-    public Actor getConcept() {
+    public PersonDTO getConcept() {
         return currentActor;
     }
 
-    public static CurrentActor getInstance(Actor currentActor) {
+    public static CurrentActor getInstance(PersonDTO currentActor) {
         instance.currentActor = currentActor;
         return instance;
     }
@@ -30,5 +32,10 @@ public class CurrentActor implements IActor, CurrentSingleton<IActor> {
     @Override
     public boolean isLegal() {
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return currentActor.getLastNameFirstName();
     }
 }

@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.comparator;
 
-import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.PropertyBean;
 import java.util.Comparator;
 
@@ -20,7 +19,13 @@ public class EventPropertyComparator implements Comparator<PropertyBean> {
         int result = t.getName().compareTo(t1.getName());
 
         if (result == 0) {
-            return t.getValue().compareTo(t1.getValue());
+            if (t.getValue() != null) {
+                return t.getValue().compareTo(t1.getValue());
+            } else if (t1.getValue() == null) {
+                return 0;
+            } else {
+                return -1;
+            }
         } else {
             return result;
         }

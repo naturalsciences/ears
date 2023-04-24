@@ -1,6 +1,6 @@
 package be.naturalsciences.bmdc.ears.entities;//ys
 
-import be.naturalsciences.bmdc.utils.StringUtils;
+import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "last_thermosalinometer_data")
+@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "tss")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ThermosalBean implements Serializable {
 
@@ -21,7 +21,7 @@ public class ThermosalBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "date_time")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")
     private String date;
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "salinity")
@@ -106,7 +106,7 @@ public class ThermosalBean implements Serializable {
 
     public OffsetDateTime getOffsetDateTime() {
         if (getInstrumentTime() != null && !getInstrumentTime().equals("")) {
-            LocalDateTime ld = LocalDateTime.parse(getInstrumentTime(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            LocalDateTime ld = LocalDateTime.parse(getInstrumentTime(), StringUtils.DTF_ISO_DATETIME_FLEX);
             return ld.atOffset(ZoneOffset.UTC);
         } else {
             return null;

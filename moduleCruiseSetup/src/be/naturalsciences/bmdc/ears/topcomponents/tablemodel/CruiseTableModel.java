@@ -72,18 +72,22 @@ public class CruiseTableModel extends AbstractTableModel implements FilterableTa
 
     @Override
     public Object getValueAt(int row, int column) {
-        CruiseBean cruise = data.get(row);
-        switch (getColumnName(column)) {
-            case NAME:
-                return cruise.getCruiseName();
-            case START_DATE:
-                return CruiseBean.DAY_FORMAT.format(cruise.getdStartDate());
-            case END_DATE:
-                return CruiseBean.DAY_FORMAT.format(cruise.getdEndDate());
-            case CHIEF_SCIENTIST:
-                return cruise.getNiceChiefScientistString();
-            default:
-                return null;
+        if(!data.isEmpty()){
+            CruiseBean cruise = data.get(row);
+            switch (getColumnName(column)) {
+                case NAME:
+                    return cruise.getName();
+                case START_DATE:
+                    return CruiseBean.DAY_FORMAT.format(cruise.getdStartDate());
+                case END_DATE:
+                    return CruiseBean.DAY_FORMAT.format(cruise.getdEndDate());
+                case CHIEF_SCIENTIST:
+                    return cruise.getNiceChiefScientistString();
+                default:
+                    return null;
+            }
+        }else{
+        return null;
         }
     }
 
@@ -95,7 +99,11 @@ public class CruiseTableModel extends AbstractTableModel implements FilterableTa
      */
     @Override
     public Class getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
+        try {
+           return getValueAt(0, c).getClass();
+        } catch (Exception e) {
+            return String.class;
+        }
     }
 
     /*
@@ -141,6 +149,9 @@ public class CruiseTableModel extends AbstractTableModel implements FilterableTa
     public void refreshModel(Collection<CruiseBean> cruises) {
         this.clearAllCruises();
         this.addCruiseList(cruises);
+        if(cruises!=null && cruises.size()>0 ){
+            fireTableDataChanged();
+        }
     }
     
 }

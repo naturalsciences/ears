@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
-import be.naturalsciences.bmdc.ears.utils.Messaging;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -35,18 +34,10 @@ public class DeleteNodeAction extends CookieAction {
     protected boolean enable(Node[] activatedNodes) {
         AsConceptNode node = context.lookup(AsConceptNode.class);
         if (node != null) {
-            return !node.isRoot();
+            return !node.isRoot() && !node.conceptHierarchy.isGeneric(); //we can't delete processes, actions and actions if they are in a GEV.
         } else {
             return false;
         }
-        //boolean isRoot = false;
-        //  try {
-        //   isRoot = node.isRoot();
-        //  } catch (NullPointerException e) {
-        //      Messaging.report("Method DeleteNodeAction.enable not applicable as node no longer exists.", e, this.getClass(), false);
-        //      return false;
-        //  }
-        //return !isRoot;
     }
 
     @Override

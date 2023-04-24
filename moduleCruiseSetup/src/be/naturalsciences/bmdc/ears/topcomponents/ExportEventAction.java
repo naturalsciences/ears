@@ -8,8 +8,6 @@ package be.naturalsciences.bmdc.ears.topcomponents;
 import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
 import be.naturalsciences.bmdc.ears.entities.CurrentProgram;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
-import be.naturalsciences.bmdc.ears.entities.EventBean;
-import java.util.Collection;
 import java.util.EventObject;
 
 /**
@@ -18,14 +16,9 @@ import java.util.EventObject;
  */
 public class ExportEventAction extends EventObject {//ActionEvent {
 
-    private Collection<EventBean> events;
     private CurrentVessel vessel;
     private CurrentCruise cruise;
     private CurrentProgram program;
-
-    public Collection<EventBean> getEvents() {
-        return events;
-    }
 
     public CurrentVessel getVessel() {
         return vessel;
@@ -51,13 +44,8 @@ public class ExportEventAction extends EventObject {//ActionEvent {
         this.program = program;
     }
 
-    public void setEvents(Collection<EventBean> events) {
-        this.events = events;
-    }
-
-    public ExportEventAction(Object source, Collection<EventBean> events, CurrentVessel vessel, CurrentCruise cruise, CurrentProgram program) {
+    public ExportEventAction(Object source, CurrentVessel vessel, CurrentCruise cruise, CurrentProgram program) {
         super(source);
-        this.events = events;
         this.vessel = vessel;
         this.cruise = cruise;
         this.program = program;

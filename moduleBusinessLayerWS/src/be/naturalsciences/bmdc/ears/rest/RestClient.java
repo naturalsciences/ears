@@ -6,9 +6,8 @@
 package be.naturalsciences.bmdc.ears.rest;
 
 import be.naturalsciences.bmdc.ears.entities.CurrentURL;
-import be.naturalsciences.bmdc.ears.entities.ExceptionMessage;
 import be.naturalsciences.bmdc.ears.entities.IResponseMessage;
-import be.naturalsciences.bmdc.ears.entities.MessageBean;
+import be.naturalsciences.bmdc.ears.entities.RestMessage;
 import be.naturalsciences.bmdc.ears.entities.NavBean;
 import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
 import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
@@ -17,6 +16,9 @@ import be.naturalsciences.bmdc.ears.utils.Message;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.EarsException;
+import com.fatboyindustrial.gsonjavatime.Converters;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
@@ -29,11 +31,10 @@ import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -94,7 +95,10 @@ public abstract class RestClient implements Serializable {
         return null;
     }
 
-    protected boolean online = true;
+    private boolean isOnline() {
+
+        return getBaseURL() != null && WebserviceUtils.testWS("ears3/api/alive");
+    }
 
     protected static URL baseURL;
 
@@ -106,9 +110,8 @@ public abstract class RestClient implements Serializable {
     protected boolean cache;
 
     public RestClient(boolean cache) throws ConnectException, EarsException {
-        if (getBaseURL() == null) {
-            online = false;
-            throw new EarsException("The base url for the EARS web services is null. The application won't work correctly.");
+        if (!isOnline()) {
+            throw new EarsException("The base url for the EARS web services is undefined or unreachable. The application won't work correctly.");
         }
         baseURL = getBaseURL();
 
@@ -117,10 +120,9 @@ public abstract class RestClient implements Serializable {
         } else {
             isHttps = false;
         }
-        if (!WebserviceUtils.testWS(null)) {
-            online = false;
-            throw new ConnectException();
-        }
+        /* if (!isOnline()) {
+            throw new ConnectException("Connecting to " + WebserviceUtils.getCurrentURL() + " failed");
+        }*/
         this.cache = cache;
     }
 
@@ -160,50 +162,43 @@ public abstract class RestClient implements Serializable {
         return null;
     }
 
-    public IResponseMessage performGetWhichIsActuallyAPost(ResteasyWebTarget target, Class cls) {
-
-        IResponseMessage responseMessage = null;
-        if (online) {
-            Response response = null;
-            response = target.request(MediaType.APPLICATION_XML).get();
+    public <E> IResponseMessage<E> performPost(ResteasyWebTarget target, Class<E> cls, E o) {
+        IResponseMessage<E> responseMessage = null;
+        if (isOnline()) {
+            Gson g = Converters.registerOffsetDateTime(new GsonBuilder()).create();
+            String payload = g.toJson(o);
+            //  payload = payload.replaceAll(":(\\d{2})\\.\\d+", ":$1");
+            payload = payload.replaceAll("(\\+|\\-)(\\d{2}):(\\d{2})", "+$2$3"); //+01:00->+0100
+            Response response = target.request().post(Entity.json(payload));
+            GenericType<RestMessage<E>> type = new GenericType<RestMessage<E>>() {
+            };
             try {
-                responseMessage = response.readEntity(MessageBean.class);
-            } catch (ProcessingException e) {
-                response = target.request(MediaType.APPLICATION_XML).get();
-
-                try {
-                    responseMessage = response.readEntity(ExceptionMessage.class);
-
-                } catch (ProcessingException e2) {
-                    response = target.request(MediaType.APPLICATION_XML, MediaType.TEXT_HTML).get();
-                    String responseAsString = response.readEntity(String.class);
-
-                    if (responseAsString == null || responseAsString.isEmpty()) {
-                        responseMessage = new ExceptionMessage(new Date().toString(), Integer.toString(response.getStatus()), "An exception occured while posting this entity: likely a DataIntegrityViolationException");
-                    } else {
-                        responseMessage = new ExceptionMessage(new Date().toString(), Integer.toString(response.getStatus()), responseAsString);
-                    }
+                responseMessage = response.readEntity(type);
+                if (responseMessage.isOk()) {
+                    responseMessage.setMessage(cls.getSimpleName() + " " + responseMessage.getIdentifier() + " created/modified");
+                } else {
+                    responseMessage.setMessage(response.getStatusInfo().getReasonPhrase() + " (" + responseMessage.getMessage() + ") - " + cls.getSimpleName() + " not created/modified");
                 }
+            } catch (Exception e) {
+                responseMessage = new RestMessage(response.getStatus(), response.getStatus() + " (" + response.getStatusInfo().getReasonPhrase() + ")");
+            } finally {
+                int status = response.getStatus();
+                response.close();
+                printResponse(target, status, cls, responseMessage);
             }
-            printResponse(target, response, cls, responseMessage);
-            response.close();
         }
         return responseMessage;
     }
 
-    public static String printResponse(ResteasyWebTarget target, Response res, Class cls, IResponseMessage responseMessage) {
+    public static String printResponse(ResteasyWebTarget target, int status, Class cls, IResponseMessage responseMessage) {
         StringBuilder sb = new StringBuilder();
         sb.append("------------\n");
         sb.append("|Tried URL: ").append(target.getUri().toASCIIString()).append("\n");
-        if (res != null) {
-            sb.append("|Server response status code: ").append(res.getStatus()).append("\n");
-        } else {
-            sb.append("|No server response status code." + "\n");
-        }
+        sb.append("|Server response status code: ").append(status).append("\n");
         if (responseMessage == null) {
             sb.append("|Response message: There is a problem with the web service and no responseMessage was returned." + "\n");
         } else {
-            sb.append("|Response message: ").append(responseMessage.getSummary()).append("\n");
+            sb.append("|Response message: ").append(responseMessage.getMessage()).append("\n");
         }
         sb.append("------------\n");
         Messaging.report(sb.toString(), Message.State.INFO, cls, false);

@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.options;
 
-import be.naturalsciences.bmdc.ears.properties.Configs;
 import java.awt.Color;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -26,7 +25,7 @@ final class ActorsPanel extends javax.swing.JPanel implements TableModelListener
         o_actorTable.setModel(model);
 
         TableColumnModel tcm = o_actorTable.getColumnModel();
-        tcm.removeColumn(tcm.getColumn(0));
+       // tcm.removeColumn(tcm.getColumn(0));
         jLabel1.setText("");
 
         o_actorTable.setCellSelectionEnabled(true);
@@ -59,7 +58,6 @@ final class ActorsPanel extends javax.swing.JPanel implements TableModelListener
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         o_actorTable = new javax.swing.JTable();
-        jCheckBox1 = new javax.swing.JCheckBox();
 
         org.openide.awt.Mnemonics.setLocalizedText(o_removeActor, org.openide.util.NbBundle.getMessage(ActorsPanel.class, "ActorsPanel.o_removeActor.text")); // NOI18N
         o_removeActor.addActionListener(new java.awt.event.ActionListener() {
@@ -83,28 +81,16 @@ final class ActorsPanel extends javax.swing.JPanel implements TableModelListener
         o_actorTable.setColumnSelectionAllowed(true);
         jScrollPane1.setViewportView(o_actorTable);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jCheckBox1, org.openide.util.NbBundle.getMessage(ActorsPanel.class, "ActorsPanel.jCheckBox1.text")); // NOI18N
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jCheckBox1)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(19, 19, 19))))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(451, 451, 451)
@@ -116,9 +102,7 @@ final class ActorsPanel extends javax.swing.JPanel implements TableModelListener
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(10, Short.MAX_VALUE)
-                .addComponent(jCheckBox1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addContainerGap(42, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(115, 115, 115))
             .addGroup(layout.createSequentialGroup()
@@ -147,16 +131,12 @@ final class ActorsPanel extends javax.swing.JPanel implements TableModelListener
         model.addEmptyRow();
     }//GEN-LAST:event_o_addActorActionPerformed
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
-
     void load() {
         // TODO read settings and initialize GUI
         // Example:        
         // someCheckBox.setSelected(Preferences.userNodeForPackage(ActorsPanel.class).getBoolean("someFlag", false));
         // or for org.openide.util with API spec. version >= 7.4:
-        jCheckBox1.setSelected(Configs.getOverrideEventsAsAnonymous());
+  //      jCheckBox1.setSelected(Configs.getOverrideEventsAsAnonymous()); //no more anonymous events in ears3
         // or:
         // someTextField.setText(SomeSystemOption.getDefault().getSomeStringProperty());
 
@@ -171,7 +151,7 @@ final class ActorsPanel extends javax.swing.JPanel implements TableModelListener
         // or:
         // SomeSystemOption.getDefault().setSomeStringProperty(someTextField.getText());
         
-        Configs.persistOverrideEventsAsAnonymous(jCheckBox1.isSelected());
+//        Configs.persistOverrideEventsAsAnonymous(jCheckBox1.isSelected());
         model.fireLookupListeners();
     }
 
@@ -181,7 +161,6 @@ final class ActorsPanel extends javax.swing.JPanel implements TableModelListener
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable o_actorTable;

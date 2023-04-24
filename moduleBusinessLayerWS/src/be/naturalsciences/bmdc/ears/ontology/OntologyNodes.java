@@ -38,11 +38,9 @@ import java.net.ConnectException;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.semanticweb.owlapi.io.OWLOntologyCreationIOException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -254,25 +252,13 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
      * @return
      */
     static <C extends AsConcept> Set<C> getAllChildren(AsConcept c, Set<C> r, Class<C> cls) {
-        if (c != null && c.getTermRef() != null && c.getTermRef().getEarsTermLabel() != null && c.getTermRef().getEarsTermLabel().getPrefLabel() != null) {
-
-            if (c.getTermRef().getEarsTermLabel().getPrefLabel().equals("Rosette")) {
-                int a = 5;
-            }
-            if (c.getTermRef().getEarsTermLabel().getPrefLabel().equals("Profile")) {
-                int a = 5;
-            }
-            if (c.getTermRef().getEarsTermLabel().getPrefLabel().equals("Cruise")) {
-                int a = 5;
-            }
-        }
         Tool hostedToolNode = (Tool) previousNodesInPath.getHostedTool();
         Process processNode = (Process) previousNodesInPath.getProcess();
         Action actionNode = (Action) previousNodesInPath.getAction();
         boolean killHostedToolNode = true;
         if (hostedToolNode != null && processNode != null) {
             for (SpecificEventDefinition sev : hostedToolNode.getSpecificEventDefinitionCollection()) {
-                if (sev.getProcess() == c || sev.getAction() == c || (sev.getProcess() == processNode && sev.getAction() == actionNode)) {
+                if (sev != null && (sev.getProcess() == c || sev.getAction() == c || (sev.getProcess() == processNode && sev.getAction() == actionNode))) {
                     killHostedToolNode = false;
                 }
             }
@@ -301,12 +287,6 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
         //make sure that first the Processes of the own tool are handled and later the processes of the nested tool!!
         //otherwise the nestedTools are already stored as a child and the subpath is calculated from the tool's processes but with the child tool as purported tool.
         if (ch != null && ch.size() > 0 && r != null) { //if there are any children
-            // boolean isHostedTool = false;
-            // if (c instanceof Tool) {
-            //     Tool tool = (Tool) c;
-            //     isHostedTool = tool.isHostedTool();
-            // }
-            // if (!isHostedTool) {
             previousNodesInPath.removeOfType(c); //attention: this removes the parent tool in case there is a nested tool.
             previousNodesInPath.add(c);
             //  }
@@ -424,15 +404,145 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
         return null;
     }
 
-    Set<String> names = new THashSet<>();
+    private void saveInternal(Path destPath, User user, RestClientOnt client) throws OWLOntologyCreationException, EarsException {
+        if (getRoot() == null) {
+            throw new IllegalStateException("This set of OntologyNodes doesn't have a root. Unrooted OntologyNodes can't be saved. Adding a root to an OntologyModel's nodes is done by passing the OntologyModel to a Root FakeConcept constructor.");
+        } else {
+            this.nodes = (Set<T>) getRoot().getChildren(null);
+        }
+        EARSOntologyCreator owlCreator;
 
-    public void testNames(List<AsConcept> concepts) {
-        for (AsConcept concept : concepts) {
-            if (names.add(concept.getTermRef().getEarsTermLabel().getPrefLabel())) {
+        Set<ToolCategory> toolCategories;
+        Set<Tool> tools;
+        Set<be.naturalsciences.bmdc.ears.ontology.entities.Process> processes;
+        Set<Action> actions;
+        Set<Property> properties;
+        Set<ProcessAction> processActions = new THashSet();//new TreeSet(new ProcessActionComparator()); //sorting is irrelevant
 
-            } else {
-                int a = 5;
+        Set<SpecificEventDefinition> specificEventDefinitions = new THashSet(); //sorting is irrelevant
+        Set<GenericEventDefinition> genericEventDefinitions = new THashSet(); //sorting is irrelevant  //all GEVs come from the base ontology
+
+        try {
+            owlCreator = new EARSOntologyCreator(this.getModel().getScopeMap(), this.getModel().getName());
+            //     TermLabelIdentityHashCodeComparator comp = new TermLabelIdentityHashCodeComparator();
+            toolCategories = this.getIndividuals(ToolCategory.class, null); //sorting is irrelevant and must include individuals even having the same uri.
+            tools = this.getIndividuals(Tool.class, null); //sorting is irrelevant and must include individuals even having the same uri.
+            processes = this.getIndividuals(be.naturalsciences.bmdc.ears.ontology.entities.Process.class, null); //sorting is irrelevant and must include individuals even having the same uri.
+            actions = this.getIndividuals(Action.class, null); //sorting is irrelevant and must include individuals even having the same uri.
+            properties = this.getIndividuals(Property.class, null); //sorting is irrelevant and must include individuals even having the same uri.
+            for (Tool tool : tools) {
+                try {
+                    if (tool.getSpecificEventDefinitionCollection() != null) {
+                        specificEventDefinitions.addAll(tool.getSpecificEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
+                    }
+                    if (tool.getGenericEventDefinitionCollection() != null) {
+                        genericEventDefinitions.addAll(tool.getGenericEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
+                    }  //all GEVs come from the base ontology
+                    if (tool.getToolCategoryCollection() != null) { //add all the original tool catagories to be serialized as well.
+                        toolCategories.addAll(tool.getToolCategoryCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
+                    }
+                } catch (Exception e) {
+                    Messaging.report("A problem occured during saving the tree at " + destPath + " for the tool" + tool.getUri(), e, this.getClass(), false);
+                }
+                if (tool.isHostingTool()) {
+                    for (SpecificEventDefinition sev : tool.getSpecificEventDefinitionCollection()) {
+                        specificEventDefinitions.add(sev);
+                        processes.add(sev.getProcess());
+                        actions.add(sev.getAction());
+                        processActions.add(sev.getProcessAction());
+                        properties.addAll(sev.getPropertyCollection());
+                    }
+                      for (GenericEventDefinition gev : tool.getGenericEventDefinitionCollection()) {
+                        genericEventDefinitions.add(gev);
+                        processes.add(gev.getProcess());
+                        actions.add(gev.getAction());
+                        processActions.add(gev.getProcessAction());
+                        properties.addAll(gev.getPropertyCollection());
+                    }  //all GEVs come from the base ontology
+                    for (Tool nestedTool : tool.getHostedCollection()) {
+                        nestedTool.getToolCategoryCollection().retainAll(toolCategories); // remove any previous categories the nested tool belongs to, unless this category is included in the current ontology itself. Otherwise the category is referenced to but the category entity itself of the previous ontology the tool belonged to does not exist.
+                        if (nestedTool.getSpecificEventDefinitionCollection() != null) {
+                            for (SpecificEventDefinition sev : nestedTool.getSpecificEventDefinitionCollection()) {
+                                if (sev != null) {
+                                    specificEventDefinitions.add(sev);
+                                    processes.add(sev.getProcess());
+                                    actions.add(sev.getAction());
+                                    processActions.add(sev.getProcessAction());
+                                    properties.addAll(sev.getPropertyCollection());
+                                }
+                            }
+                        }
+                        /*   for (GenericEventDefinition gev : nestedTool.getGenericEventDefinitionCollection()) {
+                            genericEventDefinitions.add(gev);
+                            processes.add(gev.getProcess());
+                            actions.add(gev.getAction());
+                            processActions.add(gev.getProcessAction());
+                            properties.addAll(gev.getPropertyCollection());
+                        } */  //all GEVs come from the base ontology
+                    }
+                }
             }
+            for (SpecificEventDefinition sev : specificEventDefinitions) {
+                try {
+                    processActions.add(sev.getProcessAction());
+                    processes.add(sev.getProcess());
+                    actions.add(sev.getAction());
+                    properties.addAll(sev.getPropertyCollection());
+                } catch (NullPointerException e) {
+                    Messaging.report("A problem occured during saving the tree at " + destPath + " for the specificevent about " + sev.getProcess().getUri() + " & " + sev.getAction().getUri() + " & " + sev.getToolRef().getUri(), e, this.getClass(), false);
+                    processActions.add(sev.getProcessAction());
+                }
+            }
+            /*  for (GenericEventDefinition gev : genericEventDefinitions) {
+                processActions.add(gev.getProcessAction());
+            }*/ //all GEVs come from the base ontology
+
+            /* testNames(new ArrayList<AsConcept>(toolCategories));
+            testNames(new ArrayList<AsConcept>(tools));
+            testNames(new ArrayList<AsConcept>(processes));
+            testNames(new ArrayList<AsConcept>(actions));
+            testNames(new ArrayList<AsConcept>(properties));
+            testNames(new ArrayList<AsConcept>(specificEventDefinitions));
+            testNames(new ArrayList<AsConcept>(genericEventDefinitions));*/
+            owlCreator.setToolCategoryCollection(toolCategories);
+            owlCreator.setToolCollection(tools);
+            owlCreator.setProcessCollection(processes);
+            owlCreator.setActionCollection(actions);
+            owlCreator.setPropertyCollection(properties);
+            owlCreator.setSevCollection(specificEventDefinitions);
+            owlCreator.setGevCollection(genericEventDefinitions); //all GEVs come from the base ontology
+            owlCreator.setProcessActionCollection(processActions);
+
+            int version = this.model.getVersion();
+
+            owlCreator.createOntoFile(EARSOntologyCreator.LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), version + 1, destPath, null, null, null, true);
+
+            if (this.model.getScope().equals(ScopeMap.Scope.VESSEL.name()) && user != null && client != null) { //upload it when we can
+                IResponseMessage response = client.uploadVesselOntology(destPath, user.getUsername(), user.getPassword());
+                if (response.isBad()) {
+                    throw new EarsException("Vessel tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getMessage());
+                }
+            }
+            if (this.model.getScope().equals(ScopeMap.Scope.PROGRAM.name()) && client != null) { //upload it when we can
+                IResponseMessage response = client.uploadProgramOntology(destPath);
+                if (response.isBad()) {
+                    throw new EarsException("Program tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getMessage());
+                }
+            }
+            saved = true;
+        } catch (OWLOntologyCreationException | NullPointerException ex) {
+            saved = false;
+            throw ex;
+        } finally {
+            owlCreator = null;
+            toolCategories = null;
+            tools = null;
+            processes = null;
+            actions = null;
+            properties = null;
+            //    genericEventDefinitions = null;
+            specificEventDefinitions = null;
+            processActions = null;
         }
     }
 
@@ -480,139 +590,7 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
                 throw new IllegalStateException("The vessel tree cannot be edited when the url for the EARS web server is empty or invalid.");
             }
         }
-
-        if (getRoot() == null) {
-            throw new IllegalStateException("This set of OntologyNodes doesn't have a root. "
-                    + "Unrooted OntologyNodes can't be saved. Adding a root to an OntologyModel's nodes is done by passing the OntologyModel to a Root FakeConcept constructor.");
-        } else {
-            this.nodes = (Set<T>) getRoot().getChildren(null);
-        }
-        EARSOntologyCreator owlCreator;
-
-        Set<ToolCategory> toolCategories;
-        Set<Tool> tools;
-        Set<be.naturalsciences.bmdc.ears.ontology.entities.Process> processes;
-        Set<Action> actions;
-        Set<Property> properties;
-        Set<ProcessAction> processActions = new THashSet();//new TreeSet(new ProcessActionComparator()); //sorting is irrelevant
-
-        Set<SpecificEventDefinition> specificEventDefinitions = new THashSet(); //sorting is irrelevant
-        Set<GenericEventDefinition> genericEventDefinitions = new THashSet(); //sorting is irrelevant
-
-        try {
-            owlCreator = new EARSOntologyCreator(this.getModel().getScopeMap(), this.getModel().getName());
-            //     TermLabelIdentityHashCodeComparator comp = new TermLabelIdentityHashCodeComparator();
-            toolCategories = this.getIndividuals(ToolCategory.class, null); //sorting is irrelevant and must include individuals even having the same uri.
-            tools = this.getIndividuals(Tool.class, null); //sorting is irrelevant and must include individuals even having the same uri.
-            processes = this.getIndividuals(be.naturalsciences.bmdc.ears.ontology.entities.Process.class, null); //sorting is irrelevant and must include individuals even having the same uri.
-            actions = this.getIndividuals(Action.class, null); //sorting is irrelevant and must include individuals even having the same uri.
-            properties = this.getIndividuals(Property.class, null); //sorting is irrelevant and must include individuals even having the same uri.
-            for (Tool tool : tools) {
-                try {
-                    if (tool.getSpecificEventDefinitionCollection() != null) {
-                        specificEventDefinitions.addAll(tool.getSpecificEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
-                    }
-                    if (tool.getGenericEventDefinitionCollection() != null) {
-                        genericEventDefinitions.addAll(tool.getGenericEventDefinitionCollection().stream().filter(c -> c != null).collect(Collectors.toList()));
-                    }
-                } catch (Exception e) {
-                    Messaging.report("A problem occured during saving the tree at " + destPath + " for the tool" + tool.getUri(), e, this.getClass(), false);
-                }
-                if (tool.isHostingTool()) {
-                    for (SpecificEventDefinition sev : tool.getSpecificEventDefinitionCollection()) {
-                        specificEventDefinitions.add(sev);
-                        processes.add(sev.getProcess());
-                        actions.add(sev.getAction());
-                        processActions.add(sev.getProcessAction());
-                        properties.addAll(sev.getPropertyCollection());
-                    }
-                    for (GenericEventDefinition gev : tool.getGenericEventDefinitionCollection()) {
-                        genericEventDefinitions.add(gev);
-                        processes.add(gev.getProcess());
-                        actions.add(gev.getAction());
-                        processActions.add(gev.getProcessAction());
-                        properties.addAll(gev.getPropertyCollection());
-                    }
-                    for (Tool nestedTool : tool.getHostedCollection()) {
-                        nestedTool.getToolCategoryCollection().retainAll(toolCategories); // remove any previous categories the nested tool belongs to, unless this category is included in the current ontology itself. Otherwise the category is referenced to but the category entity itself of the previous ontology the tool belonged to does not exist.
-                        for (SpecificEventDefinition sev : nestedTool.getSpecificEventDefinitionCollection()) {
-                            specificEventDefinitions.add(sev);
-                            processes.add(sev.getProcess());
-                            actions.add(sev.getAction());
-                            processActions.add(sev.getProcessAction());
-                            properties.addAll(sev.getPropertyCollection());
-                        }
-                        for (GenericEventDefinition gev : nestedTool.getGenericEventDefinitionCollection()) {
-                            genericEventDefinitions.add(gev);
-                            processes.add(gev.getProcess());
-                            actions.add(gev.getAction());
-                            processActions.add(gev.getProcessAction());
-                            properties.addAll(gev.getPropertyCollection());
-                        }
-                    }
-                }
-            }
-            for (SpecificEventDefinition sev : specificEventDefinitions) {
-                try {
-                    processActions.add(sev.getProcessAction());
-                    processes.add(sev.getProcess());
-                    actions.add(sev.getAction());
-                } catch (NullPointerException e) {
-                    Messaging.report("A problem occured during saving the tree at " + destPath + " for the specificevent about " + sev.getProcess().getUri() + " & " + sev.getAction().getUri() + " & " + sev.getToolRef().getUri(), e, this.getClass(), false);
-                    processActions.add(sev.getProcessAction());
-                }
-            }
-            for (GenericEventDefinition gev : genericEventDefinitions) {
-                processActions.add(gev.getProcessAction());
-            }
-
-            /* testNames(new ArrayList<AsConcept>(toolCategories));
-            testNames(new ArrayList<AsConcept>(tools));
-            testNames(new ArrayList<AsConcept>(processes));
-            testNames(new ArrayList<AsConcept>(actions));
-            testNames(new ArrayList<AsConcept>(properties));
-            testNames(new ArrayList<AsConcept>(specificEventDefinitions));
-            testNames(new ArrayList<AsConcept>(genericEventDefinitions));*/
-            owlCreator.setToolCategoryCollection(toolCategories);
-            owlCreator.setToolCollection(tools);
-            owlCreator.setProcessCollection(processes);
-            owlCreator.setActionCollection(actions);
-            owlCreator.setPropertyCollection(properties);
-            owlCreator.setSevCollection(specificEventDefinitions);
-            owlCreator.setGevCollection(genericEventDefinitions);
-            owlCreator.setProcessActionCollection(processActions);
-
-            int version = this.model.getVersion();
-
-            owlCreator.createOntoFile(EARSOntologyCreator.LoadOnto.PASTE, new File(Constants.ACTUAL_LOCAL_ONTOLOGY_AXIOM_LOCATION), version + 1, destPath, null, null, null, true);
-
-            if (this.model.getScope().equals(ScopeMap.Scope.VESSEL.name()) && user != null) {
-                IResponseMessage response = client.uploadVesselOntology(destPath, user.getUsername(), user.getPassword());
-                if (response.isBad()) {
-                    throw new EarsException("Vessel tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getSummary());
-                }
-            }
-            if (this.model.getScope().equals(ScopeMap.Scope.PROGRAM.name())) {
-                IResponseMessage response = client.uploadProgramOntology(destPath);
-                if (response.isBad()) {
-                    throw new EarsException("Program tree wasn't saved to EARS web services. File was only saved locally and not on the server." + response.getSummary());
-                }
-            }
-            saved = true;
-        } catch (OWLOntologyCreationException | NullPointerException ex) {
-            saved = false;
-            throw ex;
-        } finally {
-            owlCreator = null;
-            toolCategories = null;
-            tools = null;
-            processes = null;
-            actions = null;
-            properties = null;
-            genericEventDefinitions = null;
-            specificEventDefinitions = null;
-            processActions = null;
-        }
+        saveInternal(destPath, user, client);
     }
 
     /**
@@ -626,18 +604,17 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
      */
     @Override
     public boolean save() {
-
         Path path = this.getModel().getFile().toPath();
         try {
             save(path);
         } catch (OWLOntologyCreationIOException ex) {
-            Messaging.report("The ontology server is unreachable", ex, this.getClass(), false);
+            Messaging.report("The ontology server is unreachable", ex, this.getClass(), true);
             return false;
         } catch (OWLOntologyCreationException ex) {
-            Messaging.report("The tree couldn't be serialized to rdf", ex, this.getClass(), false);
+            Messaging.report("The tree couldn't be serialized to rdf", ex, this.getClass(), true);
             return false;
-        } catch (EarsException ex) {
-            Messaging.report("The tree couldn't be saved", ex, this.getClass(), false);
+        } catch (EarsException | IllegalStateException ex) {
+            Messaging.report("The tree couldn't be saved", ex, this.getClass(), true);
             return false;
         }
         try {
@@ -661,10 +638,9 @@ public class OntologyNodes<T extends AsConcept> implements IOntologyNodes<T> {
      * @return
      */
     @Override
-    public boolean saveAs(Path destPath
-    ) {
+    public boolean saveAs(Path destPath) {
         try {
-            save(destPath);
+            saveInternal(destPath, null, null);
         } catch (OWLOntologyCreationIOException ex) {
             Messaging.report("The ontology server is unreachable.", ex, this.getClass(), true);
             return false;

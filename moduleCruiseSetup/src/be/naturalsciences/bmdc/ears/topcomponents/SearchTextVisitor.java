@@ -42,7 +42,7 @@ public abstract class SearchTextVisitor<M extends TableModel> {
         RowFilter<M, Object> rf = null;
         //If current expression doesn't parse, don't update.
         try {
-            rf = RowFilter.regexFilter(text, column);
+            rf = RowFilter.regexFilter("(?i)" + text, column);
         } catch (java.util.regex.PatternSyntaxException e) {
             return;
         }
@@ -57,9 +57,6 @@ public abstract class SearchTextVisitor<M extends TableModel> {
 
             @Override
             public void focusGained(FocusEvent e) {
-                /* if (field.getText().equals(org.openide.util.NbBundle.getMessage(UpdateCruiseTopComponent.class, "UpdateCruiseTopComponent.cruiseNameTextField.text"))) {
-                 field.setText("");
-                 }*/
             }
 
             @Override

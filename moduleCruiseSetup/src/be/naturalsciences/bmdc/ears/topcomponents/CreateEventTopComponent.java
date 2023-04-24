@@ -5,25 +5,19 @@
  */
 package be.naturalsciences.bmdc.ears.topcomponents;
 
-import be.naturalsciences.bmdc.ears.listeners.ExportEventActionListener;
-import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
-import be.naturalsciences.bmdc.ears.comparator.ActorComparator;
+import be.naturalsciences.bmdc.ears.comparator.PersonDTOComparator;
 import be.naturalsciences.bmdc.ears.entities.Actor;
 import be.naturalsciences.bmdc.ears.entities.CruiseBean;
 import be.naturalsciences.bmdc.ears.entities.CurrentActor;
 import be.naturalsciences.bmdc.ears.entities.CurrentCruise;
+import be.naturalsciences.bmdc.ears.entities.CurrentEvent;
 import be.naturalsciences.bmdc.ears.entities.CurrentProgram;
 import be.naturalsciences.bmdc.ears.entities.CurrentVessel;
-import be.naturalsciences.bmdc.ears.entities.EventBean;
 import be.naturalsciences.bmdc.ears.entities.ICruise;
 import be.naturalsciences.bmdc.ears.entities.IProgram;
 import be.naturalsciences.bmdc.ears.entities.IVessel;
-import be.naturalsciences.bmdc.ears.entities.NavBean;
-import be.naturalsciences.bmdc.ears.entities.PropertyBean;
-import be.naturalsciences.bmdc.ears.entities.ThermosalBean;
-import be.naturalsciences.bmdc.ears.entities.UnderwayBean;
-import be.naturalsciences.bmdc.ears.entities.WeatherBean;
-import static be.naturalsciences.bmdc.ears.listeners.ExportEventActionListener.EXPORT_FILE_NAME;
+import be.naturalsciences.bmdc.ears.entities.ProgramBean;
+import be.naturalsciences.bmdc.ears.listeners.EventExportActionListener;
 import be.naturalsciences.bmdc.ears.listeners.SelectOnClickPopupMenuListener;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
@@ -32,14 +26,9 @@ import be.naturalsciences.bmdc.ears.ontology.ProgramOntology;
 import be.naturalsciences.bmdc.ears.ontology.VesselOntology;
 import be.naturalsciences.bmdc.ears.ontology.entities.Property;
 import be.naturalsciences.bmdc.ears.ontology.entities.SpecificEventDefinition;
-import be.naturalsciences.bmdc.ears.properties.Configs;
-import be.naturalsciences.bmdc.ears.rest.RestClient;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
-import be.naturalsciences.bmdc.ears.rest.RestClientNav;
-import be.naturalsciences.bmdc.ears.rest.RestClientThermosal;
-import be.naturalsciences.bmdc.ears.rest.RestClientUnderway;
-import be.naturalsciences.bmdc.ears.rest.RestClientWeather;
-import be.naturalsciences.bmdc.ears.utils.Message;
+import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
 import be.naturalsciences.bmdc.ears.utils.Messaging;
 import be.naturalsciences.bmdc.ears.utils.SwingUtils;
 import be.naturalsciences.bmdc.ears.utils.TableColumnAdjuster;
@@ -48,65 +37,48 @@ import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import com.github.lgooddatepicker.tableeditors.DateTableEditor;
 import com.github.lgooddatepicker.tableeditors.TimeTableEditor;
 import com.github.lgooddatepicker.zinternaltools.InternalUtilities;
-import com.opencsv.CSVWriter;
+import eu.eurofleets.ears3.dto.EventDTO;
+import eu.eurofleets.ears3.dto.PersonDTO;
+import eu.eurofleets.ears3.dto.PropertyDTO;
 import gnu.trove.map.hash.THashMap;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.SecureRandom;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import static javax.swing.JFileChooser.SAVE_DIALOG;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
-import javax.swing.SwingUtilities;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -120,8 +92,6 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 
-;
-
 /**
  * Top component which displays something.
  */
@@ -132,9 +102,9 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(
         preferredID = "CreateEventTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
-        persistenceType = TopComponent.PERSISTENCE_NEVER
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = false)
+@TopComponent.Registration(mode = "editor", openAtStartup = true, position = 3)
 @ActionID(category = "Window", id = "be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent")
 @ActionReferences({
     // @ActionReference(path = "Toolbars/Window", position = 3333,name = "Create/edit events"),
@@ -146,109 +116,110 @@ import org.openide.windows.TopComponent;
         preferredID = "CreateEventTopComponent"
 )
 @Messages({
-    "CTL_CreateEventAction=Create/edit events...",
+    "CTL_CreateEventAction=Events...",
     "CTL_CreateEventTopComponent=Create/edit events",
     "HINT_CreateEventTopComponent=Manage events"
 })
 public final class CreateEventTopComponent extends TopComponent implements LookupListener {
-    
+
     private final InstanceContent content = new InstanceContent();
     public final static Font DEFAULT_FONT = new Font("Sans Serif", Font.BOLD, 12);
     public final static int DEFAULT_ROW_HEIGHT = 25;
-    
+
     private TableColumn actorColumn;
+    private TableColumn programColumn;
     private TableColumn propertyColumn;
-    
-    private Lookup.Result<EventBean> eventResult;
+
+    //private Lookup.Result<EventDTO> eventResult;
     private Lookup.Result<Actor> actorResult;
     private SingletonResult<CurrentVessel, IVessel> currentVesselResult;
+    private SingletonResult<CurrentEvent, EventDTO> latestEventResult;
     private SingletonResult<CurrentCruise, ICruise> currentCruiseResult;
     private SingletonResult<CurrentProgram, IProgram> currentProgramResult;
-    
-    private ExportEventActionListener exportEventActionListener;
-    
-    private TableRowSorter<TableModel> eventTableSorter;
-    
+
+    private EventExportActionListener exportEventActionListener;
+
+    private TableRowSorter<TableModel> eventsTable2Sorter;
+
     private final Action editPropertyEventAction;
-    
+
     private static RestClientEvent restClientEvent;
-    
+    private static RestClientProgram restClientProgram;
+
     private EventTableModel model;
     JPopupMenu popupMenu = new JPopupMenu();
-    
+    Set<PersonDTO> actors = new TreeSet<>(new PersonDTOComparator());
     private Map<TableColumn, int[]> columnWidths;
-    
+
     public CreateEventTopComponent() {
         initComponents();
         try {
             restClientEvent = new RestClientEvent();
+            restClientProgram = new RestClientProgram();
         } catch (ConnectException ex) {
             Messaging.report("Note that the webservices are offline. The events can't be retrieved.", ex, this.getClass(), true);
         } catch (EarsException ex) {
             Messaging.report(ex.getMessage(), ex, this.getClass(), true);
         }
-        
+
         associateLookup(new AbstractLookup(content));
         setName(Bundle.CTL_CreateEventTopComponent());
         setToolTipText(Bundle.HINT_CreateEventTopComponent());
-        
+
         actorResult = Utilities.actionsGlobalContext().lookupResult(Actor.class);
         actorResult.addLookupListener(this);
-        
-        eventResult = Utilities.actionsGlobalContext().lookupResult(EventBean.class);//lookupEvent.lookupResult(EventBean.class);
-        eventResult.addLookupListener(this);
-        
+
         currentVesselResult = new SingletonResult<>(CurrentVessel.class, this);
         currentCruiseResult = new SingletonResult<>(CurrentCruise.class, this);
         currentProgramResult = new SingletonResult<>(CurrentProgram.class, this);
-        
-        exportEventActionListener = new ExportEventActionListener();
-        
-        eventTable.setRowHeight(DEFAULT_ROW_HEIGHT);
-        eventTable.setFont(DEFAULT_FONT);
-        eventTable.setFillsViewportHeight(true);
-        
+        latestEventResult = new SingletonResult<>(CurrentEvent.class, this);
+
+        exportEventActionListener = new EventExportActionListener();
+
+        eventsTable2.setRowHeight(DEFAULT_ROW_HEIGHT);
+        eventsTable2.setFont(DEFAULT_FONT);
+        eventsTable2.setFillsViewportHeight(true);
+
         final JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem copyItem = new JMenuItem("Copy");
         JMenuItem copyItemNow = new JMenuItem("Copy to now");
         JMenuItem deleteItem = new JMenuItem("Delete");
-        
+
         copyItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int[] modelRows = SwingUtils.convertSelectedRowIndicesToModel(eventTable);
-                
+                int[] modelRows = SwingUtils.convertSelectedRowIndicesToModel(eventsTable2);
+
                 for (int i = 0; i < modelRows.length; i++) {
-                    EventBean event = ((EventTableModel) eventTable.getModel()).getEntityAt(modelRows[i]).clone();
-                    event.setEventId(event.buildEventId());
-                    GlobalActionContextProxy.getInstance().addEnsureOne(event);
+                    EventDTO event = (EventDTO) getModel().getEntityAt(modelRows[i]).clone();
+                    event.setIdentifier(null); //let the server add identifier
+                    GlobalActionContextProxy.getInstance().add(CurrentEvent.getInstance(event));
                 }
             }
         });
         copyItemNow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                eventTable.getSelectedRow();
-                int[] modelRows = SwingUtils.convertSelectedRowIndicesToModel(eventTable);
-                
+                eventsTable2.getSelectedRow();
+                int[] modelRows = SwingUtils.convertSelectedRowIndicesToModel(eventsTable2);
+
                 for (int i = 0; i < modelRows.length; i++) {
-                    EventBean event = ((EventTableModel) eventTable.getModel()).getEntityAt(modelRows[i]).clone();
-                    
-                    event.setEventId(event.buildEventId());
-                    event.setTimeStampDt(OffsetDateTime.now());
-                    GlobalActionContextProxy.getInstance().addEnsureOne(event);
+                    EventDTO event = getModel().getEntityAt(modelRows[i]).clone();
+                    event.setIdentifier(null); //let the server add identifier
+                    event.setTimeStamp(null); //let the server add the current time
+                    GlobalActionContextProxy.getInstance().add(CurrentEvent.getInstance(event));
                 }
             }
         });
         deleteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int[] selectedRows = eventTable.getSelectedRows();
+                int[] selectedRows = eventsTable2.getSelectedRows();
                 if (selectedRows.length > 0) {
-                    int[] modelRows = SwingUtils.convertSelectedRowIndicesToModel(eventTable);
+                    int[] modelRows = SwingUtils.convertSelectedRowIndicesToModel(eventsTable2);
                     String messageBoxHeader = null;
                     StringBuilder messageBoxText = new StringBuilder("<html>");
-                    
+
                     if (selectedRows.length == 1) {
                         messageBoxHeader = "Delete row " + (selectedRows[0] + 1) + "?";
                     } else {
@@ -257,100 +228,101 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
                     messageBoxText.append(messageBoxHeader + ": ");
                     messageBoxText.append("<ul>");
                     for (int i = 0; i < modelRows.length; i++) {
-                        EventBean event = ((EventTableModel) eventTable.getModel()).getEntityAt(modelRows[i]);
+                        EventDTO event = ((EventTableModel) eventsTable2.getModel()).getEntityAt(modelRows[i]);
                         messageBoxText.append("<li>");
-                        messageBoxText.append(event.getDescription());
+                        messageBoxText.append(event.getName());
                         messageBoxText.append("</li>");
                     }
                     messageBoxText.append("</ul>");
                     messageBoxText.append("</html>");
-                    int rep = SwingUtils.createYNDialogAndGetResponse(eventTable, messageBoxText.toString(), messageBoxHeader);
+                    int rep = SwingUtils.createYNDialogAndGetResponse(eventsTable2, messageBoxText.toString(), messageBoxHeader);
                     if (rep == 0) {
                         ArrayUtils.reverse(modelRows); //first delete the highest indices, then move to the lowest indices
                         for (int i = 0; i < modelRows.length; i++) {
-                            EventBean event = ((EventTableModel) eventTable.getModel()).getEntityAt(modelRows[i]);
-                            ((EventTableModel) eventTable.getModel()).removeEntity(event);
+                            EventDTO event = getModel().getEntityAt(modelRows[i]);
+                            ((EventTableModel) eventsTable2.getModel()).removeEntity(event);
                             populateNbEventsLabel();
                         }
                     }
-                    resizeToEvents(eventTable);
+                    resizeToEvents(eventsTable2);
                 }
-                
+
             }
         });
-        eventTable.addKeyListener(new KeyListener() {
+        eventsTable2.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent ke) {
                 populateNbEventsLabel();
             }
-            
+
             @Override
             public void keyPressed(KeyEvent ke) {
-                
+
             }
-            
+
             @Override
             public void keyReleased(KeyEvent ke) {
                 populateNbEventsLabel();
             }
         });
-        eventTable.addMouseListener(new MouseListener() {
+        eventsTable2.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
                 populateNbEventsLabel();
             }
-            
+
             @Override
             public void mousePressed(MouseEvent me) {
                 populateNbEventsLabel();
             }
-            
+
             @Override
             public void mouseReleased(MouseEvent me) {
                 populateNbEventsLabel();
             }
-            
+
             @Override
             public void mouseEntered(MouseEvent me) {
-                
+
             }
-            
+
             @Override
             public void mouseExited(MouseEvent me) {
-                
+
             }
         });
         editPropertyEventAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int modelRow = Integer.valueOf(e.getActionCommand());
-                EventBean event = getModel().getEntityAt(modelRow);
-                JDialog dialog = new EventPropertyDialog(eventTable, null, null, event);
-                
-                dialog.setVisible(true);
+                EventDTO event = getModel().getEntityAt(modelRow);
+                if (event.getProperties() != null) {
+                    JDialog dialog = new EventPropertyDialog(eventsTable2, null, null, event);
+                    dialog.setVisible(true);
+                }
             }
         };
         popupMenu.add(copyItem);
         popupMenu.add(copyItemNow);
         popupMenu.add(deleteItem);
-        eventTable.setComponentPopupMenu(popupMenu);
-        
-        popupMenu.addPopupMenuListener(new SelectOnClickPopupMenuListener(eventTable, popupMenu));
+        eventsTable2.setComponentPopupMenu(popupMenu);
 
-        /*eventTable.getParent().addComponentListener(new ComponentAdapter() {
+        popupMenu.addPopupMenuListener(new SelectOnClickPopupMenuListener(eventsTable2, popupMenu));
+
+        /*eventsTable2.getParent().addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(final ComponentEvent e) {
-                if (eventTable.getParent().getWidth() > 400) { //actual width smaller than wished width 
-                    eventTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+                if (eventsTable2.getParent().getWidth() > 400) { //actual width smaller than wished width 
+                    eventsTable2.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
                 } else {
-                    eventTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                    eventsTable2.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 }
             }
-        });*//*> eventTable.getPreferredSize().width*/
-        
+        });*//*> eventsTable2.getPreferredSize().width*/
+
         columnWidths = new THashMap();
     }
-    
+
     public static RestClientEvent getRestClientEvent() {
         return restClientEvent;
     }
@@ -363,9 +335,8 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        o_ScrollPaneForEventTable = new javax.swing.JScrollPane();
-        eventTable = new javax.swing.JTable()
-        ;
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jPanel3 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         timeZoneCheckBox = new javax.swing.JCheckBox();
         toolCatCheckBox = new javax.swing.JCheckBox();
@@ -373,33 +344,38 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         actorCheckBox = new javax.swing.JCheckBox();
         programCheckbox = new javax.swing.JCheckBox();
         labelCheckbox = new javax.swing.JCheckBox();
-        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 32767));
+        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22));
         comboFilterDateOfEvent = new javax.swing.JComboBox();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 22), new java.awt.Dimension(10, 22), new java.awt.Dimension(10, 22));
         jButton1 = new javax.swing.JButton();
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 32767));
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22));
         jLabel1 = new javax.swing.JLabel();
-        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 22), new java.awt.Dimension(10, 22), new java.awt.Dimension(10, 22));
         mainActorCombobox = new javax.swing.JComboBox();
-        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 32767));
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22));
         nbEventsLabel = new javax.swing.JLabel();
-        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(80, 0), new java.awt.Dimension(80, 0), new java.awt.Dimension(80, 32767));
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22), new java.awt.Dimension(40, 22));
         exportEventButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        eventsTable2 = new javax.swing.JTable();
 
-        setPreferredSize(new java.awt.Dimension(1535, 1135));
+        setMaximumSize(new java.awt.Dimension(1100, 700));
+        setMinimumSize(new java.awt.Dimension(200, 500));
+        setPreferredSize(new java.awt.Dimension(1100, 700));
+        setLayout(new java.awt.CardLayout());
 
-        o_ScrollPaneForEventTable.setAutoscrolls(true);
-        o_ScrollPaneForEventTable.setPreferredSize(new java.awt.Dimension(1535, 1135));
-        o_ScrollPaneForEventTable.setRequestFocusEnabled(false);
+        jScrollPane3.setMaximumSize(new java.awt.Dimension(1100, 700));
+        jScrollPane3.setMinimumSize(new java.awt.Dimension(200, 500));
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(1100, 700));
 
-        eventTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        eventTable.setMaximumSize(new java.awt.Dimension(32767, 32767));
-        eventTable.setMinimumSize(new java.awt.Dimension(20, 20));
-        eventTable.setPreferredSize(new java.awt.Dimension(1535, 1135));
-        o_ScrollPaneForEventTable.setViewportView(eventTable);
+        jPanel3.setMaximumSize(new java.awt.Dimension(1100, 700));
+        jPanel3.setMinimumSize(new java.awt.Dimension(200, 500));
+        jPanel3.setPreferredSize(new java.awt.Dimension(1100, 700));
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
+        jToolBar1.setMaximumSize(new java.awt.Dimension(1252, 25));
+        jToolBar1.setPreferredSize(new java.awt.Dimension(1252, 25));
 
         timeZoneCheckBox.setSelected(true);
         timeZoneCheckBox.setText(org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.timeZoneCheckBox.text")); // NOI18N
@@ -463,8 +439,8 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         programCheckbox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(programCheckbox, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.programCheckbox.text")); // NOI18N
         programCheckbox.setFocusable(false);
-        programCheckbox.setMaximumSize(new java.awt.Dimension(96, 32));
-        programCheckbox.setMinimumSize(new java.awt.Dimension(96, 32));
+        programCheckbox.setMaximumSize(new java.awt.Dimension(96, 22));
+        programCheckbox.setMinimumSize(new java.awt.Dimension(96, 22));
         programCheckbox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         programCheckbox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -481,8 +457,8 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         labelCheckbox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(labelCheckbox, org.openide.util.NbBundle.getMessage(CreateEventTopComponent.class, "CreateEventTopComponent.labelCheckbox.text")); // NOI18N
         labelCheckbox.setFocusable(false);
-        labelCheckbox.setMaximumSize(new java.awt.Dimension(96, 32));
-        labelCheckbox.setMinimumSize(new java.awt.Dimension(96, 32));
+        labelCheckbox.setMaximumSize(new java.awt.Dimension(96, 22));
+        labelCheckbox.setMinimumSize(new java.awt.Dimension(96, 22));
         labelCheckbox.setPreferredSize(new java.awt.Dimension(96, 32));
         labelCheckbox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         labelCheckbox.addItemListener(new java.awt.event.ItemListener() {
@@ -530,7 +506,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         jToolBar1.add(jLabel1);
         jToolBar1.add(filler6);
 
-        mainActorCombobox.setMaximumSize(new java.awt.Dimension(200, 32767));
+        mainActorCombobox.setMaximumSize(new java.awt.Dimension(200, 25));
         mainActorCombobox.setMinimumSize(new java.awt.Dimension(200, 25));
         mainActorCombobox.setPreferredSize(new java.awt.Dimension(200, 25));
         mainActorCombobox.addItemListener(new java.awt.event.ItemListener() {
@@ -569,31 +545,47 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         });
         jToolBar1.add(exportEventButton);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setMaximumSize(new java.awt.Dimension(1252, 850));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(1252, 850));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(1252, 850));
+
+        eventsTable2.setMaximumSize(new java.awt.Dimension(1252, 750));
+        eventsTable2.setMinimumSize(new java.awt.Dimension(1252, 750));
+        eventsTable2.setName(""); // NOI18N
+        eventsTable2.setPreferredSize(new java.awt.Dimension(1252, 750));
+        jScrollPane1.setViewportView(eventsTable2);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1523, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(o_ScrollPaneForEventTable, javax.swing.GroupLayout.DEFAULT_SIZE, 1523, Short.MAX_VALUE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap()))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(1110, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(35, 35, 35)
-                    .addComponent(o_ScrollPaneForEventTable, javax.swing.GroupLayout.DEFAULT_SIZE, 1094, Short.MAX_VALUE)
-                    .addContainerGap()))
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(47, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 628, Short.MAX_VALUE)
+                .addContainerGap(25, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(669, Short.MAX_VALUE)))
         );
+
+        jScrollPane3.setViewportView(jPanel3);
+
+        add(jScrollPane3, "card3");
     }// </editor-fold>//GEN-END:initComponents
 
     private void actorCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actorCheckBoxActionPerformed
@@ -620,9 +612,9 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     }//GEN-LAST:event_toolCatCheckBoxItemStateChanged
 
     private void mainActorComboboxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_mainActorComboboxItemStateChanged
-        Actor actor = null;
-        if (evt.getItem() instanceof Actor) {
-            actor = (Actor) evt.getItem();
+        PersonDTO actor = null;
+        if (evt.getItem() instanceof PersonDTO) {
+            actor = (PersonDTO) evt.getItem();
         }
         if (actor != null) {
             GlobalActionContextProxy.getInstance().add(CurrentActor.getInstance(actor));
@@ -649,20 +641,22 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         String text = (String) comboFilterDateOfEvent.getSelectedItem();
-        boolean isDate = true;
-        try {
-            StringUtils.SDF_ISO_DATE.parse(text);
-        } catch (ParseException ex) {
-            isDate = false;
-        }
-        if (isDate) {
+        if (text != null) {
+            boolean isDate = true;
             try {
-                eventTableSorter.setRowFilter(RowFilter.regexFilter(text));
-            } catch (PatternSyntaxException pse) {
-                Messaging.report("Bad regex pattern. Could not sort or limit table", pse, this.getClass(), false);
+                StringUtils.SDF_ISO_DATE.parse(text);
+            } catch (ParseException ex) {
+                isDate = false;
             }
-        } else {
-            eventTableSorter.setRowFilter(null);
+            if (isDate) {
+                try {
+                    eventsTable2Sorter.setRowFilter(RowFilter.regexFilter(text));
+                } catch (PatternSyntaxException pse) {
+                    Messaging.report("Bad regex pattern. Could not sort or limit table", pse, this.getClass(), false);
+                }
+            } else {
+                eventsTable2Sorter.setRowFilter(null);
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -670,7 +664,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         // TODO add your handling code here:
         comboFilterDateOfEvent.setPopupVisible(true);
         comboFilterDateOfEvent.removeAllItems();
-        
+
         comboFilterDateOfEvent.addItem("Select a date...");
         for (String date : this.getModel().getAllDates()) {
             comboFilterDateOfEvent.addItem(date);
@@ -682,16 +676,15 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private void mainActorComboboxFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mainActorComboboxFocusGained
         // TODO add your handling code here:
         CurrentActor currentActor = Utilities.actionsGlobalContext().lookup(CurrentActor.class);
-        
         if (currentActor != null) {
-            Actor a = currentActor.getConcept();
+            PersonDTO a = currentActor.getConcept();
             mainActorCombobox.setSelectedItem(a);
         }
     }//GEN-LAST:event_mainActorComboboxFocusGained
 
     private void exportEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportEventButtonActionPerformed
         // TODO add your handling code here:
-        ExportEventAction e = new ExportEventAction(this, getViewedEvents(), currentVesselResult.getCurrent(), currentCruiseResult.getCurrent(), currentProgramResult.getCurrent());
+        ExportEventAction e = new ExportEventAction(this, currentVesselResult.getCurrent(), currentCruiseResult.getCurrent(), currentProgramResult.getCurrent());
         exportEventActionListener.actionPerformed(e);
     }//GEN-LAST:event_exportEventButtonActionPerformed
 
@@ -720,7 +713,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox actorCheckBox;
     private javax.swing.JComboBox comboFilterDateOfEvent;
-    private javax.swing.JTable eventTable;
+    private javax.swing.JTable eventsTable2;
     private javax.swing.JButton exportEventButton;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
@@ -730,11 +723,13 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
     private javax.swing.Box.Filler filler7;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JCheckBox labelCheckbox;
     private javax.swing.JComboBox mainActorCombobox;
     private javax.swing.JLabel nbEventsLabel;
-    private javax.swing.JScrollPane o_ScrollPaneForEventTable;
     private javax.swing.JCheckBox processCheckBox;
     private javax.swing.JCheckBox programCheckbox;
     private javax.swing.JCheckBox timeZoneCheckBox;
@@ -752,8 +747,8 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
      * @param min
      */
     private void updateColumnWidth(ItemEvent evt, int column) {
-        final TableColumnAdjuster tca = new TableColumnAdjuster(eventTable);
-        TableColumnModel tcm = eventTable.getColumnModel();
+        final TableColumnAdjuster tca = new TableColumnAdjuster(eventsTable2);
+        TableColumnModel tcm = eventsTable2.getColumnModel();
         TableColumn tableColumn = tcm.getColumn(column);
         int[] columnWidth = columnWidths.get(tableColumn);
         if (evt.getStateChange() == evt.DESELECTED) {
@@ -768,7 +763,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             tca.restoreColumns();
         }
     }
-    
+
     private void setColumnWidths(TableColumn column, int max, int min) {
         columnWidths.put(column, new int[]{min, max});
         if (min == max) {
@@ -780,107 +775,128 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
         column.setMinWidth(min);
         column.setPreferredWidth(min);
     }
-    
-    private List<EventBean> getViewedEvents() {
-        List<EventBean> result = new ArrayList<>();
-        for (int i = 0; i < eventTableSorter.getViewRowCount(); i++) {
-            result.add(this.getModel().getEntityAt(eventTable.convertRowIndexToModel(i)));
+
+    private List<EventDTO> getViewedEvents() {
+        List<EventDTO> result = new ArrayList<>();
+        for (int i = 0; i < eventsTable2Sorter.getViewRowCount(); i++) {
+            result.add(this.getModel().getEntityAt(eventsTable2.convertRowIndexToModel(i)));
         }
         return result;
     }
-    
+
     private EventTableModel getModel() {
-        return (EventTableModel) eventTable.getModel();
+        return (EventTableModel) eventsTable2.getModel();
     }
-    
+
     @Override
     protected void componentShowing() {
     }
-    
-    private void populateEventModelFromScratch() {
-        if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
-            CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
-            List<EventBean> events = null;
-            try {
-                events = (List<EventBean>) restClientEvent.getEventByCruise(currentCruise);
-            } catch (ConnectException ex) {
-                Messaging.report("Note that the webservices are offline. The event list can't be retrieved.", ex, this.getClass(), true);
+
+    private void populateEventModel() {
+        List<EventDTO> events = new ArrayList();
+        if (restClientEvent != null) {
+            if (currentCruiseResult.getCurrent() != null && currentCruiseResult.getCurrent().getConcept() != null) { //there is a current cruise
+                CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
+
+                try {
+                    events = (List<EventDTO>) restClientEvent.getEventsByCruise(currentCruise);
+                } catch (ConnectException ex) {
+                    Messaging.report("Note that the webservices are offline. The event list can't be retrieved.", ex, this.getClass(), true);
+                }
+            } else if (currentProgramResult.getCurrent() != null && currentProgramResult.getCurrent().getConcept() != null) {
+                ProgramBean currentProgram = currentProgramResult.getCurrent().getConcept();
+
+                try {
+                    events = (List<EventDTO>) restClientEvent.getEventsByProgram(currentProgram);
+                } catch (ConnectException ex) {
+                    Messaging.report("Note that the webservices are offline. The event list can't be retrieved.", ex, this.getClass(), true);
+                }
             }
-            if (events != null) {
-                Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
-                for (EventBean event : events) {
-                    getAssociatedAcquisitionInfo(event);
-                    if (event.getProperties() != null) {
-                        for (PropertyBean property : event.getProperties()) {
-                            try {
-                                Set<Property> properties = Individuals.getConcepts(allIndividuals, new URI(property.getCode()), true, Property.class);
-                                for (Property earsProperty : properties) {
-                                    property.setIsMandatory(earsProperty.isMandatory());
-                                    property.setIsMultiple(earsProperty.isMultiple());
-                                    property.setValueClass(earsProperty.getValueClass());
+        }
+        if (events != null) {
+            Collection<Individuals> allIndividuals = (Collection< Individuals>) Utilities.actionsGlobalContext().lookupAll(Individuals.class);
+            for (EventDTO event : events) {
+                // getAssociatedAcquisitionInfo(event);
+                if (event.getProperties() != null) {
+                    for (PropertyDTO property : event.getProperties()) {
+                        try {
+                            Set<Property> properties = Individuals.getConcepts(allIndividuals, new URI(property.key.identifier), true, Property.class);
+                            for (Property earsProperty : properties) {
+                                property.mandatory = earsProperty.isMandatory();
+                                property.multiple = earsProperty.isMultiple();
+                                property.valueClass = earsProperty.getValueClass();
+                            }
+                        } catch (URISyntaxException ex) {
+                            Messaging.report("URISyntaxException", ex, this.getClass(), false);
+                        }
+                    }
+                }
+                for (Individuals individuals : allIndividuals) {
+                    if (individuals.getModel() instanceof ProgramOntology) {
+
+                        for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
+                            if (sev.equals(event)) {
+                                for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
+
+                                    event.attachProperty(property, null);
                                 }
-                            } catch (URISyntaxException ex) {
-                                Messaging.report("URISyntaxException", ex, this.getClass(), false);
                             }
                         }
                     }
-                    for (Individuals individuals : allIndividuals) {
-                        if (individuals.getModel() instanceof ProgramOntology) {
-                            
-                            for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
-                                if (sev.equals(event)) {
-                                    for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
-                                        
-                                        event.attachProperty(property, null);
-                                    }
-                                }
-                            }
-                        }
-                        if (individuals.getModel() instanceof VesselOntology) {
-                            for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
-                                if (sev.equals(event)) {
-                                    for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
-                                        event.attachProperty(property, null);
-                                    }
+                    if (individuals.getModel() instanceof VesselOntology) {
+                        for (SpecificEventDefinition sev : individuals.get(SpecificEventDefinition.class)) {
+                            if (sev.equals(event)) {
+                                for (be.naturalsciences.bmdc.ears.ontology.entities.Property property : sev.getPropertyCollection()) {
+                                    event.attachProperty(property, null);
                                 }
                             }
                         }
                     }
                 }
-                
-                model = new EventTableModel(eventTable, events);
-                eventTable.setModel(model);
-                resizeToEvents(eventTable);
-                populateNbEventsLabel();
             }
+
+            model = new EventTableModel(eventsTable2, events);
+            eventsTable2.setModel(model);
+            resizeToEvents(eventsTable2);
+            populateNbEventsLabel();
         }
     }
-    
+
     public static void resizeToEvents(JTable table) {
         int size = table.getModel().getRowCount();
         int newHeight = DEFAULT_ROW_HEIGHT * size;
         Dimension dim = new Dimension(table.getWidth(), newHeight);
         table.setPreferredSize(dim);
     }
-    
+
+    private void populateActorCombobox(JComboBox actorCombobox) {
+        actorCombobox.removeAllItems();
+        actors.clear();
+        // if (!Configs.getOverrideEventsAsAnonymous()) { // no more anonymous events in ears3
+        Collection<? extends Actor> allActors = actorResult.allInstances();
+        for (Actor actor : allActors) {
+            actors.add(new PersonDTO(actor));
+        }
+
+        /*for (EventDTO event : this.getModel().getEntities()) {
+            actors.add(event.getActor());
+        }*/ //disable this as it causes java.lang.ClassCastException: javax.swing.table.DefaultTableModel cannot be cast to be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel
+        for (PersonDTO actor : actors) {
+            actorCombobox.addItem(actor);
+        }
+        /*  } else {
+            actors.clear();
+            GlobalActionContextProxy.getInstance().add(CurrentActor.getInstance(null));
+        }*/
+    }
+
     @Override
     public void componentOpened() {
-        mainActorCombobox.removeAllItems();
-        
-        Set<Actor> actors = new TreeSet<>(new ActorComparator());
-        if (!Configs.getOverrideEventsAsAnonymous()) {
-            actors.addAll(actorResult.allInstances());
-            for (Actor actor : actors) {
-                mainActorCombobox.addItem(actor);
-            }
-        }
-        
-        if (restClientEvent != null && currentCruiseResult.getCurrent() != null) {
-            
-            populateEventModelFromScratch();
-            
-            TableColumnModel tableColumnModel = eventTable.getColumnModel();
-            
+        if (restClientEvent != null) {
+            populateEventModel();
+            populateActorCombobox(mainActorCombobox);
+            TableColumnModel tableColumnModel = eventsTable2.getColumnModel();
+
             int dateColumnId = model.findColumn(EventTableModel.DATE);
             int timeColumnId = model.findColumn(EventTableModel.TIME);
             int timeZoneColumnId = model.findColumn(EventTableModel.TIMEZONE);
@@ -892,7 +908,7 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             int programColumnId = model.findColumn(EventTableModel.PROGRAM);
             int labelColumnId = model.findColumn(EventTableModel.LABEL);
             int propertyColumnId = model.findColumn(EventTableModel.PROPERTIES);
-            
+
             TableColumn dateColumn = tableColumnModel.getColumn(dateColumnId);
             TableColumn timeColumn = tableColumnModel.getColumn(timeColumnId);
             TableColumn timeZoneColumn = tableColumnModel.getColumn(timeZoneColumnId);
@@ -901,10 +917,10 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             TableColumn processColumn = tableColumnModel.getColumn(processColumnId);
             TableColumn actionColumn = tableColumnModel.getColumn(actionColumnId);
             actorColumn = tableColumnModel.getColumn(actorColumnId);
-            TableColumn programColumn = tableColumnModel.getColumn(programColumnId);
+            programColumn = tableColumnModel.getColumn(programColumnId);
             TableColumn labelColumn = tableColumnModel.getColumn(labelColumnId);
             propertyColumn = tableColumnModel.getColumn(propertyColumnId);
-            
+
             setColumnWidths(dateColumn, 80, 80);
             setColumnWidths(timeColumn, 80, 70);
             setColumnWidths(timeZoneColumn, 80, 50);
@@ -916,182 +932,154 @@ public final class CreateEventTopComponent extends TopComponent implements Looku
             setColumnWidths(programColumn, 500, 80);
             setColumnWidths(labelColumn, 500, 80);
             setColumnWidths(propertyColumn, 100, 100);
-            
-            eventTable.getTableHeader().setReorderingAllowed(true);
+
+            eventsTable2.getTableHeader().setReorderingAllowed(true);
 
             // This decides how many clicks are required to edit a cell in the table editors demo.
             // (Set this to 1 or 2 clicks, as desired.)
             int clickCountToEdit = 1;
             // Set all the default table editors to start with the desired number of clicks.
             // The default table editors are the ones supplied by the JTable class.
-            InternalUtilities.setDefaultTableEditorsClicks(eventTable, clickCountToEdit);
+            InternalUtilities.setDefaultTableEditorsClicks(eventsTable2, clickCountToEdit);
             // Add table renderers and editors for the LocalDate, LocalTime, and LocalDateTime types.
             //
             // Note: The editors and renders for each type should be separate instances of the 
             // matching table editor class. Don't use the same instance as both a renderer and editor.
             // If you did, it would be immediately obvious because the cells would not render properly.
-            eventTable.setDefaultRenderer(LocalDate.class, new DateTableEditor());
+            eventsTable2.setDefaultRenderer(LocalDate.class, new DateTableEditor());
             DateTableEditor dateEdit = new DateTableEditor();
             dateEdit.clickCountToEdit = clickCountToEdit;
-            eventTable.setDefaultEditor(LocalDate.class, dateEdit);
-            
-            eventTable.setDefaultRenderer(LocalTime.class, new TimeTableEditor());
+            eventsTable2.setDefaultEditor(LocalDate.class, dateEdit);
+
+            eventsTable2.setDefaultRenderer(LocalTime.class, new TimeTableEditor());
             TimeTableEditor timeEdit = new TimeTableEditor();
             timeEdit.clickCountToEdit = clickCountToEdit;
-            eventTable.setDefaultEditor(LocalTime.class, timeEdit);
+            eventsTable2.setDefaultEditor(LocalTime.class, timeEdit);
 
             //add actor column
             actorColumn.setCellRenderer(new DropdownTableCellRenderer());
             actorColumn.setCellEditor(new ActorCellEditor(actors));
+
+            //add program column
+            Set<ProgramBean> programs = populatePrograms();
+            programColumn.setCellRenderer(new DropdownTableCellRenderer());
+            programColumn.setCellEditor(new ProgramCellEditor(programs));
 
             //add action column
             actionColumn.setCellRenderer(new DropdownTableCellRenderer());
             actionColumn.setCellEditor(new ActionCellEditor());
 
             //add properties button
-            ButtonColumn editPropertyButtonColumn = new ButtonColumn(eventTable, editPropertyEventAction, propertyColumnId, "Edit properties");
-            
-            eventTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+            ButtonColumn editPropertyButtonColumn = new ButtonColumn(eventsTable2, editPropertyEventAction, propertyColumnId, "Edit properties");
+
+            eventsTable2.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
             //sorting
-            eventTable.setAutoCreateRowSorter(true);
-            eventTableSorter = new TableRowSorter<>(this.getModel());
-            eventTable.setRowSorter(eventTableSorter);
+            eventsTable2.setAutoCreateRowSorter(true);
+            eventsTable2Sorter = new TableRowSorter<>(this.getModel());
+            eventsTable2.setRowSorter(eventsTable2Sorter);
         }
-        
+
     }
-    
+
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
 
     }
-    
+
     @Override
     public void componentActivated() {
         // TODO add custom code on component closing
 
     }
-    
+
     @Override
     public void componentDeactivated() {
         // TODO add custom code on component closing
 
     }
-    
+
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
         // TODO store your settings
     }
-    
+
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-    
-    private static Object previousEvent;
-    
+
+    private void addDropdownMenu(String columnName, TableCellEditor editor) {
+        TableColumnModel tableColumnModel = eventsTable2.getColumnModel();
+        int actorColumnId = model.findColumn(columnName);
+        TableColumn actorColumn = tableColumnModel.getColumn(actorColumnId);
+        if (actorColumn != null) {
+            actorColumn.setCellRenderer(new DropdownTableCellRenderer());
+            actorColumn.setCellEditor(editor);
+        }
+    }
+
     @Override
     public void resultChanged(LookupEvent ev) {
-        
         if (ev.getSource().equals(actorResult)) {
-            
-            mainActorCombobox.removeAllItems();
-            Set<Actor> actors = new TreeSet<>(new ActorComparator());
-            if (!Configs.getOverrideEventsAsAnonymous()) {
-                actors.addAll(actorResult.allInstances());
-            } else {
-                actors.clear();
-                GlobalActionContextProxy.getInstance().add(CurrentActor.getInstance(null));
-            }
-            for (Actor actor : actors) {
-                mainActorCombobox.addItem(actor);
-            }
-            if (actorColumn != null) {
-                actorColumn.setCellEditor(new ActorCellEditor(actors));
-            }
+            populateActorCombobox(mainActorCombobox);
+            addDropdownMenu(EventTableModel.ACTOR, new ActorCellEditor(actors));
         }
-
-        // if (ev.getSource().equals(eventResult)) {
-        Collection c = ((Lookup.Result) ev.getSource()).allInstances();
-        //ev.getSource().equals(eventResult)
-        for (Object c1 : c) {
-            if (c1 instanceof EventBean && !c1.equals(previousEvent)) {
-                previousEvent = c1;
-                EventBean currentEvent = (EventBean) c1;
+        EventDTO currentEvent = null;
+        if (latestEventResult.matches(ev) && latestEventResult.getCurrent() != null) {
+            if (latestEventResult.getCurrent().getConcept() != currentEvent) { //same event sometimes added multiple times!
+                currentEvent = latestEventResult.getCurrent().getConcept();
                 this.getModel().addEntity(currentEvent);
-                
-                populateNbEventsLabel();
-                getAssociatedAcquisitionInfo(currentEvent);
-                if (eventTable.getHeight() < eventTable.getModel().getRowCount() * DEFAULT_ROW_HEIGHT) {
-                    int newHeight = eventTable.getHeight() + DEFAULT_ROW_HEIGHT;
-                    Dimension dim = new Dimension(eventTable.getWidth(), newHeight);
-                    eventTable.setPreferredSize(dim);
-                }
-                eventTable.scrollRectToVisible(eventTable.getCellRect(eventTable.getModel().getRowCount() + 1, 0, true));
-            }
-        }
-        
-        if (currentCruiseResult.matches(ev)) {
-            if (restClientEvent != null) {
-                //updateEventModel();
 
-                componentOpened();
+                populateNbEventsLabel();
+                // getAssociatedAcquisitionInfo(currentEvent);
+                if (eventsTable2.getHeight() < eventsTable2.getModel().getRowCount() * DEFAULT_ROW_HEIGHT) {
+                    int newHeight = eventsTable2.getHeight() + DEFAULT_ROW_HEIGHT * 2;
+                    Dimension dim = new Dimension(eventsTable2.getWidth(), newHeight);
+                    eventsTable2.setPreferredSize(dim);
+                }
+                eventsTable2.scrollRectToVisible(eventsTable2.getCellRect(eventsTable2.getModel().getRowCount() + 2, 0, true));
+            }
+        }
+
+        if (currentProgramResult.matches(ev) && currentProgramResult.getCurrent() != null) {
+            if (restClientEvent != null) {
+                populateEventModel();
+                Set<ProgramBean> programs = populatePrograms();
+                addDropdownMenu(EventTableModel.PROGRAM, new ProgramCellEditor(programs));
+                addDropdownMenu(EventTableModel.ACTOR, new ActorCellEditor(actors));
+            }
+        }
+
+        if (currentCruiseResult.matches(ev) && currentCruiseResult.getCurrent() != null) {
+            if (restClientEvent != null) {
+                populateEventModel();
+                Set<ProgramBean> programs = populatePrograms();
+                addDropdownMenu(EventTableModel.PROGRAM, new ProgramCellEditor(programs));
+                addDropdownMenu(EventTableModel.ACTOR, new ActorCellEditor(actors));
             }
         }
     }
-    
-    public static void getAssociatedAcquisitionInfo(final EventBean event) {
-        Thread thr = new Thread() {
-            public void run() {
-                RestClientNav restNav = null;
-                RestClientWeather restWeather = null;
-                RestClientThermosal restThermosal = null;
-                RestClientUnderway restUnderway = null;
-                try {
-                    restNav = new RestClientNav(true);
-                } catch (ConnectException ex) {
-                    Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), true);
-                } catch (EarsException ex) {
-                    Messaging.report("Problem with the navigation web service", ex, this.getClass(), true);;
-                }
-                
-                try {
-                    restWeather = new RestClientWeather(true);
-                } catch (ConnectException ex) {
-                    Messaging.report("Can't connect to the weather web service", ex, this.getClass(), true);
-                } catch (EarsException ex) {
-                    Messaging.report("Problem with the weather web service", ex, this.getClass(), true);
-                }
-                try {
-                    restThermosal = new RestClientThermosal(true);
-                } catch (ConnectException ex) {
-                    Messaging.report("Can't connect to the thermosal web service", ex, this.getClass(), true);
-                } catch (EarsException ex) {
-                    Messaging.report("Problem with the thermosal web service", ex, this.getClass(), true);
-                }
-                try {
-                    restUnderway = new RestClientUnderway(true);
-                } catch (ConnectException ex) {
-                    Messaging.report("Can't connect to the underway web service", ex, this.getClass(), true);
-                } catch (EarsException ex) {
-                    Messaging.report("Problem with the underway web service", ex, this.getClass(), true);
-                }
-                OffsetDateTime time = event.getTimeStampDt();
-                RestClient.getNavigation(restNav, event.getTimeStampDt());
-                RestClient.getThermosal(restThermosal, time);
-                RestClient.getWeather(restWeather, time);
-                RestClient.getUnderway(restUnderway, time);
-                System.out.println("Fetched acquisition info for " + event.toString());
-            }
-            
-        };
-        thr.start();
-    }
-    
+
     private void populateNbEventsLabel() {
-        nbEventsLabel.setText("Number of selected events: " + eventTable.getSelectedRows().length + "/" + eventTable.getModel().getRowCount());
+        nbEventsLabel.setText("Number of selected events: " + eventsTable2.getSelectedRows().length + "/" + eventsTable2.getModel().getRowCount());
+    }
+
+    private Set<ProgramBean> populatePrograms() {
+        Set<ProgramBean> programs = null;
+        if (currentCruiseResult.getCurrent() != null && currentCruiseResult.getCurrent().getConcept() != null) { //there is a current cruise
+            CruiseBean currentCruise = currentCruiseResult.getCurrent().getConcept();
+            programs = new HashSet(currentCruise.getPrograms());
+        } else {
+            try {
+                programs = new HashSet(restClientProgram.getAllPrograms());
+            } catch (ConnectException ex) {
+                Messaging.report("Note that the webservices are offline. The programs can't be retrieved.", ex, this.getClass(), true);
+            }
+        }
+        return programs;
     }
 }

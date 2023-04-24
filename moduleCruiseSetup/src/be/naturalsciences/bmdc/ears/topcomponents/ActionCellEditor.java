@@ -6,12 +6,9 @@
 package be.naturalsciences.bmdc.ears.topcomponents;
 
 import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EventTableModel;
-import be.naturalsciences.bmdc.ears.entities.Actor;
-import be.naturalsciences.bmdc.ears.ontology.entities.Action;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JTable;

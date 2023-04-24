@@ -1,21 +1,18 @@
-package be.naturalsciences.bmdc.ears.entities;//ys
+package be.naturalsciences.bmdc.ears.entities;
 
-import be.naturalsciences.bmdc.utils.StringUtils;
+import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "navigation")
+@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "nav")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NavBean implements Serializable {
 
@@ -27,9 +24,9 @@ public class NavBean implements Serializable {
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "timestamp")
     private String timestamp;
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "lon")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "longitude")
     private String lon;
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "lat")
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "latitude")
     private String lat;
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "heading")
     private String heading;
@@ -115,7 +112,7 @@ public class NavBean implements Serializable {
      */
     public OffsetDateTime getOffsetDateTime() {
         if (getTimeStamp() != null && !getTimeStamp().equals("")) {
-            LocalDateTime ld = LocalDateTime.parse(getTimeStamp(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            LocalDateTime ld = LocalDateTime.parse(getTimeStamp(), StringUtils.DTF_ISO_DATETIME_FLEX); //
             return ld.atOffset(ZoneOffset.UTC);
         } else {
             return null;

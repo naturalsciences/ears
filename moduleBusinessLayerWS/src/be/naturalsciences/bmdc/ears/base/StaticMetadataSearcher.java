@@ -99,7 +99,6 @@ public class StaticMetadataSearcher implements LookupListener {
     private static Set<? extends IOrganisation> organisationsU;
 
     private static <C extends EARSConcept> Collection<? extends EARSConcept> getConcepts(Class<C> cls, boolean sorted) {
-
         String sort = (sorted) ? "S" : "U";
         String key = cls.getName().concat(sort);
         Set<? extends EARSConcept> concepts = results.get(key);
@@ -123,7 +122,6 @@ public class StaticMetadataSearcher implements LookupListener {
                     } else {
                         concepts = new TreeSet<>(organisationMetadataManager.readMetadataFromFile());
                     }
-
                 } catch (FileNotFoundException ex) {
                     Messaging.report("The static metadata of type '" + cls.getSimpleName() + "' can't be found.", ex, StaticMetadataSearcher.class, true);
                     return new THashSet<>();
@@ -133,8 +131,11 @@ public class StaticMetadataSearcher implements LookupListener {
         return concepts;
     }
 
+    
     public Collection<SeaAreaBean> getSeaAreas(boolean sorted) {
-        return (Collection<SeaAreaBean>) getConcepts(SeaAreaBean.class, sorted);
+        Collection<SeaAreaBean> seas = (Collection<SeaAreaBean>) getConcepts(SeaAreaBean.class, sorted);
+        seas.removeIf(s -> s.getCode().contains("C16"));
+        return seas;
     }
 
     public Collection<ProjectBean> getProjects(boolean sorted) {

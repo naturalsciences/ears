@@ -28,6 +28,8 @@ public class WebserviceUtils {
                 return false;
             }
         }
+        //Logger logger = Logger.getLogger(WebserviceUtils.class.getName());
+        //logger.log(Level.INFO, "Trying to connect to " + baseUrl.toString());
         if (baseUrl != null && baseUrl.getProtocol() != null && baseUrl.getHost() != null && baseUrl.getPath() != null) {
             try {
                 HttpURLConnection con = (HttpURLConnection) baseUrl.openConnection();
@@ -46,10 +48,15 @@ public class WebserviceUtils {
         }
     }
 
+    public static String getCurrentURL() {
+        return Utilities.actionsGlobalContext().lookup(CurrentURL.class).getConcept().toString();
+    }
+
     /**
      * *
-     * Test the given url given an url part, the path. Return true if the path results in a 200. The path is appended to
-     * the domain, which is provided via an application setting. If the path is null only the domain will be
+     * Test the given url given an url part, the path. Return true if the path
+     * results in a 200. The path is appended to the domain, which is provided
+     * via an application setting. If the path is null only the domain will be
      * tested.
      *
      * @param path
@@ -61,7 +68,6 @@ public class WebserviceUtils {
             return testWS(baseUrl.getConcept(), path);
         }
         return false;
-
     }
 
     /*public static boolean localWebServicesAreAvailable() throws MalformedURLException {

@@ -15,13 +15,6 @@ public class OntologyNodeComparator implements Comparator<OntologyNode> {
 
     @Override
     public int compare(OntologyNode a, OntologyNode b) {
-        //int i = -Boolean.valueOf(a.isCorrect()).compareTo(b.isCorrect());
-
-       /* if (i != 0) {
-            return i;
-        }*/
-
         return a.getFileName().compareToIgnoreCase(b.getFileName());
-
     }
 }

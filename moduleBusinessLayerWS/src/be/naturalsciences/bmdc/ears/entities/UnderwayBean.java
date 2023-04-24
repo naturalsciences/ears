@@ -5,14 +5,10 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
-import be.naturalsciences.bmdc.utils.StringUtils;
-import java.text.SimpleDateFormat;
+import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -22,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author thomas
  */
-@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "underway")
+@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "und")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UnderwayBean {
 
@@ -159,7 +155,7 @@ public class UnderwayBean {
 
     public OffsetDateTime getOffsetDateTime() {
         if (getDate() != null && !getDate().equals("")) {
-            LocalDateTime ld = LocalDateTime.parse(getDate(), StringUtils.DTF_ISO_DATETIME_ZONE);
+            LocalDateTime ld = LocalDateTime.parse(getDate(), StringUtils.DTF_ISO_DATETIME_FLEX);
             return ld.atOffset(ZoneOffset.UTC);
         } else {
             return null;

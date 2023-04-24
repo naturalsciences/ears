@@ -6,7 +6,6 @@
 package be.naturalsciences.bmdc.ears.ontology.gui;
 
 import be.naturalsciences.bmdc.ears.ontology.entities.Action;
-import be.naturalsciences.bmdc.ears.ontology.entities.Tool;
 import be.naturalsciences.bmdc.ears.ontology.entities.ToolCategory;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import org.openide.awt.ActionID;
@@ -41,7 +40,7 @@ public class CreateChildNodeAction extends CookieAction {
     protected boolean enable(Node[] activatedNodes) {
         AsConceptNode node = context.lookup(AsConceptNode.class);
         Class<? extends AsConcept> cls = node != null ? node.getConcept().getClass() : null;
-        return cls != null && (cls.equals(ToolCategory.class) || cls.equals(Action.class));
+        return cls != null && (cls.equals(ToolCategory.class)); //new nodes only allowed for new tools
     }
 
     @Override

@@ -5,54 +5,85 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
+import eu.eurofleets.ears3.dto.PersonDTO;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Yvan Stojanov
  */
+@XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "actor")
 public class Actor implements IActor, Comparable<Actor> {
 
-    private String id;
-    private String firstNameOfActor;
-    private String lastNameOfActor;
+    private int id;
+    private String firstName;
+    private String lastName;
+    private String email;
 
-    public String getId() {
+    public Actor(PersonDTO p) {
+        this.firstName = p.firstName;
+        this.lastName = p.lastName;
+        this.email = p.email;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getFirstNameOfActor() {
-        return firstNameOfActor;
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "firstName")
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstNameOfActor(String firstNameOfActor) {
-        this.firstNameOfActor = firstNameOfActor;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLastNameOfActor() {
-        return lastNameOfActor;
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "lastName")
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastNameOfActor(String lastNameOfActor) {
-        this.lastNameOfActor = lastNameOfActor;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getLastNameFirstName() {
-        return this.lastNameOfActor + ((lastNameOfActor != null && firstNameOfActor != null) ? " " : "") + this.firstNameOfActor;
+        return this.lastName + ((lastName != null && firstName != null) ? " " : "") + this.firstName;
     }
 
-    public Actor(String id, String nameOfActor, String surnameOfActor) {
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Actor() {
+    }
+
+    public Actor(int id, String firstName, String lastName) {
         this.id = id;
-        this.firstNameOfActor = nameOfActor;
-        this.lastNameOfActor = surnameOfActor;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public Actor(int id, String firstName, String lastName, String email) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
     }
 
     public boolean isComplete() {
-        return !this.id.isEmpty() && !this.firstNameOfActor.isEmpty() && !this.lastNameOfActor.isEmpty();
+        return !this.email.isEmpty() && !this.firstName.isEmpty() && !this.lastName.isEmpty();
     }
 
     @Override
@@ -64,7 +95,7 @@ public class Actor implements IActor, Comparable<Actor> {
     public boolean equals(Object o) {
         if (o instanceof Actor) {
             Actor other = (Actor) o;
-            return this.getId().equals(other.getId());
+            return Objects.equals(this.getEmail(), other.getEmail());
         } else {
             return false;
         }
@@ -73,7 +104,7 @@ public class Actor implements IActor, Comparable<Actor> {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + Objects.hashCode(this.id);
+        hash = 41 * hash + Objects.hashCode(this.getEmail());
         return hash;
     }
 
@@ -85,6 +116,11 @@ public class Actor implements IActor, Comparable<Actor> {
     @Override
     public boolean isLegal() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getName() {
+        return getLastNameFirstName();
     }
 
 }

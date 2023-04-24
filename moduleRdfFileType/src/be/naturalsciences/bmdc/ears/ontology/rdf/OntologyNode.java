@@ -2,7 +2,6 @@ package be.naturalsciences.bmdc.ears.ontology.rdf;
 
 import static be.naturalsciences.bmdc.ears.ontology.OntologyModel.BROWSE_ONTOLOGY;
 import static be.naturalsciences.bmdc.ears.ontology.OntologyModel.EDIT_ONTOLOGY;
-import be.naturalsciences.bmdc.ears.utils.WebserviceUtils;
 import be.naturalsciences.bmdc.ontology.IOntologyModel;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -99,8 +98,8 @@ public class OntologyNode extends DataNode implements Comparable<OntologyNode> {
         IOntologyModel model = this.ontologyDataObject.getOntModel();
         Action[] actions = {};
         List<?> nodeActions = Utilities.actionsForPath("Loaders/application/rdf+xml/Actions");
-        
-        List<Action> result=new ArrayList();
+
+        List<Action> result = new ArrayList();
         for (int i = 0; i < nodeActions.size(); i++) {
             Action a = (Action) nodeActions.get(i);
             if (a != null) {
@@ -119,10 +118,12 @@ public class OntologyNode extends DataNode implements Comparable<OntologyNode> {
         if (act.equals(EDIT_ONTOLOGY)) {
             if (ontModel.getCurrentActions().contains(IOntologyModel.ActionEnum.EDITING)) {
                 return false;
-            } else if (ontModel.isPasswordProtected() && !WebserviceUtils.testWS("ears2Ont/authenticate")) { //if password protection is required and the earsOnt service is offline
+            }/* else if (ontModel.isPasswordProtected() && !WebserviceUtils.testWS("ears3/alive")) { //if password protection is required and the earsOnt service is offline
                 return false;
-            } else if (ontModel.isEditable()) {
+            }*/ else if (ontModel.isEditable()) {//a vessel ontology can be saved as
                 return true;
+            } else {
+                return false;
             }
         } else if (act.equals(BROWSE_ONTOLOGY)) {
             if (ontModel.getCurrentActions().contains(IOntologyModel.ActionEnum.BROWSING)) {
@@ -130,7 +131,7 @@ public class OntologyNode extends DataNode implements Comparable<OntologyNode> {
             }
         }
         return true;
-/*
+        /*
         if (!ontModel.isEditable() && act.equals(EDIT_ONTOLOGY)) {
             return false;
         } else if (ontModel.getCurrentActions().contains(IOntologyModel.ActionEnum.BROWSING) && act.equals(BROWSE_ONTOLOGY)) { //can't reopen something that's being edited

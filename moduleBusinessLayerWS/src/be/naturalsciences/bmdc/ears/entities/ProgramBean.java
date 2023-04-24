@@ -9,42 +9,47 @@ package be.naturalsciences.bmdc.ears.entities;
  *
  * @author Yvan Stojanov
  */
+import be.naturalsciences.bmdc.ontology.writer.JSONReader;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.SerializationUtils;
+import org.openide.util.Exceptions;
 
 @XmlRootElement(namespace = "http://www.eurofleets.eu/", name = "program")
 public class ProgramBean implements Serializable, Cloneable, IProgram, Comparable<ProgramBean> {
-
-    public ProgramBean() {
-
-    }
 
     private static final long serialVersionUID = 1L;
 
     private String programId;
 
-    private String cruiseId;
-
-    private String originatorCode;
-
-    private String piName;
+    private String principalInvestigator;
 
     private String description;
 
     private Set<ProjectBean> projects = new HashSet();
+    private List<Person> principalInvestigators;
 
-    public ProgramBean(String programId, String cruiseId) {
+    public ProgramBean(String programId) {
         this.programId = programId;
-        this.cruiseId = cruiseId;
+    }
+
+    public ProgramBean() {
+
     }
 
     @XmlAttribute(name = "programId")
@@ -56,31 +61,109 @@ public class ProgramBean implements Serializable, Cloneable, IProgram, Comparabl
         this.programId = programId.trim();
     }
 
-    @XmlAttribute(name = "cruiseId")
-    public String getCruiseId() {
-        return cruiseId;
+    /**
+     * *
+     * Returns the list of scientists and organisations as one string
+     *
+     * @return
+     */
+    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "principalInvestigator")
+    public String getPrincipalInvestigator() {
+        /*if (principalInvestigator != null) {
+         return principalInvestigator;
+         } else {*/
+        return stringifyScientistList();
+        // }
     }
 
-    public void setCruiseId(String cruiseId) {
-        this.cruiseId = cruiseId;
+    public void setPrincipalInvestigator(String principalInvestigator) {
+        this.principalInvestigator = principalInvestigator;
+        this.principalInvestigators = scientistStringToList(principalInvestigator);
     }
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "originatorCode")
-    public String getOriginatorCode() {
-        return originatorCode;
+    /**
+     * *
+     * Return a list of singleton maps of String, String representing all chief
+     * scientists and their institutions.
+     *
+     * @return
+     */
+    @XmlTransient
+    public List<Person> getPrincipalInvestigators() {
+        return principalInvestigators;
     }
 
-    public void setOriginatorCode(String originatorCode) {
-        this.originatorCode = originatorCode.trim();
+    /**
+     * *
+     * Set the list of singleton maps of String, String representing all chief
+     * scientists and their institutions to the given argument.
+     *
+     * @return
+     */
+    public void setPrincipalInvestigators(List<Person> principalInvestigators) {
+        this.principalInvestigator = stringifyScientistList();
+        this.principalInvestigators = principalInvestigators;
     }
 
-    @XmlElement(namespace = "http://www.eurofleets.eu/", name = "PIName")
-    public String getPiName() {
-        return piName;
+    @XmlTransient
+    public String getNicePIString() {
+        StringJoiner sb = new StringJoiner(", ");
+        if (principalInvestigators != null) {
+            int ii = principalInvestigators.size();
+            if (ii == 0) {
+                return "No Principal investigator specified";
+            } else {
+                for (Person p : principalInvestigators) {
+                    sb.add(p.firstName + " " + p.lastName);
+                }
+            }
+            return sb.toString();
+        } else {
+            return "No Principal investigator specified";
+        }
     }
 
-    public void setPiName(String piName) {
-        this.piName = piName.trim();
+    /**
+     * *
+     * Convert a list of scientists and their organisations represented in json
+     * to a list of Scientist
+     *
+     * @param principalInvestigator
+     * @return
+     */
+    private List<Person> scientistStringToList(String principalInvestigator) {
+        if (principalInvestigator == null) {
+            return new ArrayList();
+        }
+        List<Person> r;
+        if (JSONReader.isValidJSON(principalInvestigator)) {
+            try {
+                principalInvestigator = URLDecoder.decode(principalInvestigator, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Person>>() {
+            }.getType();
+
+            r = new Gson().fromJson(principalInvestigator, type);
+            return r;
+        } else {
+            r = new ArrayList();
+            r.add(new Person(principalInvestigator, principalInvestigator, null, null, null));
+            return r;
+        }
+    }
+
+    /**
+     * *
+     * Output a JSON representation of
+     *
+     * @return
+     */
+    private String stringifyScientistList() {
+        String json = new Gson().toJson(getPrincipalInvestigators());
+        return json;
     }
 
     @XmlElement(namespace = "http://www.eurofleets.eu/", name = "description")
@@ -136,12 +219,7 @@ public class ProgramBean implements Serializable, Cloneable, IProgram, Comparabl
 
     @Override
     public String toString() {
-
-        String pi = this.getPiName();
-        if (pi == null) {
-            pi = "no PI";
-        }
-        return this.getProgramId() + " (" + this.getPiName() + ")";
+        return this.getProgramId() + " (" + getNicePIString() + ")";
     }
 
     public String getProjectsNameString() {
@@ -179,7 +257,7 @@ public class ProgramBean implements Serializable, Cloneable, IProgram, Comparabl
     public boolean equals(Object o) {
         if (o instanceof ProgramBean) {
             ProgramBean other = (ProgramBean) o;
-            return this.getProgramId().equals(other.getProgramId()) && this.getCruiseId().equals(other.getCruiseId());
+            return this.getProgramId().equals(other.getProgramId());
         } else {
             return false;
         }
@@ -189,12 +267,11 @@ public class ProgramBean implements Serializable, Cloneable, IProgram, Comparabl
     public int hashCode() {
         int hash = 3;
         hash = 23 * hash + Objects.hashCode(this.programId);
-        hash = 23 * hash + Objects.hashCode(this.cruiseId);
         return hash;
     }
 
     public boolean isLegal() {
-        return getProgramId() != null && !getProgramId().isEmpty() && getCruiseId() != null && !getCruiseId().isEmpty() && getPiName() != null && !getPiName().isEmpty() && getOriginatorCode() != null && !getOriginatorCode().isEmpty() /*&& getProjects() != null && !getProjects().isEmpty()*/;
+        return getProgramId() != null && !getProgramId().isEmpty() && !getPrincipalInvestigator().isEmpty() /*!= null && !getPiFirstName().isEmpty() && getPiLastName() != null && !getPiLastName().isEmpty() && getPiOrganisationCode() != null && !getPiOrganisationCode().isEmpty() && getProjects() != null && !getProjects().isEmpty()*/;
     }
 
     public String cleanName() {
@@ -215,5 +292,10 @@ public class ProgramBean implements Serializable, Cloneable, IProgram, Comparabl
             programName = programName.replace(replacement, "_");
         }
         return programName.toLowerCase();
+    }
+
+    @Override
+    public String getName() {
+        return getProgramId();
     }
 }

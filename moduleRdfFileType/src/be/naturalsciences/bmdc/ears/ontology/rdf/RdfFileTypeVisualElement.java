@@ -29,6 +29,7 @@ import org.openide.explorer.ExplorerUtils;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
@@ -48,8 +49,8 @@ public final class RdfFileTypeVisualElement extends CloneableTopComponent implem
 
     public static final String TCNAME = "RdfFileTypeVisualElement";
 
-    private final RdfFileTypeDataObject obj;
-    private final JToolBar toolbar = new JToolBar();
+    private RdfFileTypeDataObject obj;
+    private JToolBar toolbar = new JToolBar();
     private transient MultiViewElementCallback callback;
 
     private final ExplorerManager mgr = new ExplorerManager();
@@ -58,12 +59,21 @@ public final class RdfFileTypeVisualElement extends CloneableTopComponent implem
     //private JLabel label;
     private Lookup lookup;
 
-    private RdfVisualElementPanel panel;
-    
+    private EditRdfFilePanel panel;
 
-    public RdfFileTypeVisualElement(Lookup lkp) throws Exception /*throws FileNotFoundException, IOException*/ {
-        this.obj = lkp.lookup(RdfFileTypeDataObject.class);
-        //this.obj =obj;
+    //no-arg ctor to solve Caused: java.lang.NoSuchMethodException: be.naturalsciences.bmdc.ears.ontology.rdf.RdfFileTypeVisualElement.<init>()
+  /*  public RdfFileTypeVisualElement() throws Exception {
+    
+        this(Utilities.actionsGlobalContext().lookup(RdfFileTypeDataObject.class));
+
+    }*/
+
+    public RdfFileTypeVisualElement(Lookup lkp) throws Exception {
+        this(lkp.lookup(RdfFileTypeDataObject.class));
+    }
+
+    public RdfFileTypeVisualElement(RdfFileTypeDataObject obj) throws Exception /*throws FileNotFoundException, IOException*/ {
+        this.obj = obj;
         assert this.obj != null;
         //this.obj.addChangeListener(this);
         try {
@@ -71,7 +81,7 @@ public final class RdfFileTypeVisualElement extends CloneableTopComponent implem
             AsConceptNode.ContextBehaviour beh = AsConceptNode.EDIT_BEHAVIOUR;
             beh.nListener = obj;
             beh.pcListener = obj;
-            panel = new RdfVisualElementPanel(obj, beh);
+            panel = new EditRdfFilePanel(obj, beh);
 
             this.obj.addChangeListener(panel);
 
@@ -113,7 +123,7 @@ public final class RdfFileTypeVisualElement extends CloneableTopComponent implem
     // End of variables declaration//GEN-END:variables
     @Override
     public JComponent getVisualRepresentation() {
-        //return new RdfVisualElementPanel(obj);
+        //return new EditRdfFilePanel(obj);
         return panel;
     }
 
@@ -173,53 +183,18 @@ public final class RdfFileTypeVisualElement extends CloneableTopComponent implem
     public CloseOperationState canCloseElement() {
         RdfFileTypeDataObject.RdfFileTypeDataObjectSavable savable = obj.getLookup().lookup(RdfFileTypeDataObject.RdfFileTypeDataObjectSavable.class);
         if (savable != null) {
-
-            /*DialogDescriptor ddesc = new DialogDescriptor("Save Changes to ?" + obj.getName(),
-             "Close " + obj.getName(),
-             true,
-             DialogDescriptor.YES_NO_OPTION,
-             DialogDescriptor.CANCEL_OPTION,
-             new ActionListener() {
-             public void actionPerformed(ActionEvent e) {
-             if (e.getActionCommand().equalsIgnoreCase("yes")) {
-             try {
-             savable.handleSave();
-             } catch (IOException ex) {
-             Exceptions.printStackTrace(ex);
-             }
-             } else {
-             }
-             }
-             });
-
-             DialogDisplayer.getDefault().createDialog(ddesc).setVisible(true);*/
-            /*Confirmation message = new NotifyDescriptor.Confirmation("Do you want to save \""
-             + obj.getName() + ")\"?",
-             NotifyDescriptor.YES_NO_OPTION,
-             NotifyDescriptor.QUESTION_MESSAGE);
-             Object result = DialogDisplayer.getDefault().notify(message);
-             if (NotifyDescriptor.YES_OPTION.equals(result)) {
-
-             try {
-             savable.handleSave();
-             } catch (IOException ex) {
-             Exceptions.printStackTrace(ex);
-             }
-             } else if (NotifyDescriptor.CANCEL_OPTION.equals(result)) {
-             return MultiViewFactory.createUnsafeCloseState("Just click cancel", MultiViewFactory.NOOP_CLOSE_ACTION, MultiViewFactory.NOOP_CLOSE_ACTION);
-             }*/
             return MultiViewFactory.createUnsafeCloseState("Do you want to save \""
                     + obj.getName() + ")\"?", new AbstractAction() {
 
-                        @Override
-                        public void actionPerformed(ActionEvent ae) {
-                            try {
-                                savable.handleSave();
-                            } catch (IOException ex) {
-                                Exceptions.printStackTrace(ex);
-                            }
-                        }
-                    }, MultiViewFactory.NOOP_CLOSE_ACTION);
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    try {
+                        savable.handleSave();
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            }, MultiViewFactory.NOOP_CLOSE_ACTION);
         }
         return CloseOperationState.STATE_OK;
     }

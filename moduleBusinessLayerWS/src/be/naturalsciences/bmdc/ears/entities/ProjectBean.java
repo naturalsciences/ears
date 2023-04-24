@@ -34,7 +34,7 @@ public class ProjectBean implements Serializable, IProject, Comparable<ProjectBe
      * *
      * The full written name of the project
      */
-    private String fullName;
+    private String name;
     private String acronym;
     private String organisation;
     private OrganisationBean organisationObject;
@@ -53,7 +53,7 @@ public class ProjectBean implements Serializable, IProject, Comparable<ProjectBe
         super();
         this.code = projectName;
         //this.id = id;
-        this.fullName = fullName;
+        this.name = fullName;
         this.acronym = acronym;
         this.organisation = organisation;
         this.organisationObject = organisationObject;
@@ -112,13 +112,13 @@ public class ProjectBean implements Serializable, IProject, Comparable<ProjectBe
         this.country = country;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
     @SetterField(name = "name")
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /*public static ProjectBean fromMap(Map<String, String> map) {
@@ -149,8 +149,8 @@ public class ProjectBean implements Serializable, IProject, Comparable<ProjectBe
 
     @Override
     public String toString() {
-        if (getFullName() != null && getId() != null && !getFullName().isEmpty() && !getId().isEmpty()) {
-            return getFullName() + " - (" + getId() + ")";
+        if (getName() != null && getId() != null && !getName().isEmpty() && !getId().isEmpty()) {
+            return getName() + " - (" + getId() + ")";
         } else {
             return null;
         }

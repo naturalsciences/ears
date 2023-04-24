@@ -6,6 +6,7 @@
 package be.naturalsciences.bmdc.ears.topcomponents;
 
 import be.naturalsciences.bmdc.ears.entities.EARSConcept;
+import be.naturalsciences.bmdc.ears.topcomponents.tablemodel.EntityTableModel;
 import be.naturalsciences.bmdc.ears.utils.SwingUtils;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
@@ -37,15 +38,18 @@ import org.netbeans.validation.api.ui.ValidationUI;
  */
 public class ComboBoxColumnEditor<E extends EARSConcept> extends AbstractCellEditor implements TableCellEditor, ItemListener {
 
+    /*The list of entities to become elements in the combobox
+    
+     */
     Collection<E> set;
     JComboBox currentComboBox;
-    //E currentValue;
     List<JComboBox<E>> lists;
     JTable table;
     int column;
     SaveButtonDisablerOnValidationFailure parent;
+    String name;
 
-    public ComboBoxColumnEditor(Collection<E> set, JTable table, int column, String tooltip, SaveButtonDisablerOnValidationFailure parent) {
+    public ComboBoxColumnEditor(String name, Collection<E> set, JTable table, int column, String tooltip, SaveButtonDisablerOnValidationFailure parent) {
         lists = new ArrayList<>();
 
         this.set = set;
@@ -58,18 +62,30 @@ public class ComboBoxColumnEditor<E extends EARSConcept> extends AbstractCellEdi
         col.setResizable(true);
         col.setCellRenderer(renderer);
         col.setCellEditor(this);
+        for (int i = 0; i < table.getModel().getRowCount(); i++) {
+            String valueAt = (String) table.getModel().getValueAt(i, column);
+            addComboBox(name + " combobox " + (i + 1), valueAt);
+        }
     }
 
+    /**
+     * *
+     * Add a combobox to a new row with no element preselected
+     *
+     * @param name
+     * @return
+     */
     public JComboBox addComboBox(String name) {
-        JComboBox list = new JComboBox();
+        JComboBox comboBox = new JComboBox();
 
         if (set != null) {
             for (E e : set) {
-                list.addItem(e);
+                comboBox.addItem(e);
             }
         }
 
-        list.addItemListener(new ItemListener() {
+        comboBox.setName(name);
+        comboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent ie) {
                 if (ie.getStateChange() == ItemEvent.SELECTED) {
@@ -77,7 +93,7 @@ public class ComboBoxColumnEditor<E extends EARSConcept> extends AbstractCellEdi
                     if (row > -1) {
                         AbstractTableModel model = (AbstractTableModel) ComboBoxColumnEditor.this.table.getModel();
                         int column = ComboBoxColumnEditor.this.column;
-                        Object value = list.getSelectedItem();
+                        Object value = comboBox.getSelectedItem();
                         Object originalValue = model.getValueAt(row, column);
                         if (originalValue == null || !originalValue.equals(value)) {
                             model.setValueAt(value, row, column);
@@ -88,21 +104,63 @@ public class ComboBoxColumnEditor<E extends EARSConcept> extends AbstractCellEdi
                 }
             }
         });
-        list.setMaximumRowCount(SwingUtils.COMBOBOX_MAX_ROW_COUNT);
+        comboBox.setMaximumRowCount(SwingUtils.COMBOBOX_MAX_ROW_COUNT);
 
-        list.setName(name);
+        comboBox.addItemListener(this);
+        lists.add(comboBox);
 
-        list.addItemListener(this);
-        lists.add(list);
+        parent.getValidationGroup().add(comboBox, StringValidators.REQUIRE_NON_EMPTY_STRING);
+        parent.enableThatButtonGreysOutOnValidationFailure((JTextField) comboBox.getEditor().getEditorComponent(), parent.getValidationGroup());
 
-        parent.getValidationGroup().add(list, StringValidators.REQUIRE_NON_EMPTY_STRING);
-        parent.enableThatButtonGreysOutOnValidationFailure((JTextField) list.getEditor().getEditorComponent(), parent.getValidationGroup());
+        return comboBox;
+    }
 
-        return list;
+    /**
+     * *
+     * Add a combobox to a new row with element selectedItem preselected
+     *
+     * @param name
+     * @return
+     */
+    public JComboBox addComboBox(String name, E selectedItem) {
+        JComboBox comboBox = addComboBox(name);
+        if (selectedItem != null) {
+            comboBox.setSelectedItem(selectedItem);
+        }
+        return comboBox;
+    }
+
+    /**
+     * *
+     * Add a combobox to a new row with element String selectedItem preselected
+     *
+     * @param name
+     * @return
+     */
+    public JComboBox addComboBox(String name, String selectedItem) {
+        JComboBox comboBox = addComboBox(name);
+        if (selectedItem != null && !selectedItem.equals("")) {
+            if (table.getModel() instanceof EntityTableModel) {
+                EntityTableModel model = (EntityTableModel) table.getModel();
+                EARSConcept entity = model.getEntityWithName(selectedItem);
+                comboBox.setSelectedItem(entity);
+            } else {
+                if (set != null) {
+                    for (E e : set) {
+                        if (e.getName().equals(selectedItem)) {
+                            comboBox.setSelectedItem(selectedItem);
+                        }
+                    }
+                }
+            }
+        }
+        return comboBox;
     }
 
     @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+    public Component getTableCellEditorComponent(JTable table, Object value,
+            boolean isSelected, int row, int column
+    ) {
         if (lists.size() > row) {
             return lists.get(row);
         } else {
@@ -122,7 +180,8 @@ public class ComboBoxColumnEditor<E extends EARSConcept> extends AbstractCellEdi
     }
 
     @Override
-    public void itemStateChanged(ItemEvent ie) {
+    public void itemStateChanged(ItemEvent ie
+    ) {
         if (ie.getStateChange() == ItemEvent.SELECTED) {
             if (!(ie.getItem() instanceof String)) {
                 currentComboBox = (JComboBox) ie.getSource();

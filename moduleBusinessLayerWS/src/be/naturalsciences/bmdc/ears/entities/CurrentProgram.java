@@ -23,7 +23,7 @@ public class CurrentProgram implements IProgram, CurrentSingleton<IProgram> {
     }
 
     public static CurrentProgram getInstance(ProgramBean currentProgram) {
-       /* if (currentProgram == null) {
+        /* if (currentProgram == null) {
             throw new IllegalArgumentException("Program can't be null.");
         }*/
         instance.currentProgram = currentProgram;
@@ -33,5 +33,10 @@ public class CurrentProgram implements IProgram, CurrentSingleton<IProgram> {
     @Override
     public boolean isLegal() {
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return currentProgram.getName();
     }
 }

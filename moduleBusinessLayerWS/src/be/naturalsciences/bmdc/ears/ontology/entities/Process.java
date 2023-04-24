@@ -4,6 +4,7 @@ import be.naturalsciences.bmdc.ears.comparator.TermLabelComparator;
 import be.naturalsciences.bmdc.ears.ontology.AsConceptFlavor;
 import be.naturalsciences.bmdc.ontology.ConceptHierarchy;
 import be.naturalsciences.bmdc.ontology.IAsConceptFactory;
+import be.naturalsciences.bmdc.ontology.OntologyConstants;
 import be.naturalsciences.bmdc.ontology.entities.AsConcept;
 import be.naturalsciences.bmdc.ontology.entities.IEventDefinition;
 import be.naturalsciences.bmdc.ontology.entities.IProcess;
@@ -17,6 +18,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,8 +47,6 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
     @Id
     protected URI uri;
     //protected Long id;
-
-    private Collection<Subject> subjectCollection;
 
     private transient Collection<ProcessAction> processActionCollection;
     private Collection<Process> processCollection;
@@ -80,7 +80,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
         eventDefinition = new ArrayList();
         actionCollection = new ArrayList();
         processCollection = new ArrayList();
-        subjectCollection = new ArrayList();
+        // subjectCollection = new ArrayList();
     }
 
     /*public Process(Long id) {
@@ -115,17 +115,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
 
     @Override
     public String getUrn() {
-        return this.getTermRef().getPublisherUrn();
-    }
-
-    @Override
-    public Collection<Subject> getSubjectCollection() {
-        return subjectCollection;
-    }
-
-    @Override
-    public void setSubjectCollection(Collection<Subject> subjectCollection) {
-        this.subjectCollection = subjectCollection;
+        return this.getTermRef().getPublisherUrn() == null ? this.getTermRef().getOrigUrn() : this.getTermRef().getPublisherUrn();
     }
 
     /**
@@ -137,47 +127,65 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
     @Override
     public Collection<Action> getActionCollectionFromEvent() {
         Set<Action> join = new TreeSet(new TermLabelComparator());
-        /*Collection<EventDefinition> events = new ArrayList();
-         while (true) {
-         try {
-         for (EventDefinition e : this.getEventDefinition()) {
-         if (e != null) {
-         events.add(e);
-         }
-         }
-         break;
-         } catch (Exception e) {
-         continue;
-         }
-         }*/
+        join.addAll(getActionCollectionFromGenericEvents(null));
+        join.addAll(getActionCollectionFromSpecificEvents(null));
+        return join;
+    }
 
+    /**
+     * *
+     * Returns the actions this process is involved in via its generic events
+     * and constrain by ToolCategory tc. If tc is null, no constraining happens
+     *
+     * @return
+     */
+    public Collection<Action> getActionCollectionFromGenericEvents(ToolCategory tc) {
+        Set<Action> join = new TreeSet(new TermLabelComparator());
         for (IEventDefinition e : this.getEventDefinition()) {
             if (e != null) {
                 if (e instanceof GenericEventDefinition) {
                     GenericEventDefinition ge = (GenericEventDefinition) e;
-                    if (ge.getAction() != null && ge.getProcess().equals(this)) {
-                        join.add(ge.getAction());
-                    }
-                }
-                if (e instanceof SpecificEventDefinition) {
-                    SpecificEventDefinition se = (SpecificEventDefinition) e;
-                    if (se.getAction() != null && se.getProcess().equals(this)) {
-                        join.add(se.getAction());
+                    if (tc != null) {
+                        if (ge.getAction() != null && ge.getProcess().equals(this) && ge.getToolCategoryRef().equals(tc)) {
+                            join.add(ge.getAction());
+                        }
+                    } else {
+                        if (ge.getAction() != null && ge.getProcess().equals(this)) {
+                            join.add(ge.getAction());
+                        }
                     }
                 }
             }
         }
         return join;
-        /*if (processActionCollection == null) {
-         processActionCollection = new HashSet();
-         }
-         for (Action a : actionCollection) {
-         ProcessAction pa = new ProcessAction(this, a);
-         if (!processActionCollection.contains(pa)) {
-         processActionCollection.add(pa);
-         }
-         }
-         return processActionCollection;*/
+    }
+
+    /**
+     * *
+     * Returns the actions this process is involved in via its specific events
+     * and constrain by Tool t. If t is null, no constraining happens
+     *
+     * @return
+     */
+    public Collection<Action> getActionCollectionFromSpecificEvents(Tool t) {
+        Set<Action> join = new TreeSet(new TermLabelComparator());
+        for (IEventDefinition e : this.getEventDefinition()) {
+            if (e != null) {
+                if (e instanceof SpecificEventDefinition) {
+                    SpecificEventDefinition se = (SpecificEventDefinition) e;
+                    if (t != null) {
+                        if (se.getAction() != null && se.getProcess().equals(this) && se.getToolRef().equals(t)) {
+                            join.add(se.getAction());
+                        }
+                    } else {
+                        if (se.getAction() != null && se.getProcess().equals(this)) {
+                            join.add(se.getAction());
+                        }
+                    }
+                }
+            }
+        }
+        return join;
     }
 
     @Override
@@ -297,28 +305,6 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
         return true;
     }
 
-    /*boolean equalsNbChildren(Process otherProcess, ConceptHierarchy thisParents, ConceptHierarchy otherParents) {
-        thisParents.add(this);
-        otherParents.add(otherProcess);
-        if (!this.equals(otherProcess)) {
-            return false;
-        }
-        boolean allLevelsTrue = true;
-        if (this.getChildren(thisParents).size() != otherProcess.getChildren(otherParents).size()) {
-            return false;
-        }
-        if (this.getChildren(thisParents).size() > 0) {
-            for (Action action : this.getChildren(thisParents)) {
-                for (Action otherAction : otherProcess.getChildren(otherParents)) {
-                    if (action.equals(otherAction)) {
-                        return action.equalsNbChildren(otherAction, thisParents, otherParents);
-                    }
-                }
-
-            }
-        }
-        return true;
-    }*/
     @Override
     public String toString() {
         return "id=" + getId() + "; hash=" + System.identityHashCode(this) + "; name=" + ((this.getTermRef() != null) ? this.getTermRef().getName() : "no name");
@@ -333,7 +319,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
         collectionIdentityHashMap.put(this.eventDefinition, shallowClone.eventDefinition);
         collectionIdentityHashMap.put(this.actionCollection, shallowClone.actionCollection);
         collectionIdentityHashMap.put(this.processCollection, shallowClone.processCollection);
-        collectionIdentityHashMap.put(this.subjectCollection, shallowClone.subjectCollection);
+//        collectionIdentityHashMap.put(this.subjectCollection, shallowClone.subjectCollection);
         cc.cloneCollection(collectionIdentityHashMap);
 
         return shallowClone;
@@ -381,7 +367,7 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
                 }
             }
         }
-
+        result.removeIf(a -> a.getTermRef().getStatusName().equals(OntologyConstants.STATUSES.get(OntologyConstants.DEPRECATED)));
         return result;
     }
 
@@ -411,8 +397,12 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
                 }
             } else if (e instanceof GenericEventDefinition) {
                 GenericEventDefinition ge = (GenericEventDefinition) e;
-                if (tool.getToolCategoryCollection().contains(ge.getToolCategoryRef()) && ge.getAction().equals(action) && ge.getProcess().equals(this)) {
-                    eventListResult.add(ge);
+                try {
+                    if (tool != null && tool.getToolCategoryCollection().contains(ge.getToolCategoryRef()) && ge.getAction().equals(action) && ge.getProcess().equals(this)) {
+                        eventListResult.add(ge);
+                    }
+                } catch (Exception ex) {
+                    int a = 5;
                 }
             }
         }
@@ -623,9 +613,6 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
 
     @Override
     public void isolate() {
-        if (subjectCollection != null) {
-            subjectCollection.clear();
-        }
 
         if (processActionCollection != null) {
             processActionCollection.clear();
@@ -640,6 +627,51 @@ public class Process implements IProcess<EarsTerm, Tool, Process, Action, Proces
         if (actionCollection != null) {
             actionCollection.clear();
         }
+    }
+
+    @Override
+    public String getDefinitionEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getAltLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getPrefLabelEn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getIdentifierString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getVersionString() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getModifiedDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getCreationDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Boolean isIsDeprecated() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<String> broadMatch() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

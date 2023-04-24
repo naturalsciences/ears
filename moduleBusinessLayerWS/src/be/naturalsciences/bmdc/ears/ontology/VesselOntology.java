@@ -60,7 +60,11 @@ public class VesselOntology extends OntologyModel implements IVesselOntology {
 
     @Override
     public boolean isEditable() {
-        return Utilities.actionsGlobalContext().lookup(CurrentVessel.class).getConcept().getCode().equals(scopeMap.getScopedTo()); //only editable if the current vessel is the same as this ontologies' scopedTo value.
+        CurrentVessel currentVessel = Utilities.actionsGlobalContext().lookup(CurrentVessel.class);
+        if (currentVessel != null && currentVessel.getConcept() != null) {
+            return currentVessel.getConcept().getCode().equals(scopeMap.getScopedTo()); //only editable if the current vessel is the same as this ontologies' scopedTo value.
+        }
+        return false;
     }
 
     @Override

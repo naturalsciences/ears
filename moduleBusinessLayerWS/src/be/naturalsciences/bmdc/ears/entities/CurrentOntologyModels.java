@@ -5,7 +5,9 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
+import be.naturalsciences.bmdc.ears.ontology.BaseOntology;
 import be.naturalsciences.bmdc.ears.ontology.OntologyModel;
+import be.naturalsciences.bmdc.ontology.writer.ScopeMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -24,6 +26,16 @@ public class CurrentOntologyModels implements CurrentSingleton<Set> {
 
     public LinkedHashSet<OntologyModel> getConcept() {
         return models;
+    }
+
+    public BaseOntology getBaseOntology() {
+        for (OntologyModel model : models) {
+            if (model instanceof BaseOntology) {
+                BaseOntology baseModel = (BaseOntology) model;
+                return baseModel;
+            }
+        }
+        return null;
     }
 
     public static CurrentOntologyModels getInstance(LinkedHashSet currentModels) {
@@ -57,5 +69,4 @@ public class CurrentOntologyModels implements CurrentSingleton<Set> {
         hash = 17 * hash + Objects.hashCode(this.file);
         return hash;
     }*/
-
 }

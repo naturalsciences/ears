@@ -5,7 +5,6 @@
  */
 package be.naturalsciences.bmdc.ears.infobar;
 
-import be.naturalsciences.bmdc.ears.entities.NavBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.rest.RestClientNav;
 import be.naturalsciences.bmdc.ears.utils.Message;
@@ -14,37 +13,25 @@ import be.naturalsciences.bmdc.ontology.EarsException;
 import be.naturalsciences.bmdc.ontology.writer.StringUtils;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.net.ConnectException;
-import java.text.DateFormat;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.openide.awt.NotificationDisplayer;
-import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -113,12 +100,10 @@ public final class InfoBar implements LookupListener {
     private static final InputOutput EXCEPTIONS = IOProvider.getDefault().getIO("Exceptions", true);
 
     private JPanel panel = new JPanel();
-    // private final JLabel connectionLabel;
 
     private Lookup.Result<Message> messageResult;
-    private JLabel locationLabel;
     private JLabel timeLabel;
-    private JLabel centralTimeLabel;
+    
 
     private static ConnectionState latestConnectionState;
 
@@ -167,43 +152,22 @@ public final class InfoBar implements LookupListener {
             }
         }
         messageResult.addLookupListener(this);
-        Timer t = new Timer(1000, (ActionEvent event) -> {
+
+        this.timeLabel = new JLabel();
+
+        Border border = new LineBorder(Color.BLUE);
+        JPanel timeLabelPanel = new JPanel();
+        timeLabelPanel.setBorder(border);
+        timeLabelPanel.add(this.timeLabel);
+        panel.add(timeLabelPanel);
+
+        Timer t1 = new Timer(5 * 100, (ActionEvent event) -> {  //0.5 seconds
             OffsetTime localTimeInUtc = OffsetTime.now(Clock.systemUTC());
             OffsetTime localTime = OffsetTime.now(Clock.systemDefaultZone());
             timeLabel.setText("Computer UTC: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTimeInUtc) + SEPARATOR + "Computer local: " + StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE.format(localTime) + " ");
-            try {
-                if (restNav != null && restNav.getLastNavXml() != null && restNav.getLastNavXml().getTimeStamp() != null && !restNav.getLastNavXml().getTimeStamp().equals("")) {
-                    NavBean lastNav = restNav.getLastNavXml();
-                    String lastCentralTime = lastNav.getTimeStamp();
-                    LocalDateTime localDate = LocalDateTime.parse(lastCentralTime, StringUtils.DTF_ISO_DATETIME_ZONE);
-                    centralTimeLabel.setText("Server UTC: " + localDate.atOffset(ZoneOffset.UTC).format(StringUtils.DTF_TIME_FORMAT_HOURS_MINS_SECS_ZONE));
-                    locationLabel.setText("Location: " + lastNav.getLatitudeDMS(false) + " " + lastNav.getLongitudeDMS(false));
-                }
-            } catch (ConnectException ex) {
-                Messaging.report("Can't connect to the navigation web service", ex, this.getClass(), false);
-            }
         });
 
-        t.start();
-        this.timeLabel = new JLabel();
-        this.centralTimeLabel = new JLabel();
-        this.locationLabel = new JLabel();
-
-        Border border = new LineBorder(Color.BLUE);
-        
-        JPanel locationLabelPanel = new JPanel();
-        locationLabelPanel.setBorder(border);
-        JPanel centralTimeLabelPanel = new JPanel();
-        centralTimeLabelPanel.setBorder(border);
-        JPanel timeLabelPanel = new JPanel();
-        timeLabelPanel.setBorder(border);
-
-        locationLabelPanel.add(locationLabel);
-        centralTimeLabelPanel.add(this.centralTimeLabel);
-        timeLabelPanel.add(this.timeLabel);
-        panel.add(locationLabelPanel);
-        panel.add(centralTimeLabelPanel);
-        panel.add(timeLabelPanel);
+        t1.start();
     }
 
     /**
@@ -363,8 +327,8 @@ public final class InfoBar implements LookupListener {
         if (ex == null) {
             report(msg, caller);
         } else {
-            Logger logger = Logger.getLogger(caller.getName());
-            logger.log(Level.INFO, msg, ex);
+            /*Logger logger = Logger.getLogger(caller.getName());
+            logger.log(Level.INFO, msg, ex);*/ //extra logging not needed
 
             String thisMoment = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC).format(Instant.now());
 

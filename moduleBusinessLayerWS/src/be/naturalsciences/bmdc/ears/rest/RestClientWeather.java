@@ -13,15 +13,12 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.openide.util.Exceptions;
 
 public class RestClientWeather extends RestClient {
 
@@ -31,11 +28,14 @@ public class RestClientWeather extends RestClient {
 
     protected ResteasyWebTarget getNearestWeatherTarget;
 
+    private boolean isOnline() {
+        return getBaseURL() != null && WebserviceUtils.testWS("ears3Nav/met/getLast/datagram");
+    }
+
     public RestClientWeather(boolean cache) throws ConnectException, EarsException {
         super(cache);
-        if (!WebserviceUtils.testWS("ears2Nav/getLast24hMet")) {
-            online = false;
-            throw new ConnectException();
+        if (!isOnline()) {
+            throw new EarsException("The navigation web service can't be reached. The application won't work correctly.");
         }
         if (isHttps) {
             ApacheHttpClient4Engine engine = null;
@@ -55,8 +55,8 @@ public class RestClientWeather extends RestClient {
             throw new EarsException("The base url for the web services is invalid. The weather web service won't work correctly.", ex);
         }
         if (uri != null) {
-            getLastWeatherXmlTarget = client.target(uri.resolve("ears2Nav/getLast24hMet"));
-            getNearestWeatherTarget = client.target(uri.resolve("ears2Nav/getNearestMet"));
+            getLastWeatherXmlTarget = client.target(uri.resolve("ears3Nav/met/getLast/xml"));
+            getNearestWeatherTarget = client.target(uri.resolve("ears3Nav/met/getNearest/xml"));
         }
         /*else {
             throw new EarsException("The base url for the web services has not been set correctly; the application won't work properly.");
@@ -89,7 +89,7 @@ public class RestClientWeather extends RestClient {
         } else {
             Response response = target.request().get();
             if (response.getStatus() != 200) {
-                throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + target.getUri().toString() + ")");
+                throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") - " + target.getUri().toString() + ")");
             }
             nav = response.readEntity(WeatherBean.class);
             response.close();
@@ -111,7 +111,7 @@ public class RestClientWeather extends RestClient {
                 .request().get();
         // Check Status
         if (response.getStatus() != 200) {
-            throw new ConnectException("Failed (http code : " + response.getStatus() + "; url " + getLastWeatherXmlTarget.getUri().toString() + ")");
+            throw new ConnectException(response.getStatus() + "(" + response.getStatusInfo().getReasonPhrase() + ") - " + getLastWeatherXmlTarget.getUri().toString() + ")");
         }
         wts = response.readEntity(new GenericType<Collection<WeatherBean>>() {
         });

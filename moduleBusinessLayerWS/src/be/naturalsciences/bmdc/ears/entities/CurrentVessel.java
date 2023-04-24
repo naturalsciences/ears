@@ -64,4 +64,9 @@ public class CurrentVessel implements IVessel, CurrentSingleton<IVessel> {
     public void setCode(String code) {
         throw new UnsupportedOperationException("Cannot perform operation"); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public String getName() {
+        return currentVessel.getName();
+    }
 }

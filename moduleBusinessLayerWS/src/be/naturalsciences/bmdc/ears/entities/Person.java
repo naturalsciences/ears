@@ -14,20 +14,23 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlTransient
 public class Person {
 
-    public String name;
+    public String firstName;
+    public String lastName;
     public String organisationCode;
     public String organisationName;
     public String country;
 
-    public Person(String name, String organisationCode, String organisationName, String country) {
-        this.name = name;
+    public Person(String firstName, String lastName, String organisationCode, String organisationName, String country) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.organisationCode = organisationCode;
         this.organisationName = organisationName;
         this.country = country;
     }
 
-    public Person(String name, OrganisationBean organisation) {
-        this.name = name;
+    public Person(String firstName, String lastName, OrganisationBean organisation) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.organisationCode = organisation.getCode();
         this.organisationName = organisation.getName();
         this.country = organisation.getCountry();

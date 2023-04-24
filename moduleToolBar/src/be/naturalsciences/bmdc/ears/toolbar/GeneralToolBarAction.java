@@ -17,12 +17,14 @@ import be.naturalsciences.bmdc.ears.entities.IVessel;
 import be.naturalsciences.bmdc.ears.entities.ProgramBean;
 import be.naturalsciences.bmdc.ears.netbeans.services.GlobalActionContextProxy;
 import be.naturalsciences.bmdc.ears.netbeans.services.SingletonResult;
+import be.naturalsciences.bmdc.ears.ontology.browser.OntologyFileBrowserTopComponent;
+import be.naturalsciences.bmdc.ears.ontology.conceptlist.ConceptListTopComponent;
 import be.naturalsciences.bmdc.ears.rest.RestClientCruise;
 import be.naturalsciences.bmdc.ears.rest.RestClientEvent;
 import be.naturalsciences.bmdc.ears.rest.RestClientProgram;
-import be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseSetupTopComponent;
+import be.naturalsciences.bmdc.ears.topcomponents.CreateCruiseTopComponent;
 import be.naturalsciences.bmdc.ears.topcomponents.CreateEventTopComponent;
-import be.naturalsciences.bmdc.ears.topcomponents.CreateProgramSetupTopComponent;
+import be.naturalsciences.bmdc.ears.topcomponents.CreateProgramTopComponent;
 import be.naturalsciences.bmdc.ears.topcomponents.UpdateCruiseTopComponent;
 import be.naturalsciences.bmdc.ears.topcomponents.UpdateProgramTopComponent;
 import be.naturalsciences.bmdc.ears.utils.Message;
@@ -39,9 +41,7 @@ import java.awt.event.ItemListener;
 import java.net.ConnectException;
 import java.net.URL;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.swing.AbstractAction;
@@ -92,10 +92,12 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
     CurrentCruise currentCruise;
     CurrentProgram currentProgram;
 
-    Set<? extends ICruise> cruises;
-    Collection<? extends IProgram> currentPrograms;
+    Set<CruiseBean> cruises = new TreeSet<>();
+    Collection<? extends IProgram> possibleCurrentPrograms;
 
     Collection<EventBean> events;
+
+    public static String NO_CRUISE_SELECTED = "Choose a Cruise";
 
     ItemListener cruiseIl = new ItemListener() {
         @Override
@@ -104,15 +106,14 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
             if (ie.getStateChange() == ItemEvent.SELECTED) {
                 JComboBox<ItemEvent> cb = (JComboBox<ItemEvent>) ie.getSource();
 
-                Object o2 = cb.getSelectedItem();
-                if (o2 != null && o2 instanceof CruiseBean) {
-                    CruiseBean cr = (CruiseBean) o2;
+                Object o = cb.getSelectedItem();
+                if (o != null && o instanceof CruiseBean) {
+                    CruiseBean cr = (CruiseBean) o;
                     Messaging.report("Current cruise: " + cr.toString(), Message.State.INFO, this.getClass(), false);
                     GlobalActionContextProxy.getInstance().add(CurrentCruise.getInstance(cr));
-                } else {
-                    GlobalActionContextProxy.getInstance().add(CurrentProgram.getInstance(null));
-                    programComboBox.removeAllItems();
-
+                } else if (o.equals(NO_CRUISE_SELECTED)) { //we have picked the "Choose the cruise" element
+                    Messaging.report("Current cruise: none", Message.State.INFO, this.getClass(), false);
+                    GlobalActionContextProxy.getInstance().add(CurrentCruise.getInstance(null));
                 }
             }
         }
@@ -124,13 +125,11 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
             if (ie.getStateChange() == ItemEvent.SELECTED) {
                 JComboBox<ItemEvent> cb = (JComboBox<ItemEvent>) ie.getSource();
-//                        ie.getSource();
-                Object o2 = cb.getSelectedItem();
-                if (o2 != null && o2 instanceof ProgramBean) {
-                    ProgramBean pr = (ProgramBean) o2;
+                Object o = cb.getSelectedItem();
+                if (o != null && o instanceof ProgramBean) {
+                    ProgramBean pr = (ProgramBean) o;
                     Messaging.report("Current program: " + pr.toString(), Message.State.INFO, this.getClass(), false);
                     GlobalActionContextProxy.getInstance().add(CurrentProgram.getInstance(pr));
-
                 }
             }
         }
@@ -150,27 +149,21 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
         currentProgram = getCurrentProgram();
         //initialiseStaticMetadata(true);
 
-        if (WebserviceUtils.testWS("ears2/getCruise")) {
+        if (WebserviceUtils.testWS("ears3/api/alive")) {
             try {
                 cruiseClient = new RestClientCruise();
-
                 programClient = new RestClientProgram();
                 eventClient = new RestClientEvent();
             } catch (ConnectException ex) {
                 //can't happen
-                Messaging.report("Note that the webservices are offline. The tool won't function properly.", Message.State.BAD, this.getClass(), true);
+                Messaging.report("The webservices are offline. The tool won't function properly.", Message.State.BAD, this.getClass(), true);
             } catch (EarsException ex) {
                 Messaging.report(ex.getMessage(), ex, this.getClass(), true);
             }
-            if (cruiseClient != null && programClient != null && currentVessel != null) {
-                try {
-                    cruises = new TreeSet<>(cruiseClient.getCruiseByPlatform(currentVessel.getConcept()));
-                } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of cruises can't be retrieved.", ex, this.getClass(), true);
-                }
-                currentCruise = CurrentCruise.getInstance(CruiseBean.getCruiseByDate(cruises, OffsetDateTime.now()));
-                // currentCruise = CurrentCruise.getInstance(cruiseClient.getCruiseByDate(OffsetDateTime.now(), currentVessel.getConcept()));
+            if (programClient != null && cruiseClient != null && currentVessel != null) {
+                populateCruiseList();
 
+                currentCruise = CurrentCruise.getInstance(CruiseBean.getCruiseByDate(cruises, OffsetDateTime.now()));
                 if (currentCruise != null && currentCruise.getConcept() == null) {
                     if (cruises.size() > 0) {
                         currentCruise = CurrentCruise.getInstance((CruiseBean) cruises.toArray()[0]);
@@ -183,33 +176,94 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
                     Messaging.report("There is no actual cruise ongoing.", Message.State.BAD, this.getClass(), true);
                 }
 
-                try {
-                    currentPrograms = programClient.getProgramByCruise(currentCruise.getConcept());
-                } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
-                }
-
-                if (currentProgram == null || currentProgram.getConcept() == null) {
-                    if (currentPrograms.size() > 0) {
-                        currentProgram = CurrentProgram.getInstance((ProgramBean) currentPrograms.toArray()[0]);
+                populatePossibleCurrentProgramList();
+                populateProgramCombobox();
+                /* if (currentProgram == null || currentProgram.getConcept() == null) {
+                    if (possibleCurrentPrograms.size() > 0) {
+                        currentProgram = CurrentProgram.getInstance((ProgramBean) possibleCurrentPrograms.toArray()[0]);
                     }
                 }
                 if (currentProgram != null && currentProgram.getConcept() != null) {
                     GlobalActionContextProxy.getInstance().add(currentProgram);
-                    //Messaging.report("Current program: " + currentProgram.getConcept().toString(), Message.State.INFO, this.getClass(), false);
                 } else {
                     Messaging.report("There is no current program selected.", Message.State.BAD, this.getClass(), true);
-                }
+                }*/
             } else {
                 cruises = new TreeSet<>();
-                currentPrograms = new TreeSet<>();
+                possibleCurrentPrograms = new TreeSet<>();
             }
 
         } else {
             cruises = new TreeSet<>();
-            currentPrograms = new TreeSet<>();
+            possibleCurrentPrograms = new TreeSet<>();
+        }
+    }
+
+    private void populateCruiseList() {
+        if (cruiseClient != null && currentVessel != null && WebserviceUtils.testWS("ears3/api/alive")) {
+            try {
+                //  if (cruises == null) {
+                cruises = new TreeSet<>(cruiseClient.getCruiseByPlatform(currentVessel.getConcept()));
+                //  } else {
+                //      cruises.addAll(cruiseClient.getCruiseByPlatform(currentVessel.getConcept()));
+                //  }
+            } catch (ConnectException ex) {
+                Messaging.report("The webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
+            }
+        } else {
+            cruises = new TreeSet<>();
+        }
+    }
+
+    private void populatePossibleCurrentProgramList() {
+        if (programClient != null && WebserviceUtils.testWS("ears3/api/alive")) {
+            currentCruise = currentCruiseResult.getCurrent();
+            if (currentCruise != null && currentCruise.getConcept() != null) {
+                try {
+                    possibleCurrentPrograms = programClient.getProgramByCruise(currentCruise.getConcept()); //get the programs of the current cruise
+                } catch (ConnectException ex) {
+                    Messaging.report("The webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
+                }
+            } else {
+                try {
+                //    if (!cruises.isEmpty()) {
+                //        List<CruiseBean> list = new ArrayList(cruises);
+                //        possibleCurrentPrograms = programClient.getProgramByCruise(list.get(0)); //get the programs of the first cruise in the list
+                //    } else {
+                        possibleCurrentPrograms = programClient.getAllPrograms();
+                //    }
+                } catch (ConnectException ex) {
+                    Messaging.report("The webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
+                }
+            }
+        } else {
+            possibleCurrentPrograms = new TreeSet<>();
+        }
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) { //part after && because of weird behaviour where currentUrlResult does match even when the cruise changes
+        if ((currentVesselResult.matches(ev) || currentUrlResult.matches(ev)) || (currentUrlResult.getCurrent() == null ? null : currentUrlResult.getCurrent().getConcept()) != currentUrl) {
+            if (currentUrlResult.getCurrent() == null) {
+                currentUrl = null;
+            } else {
+                currentUrl = currentUrlResult.getCurrent().getConcept();
+            }
+            currentVessel = currentVesselResult.getCurrent();
+            populateCruiseList();
+            populatePossibleCurrentProgramList();
+            GlobalActionContextProxy.getInstance().removeAll(IProgram.class);
+            GlobalActionContextProxy.getInstance().addAll(possibleCurrentPrograms);
+            populateComboboxes();
         }
 
+        if (currentCruiseResult !=null && currentCruiseResult.matches(ev)) {
+            currentCruise = currentCruiseResult.getCurrent();
+            populatePossibleCurrentProgramList();
+            GlobalActionContextProxy.getInstance().removeAll(IProgram.class);
+            GlobalActionContextProxy.getInstance().addAll(possibleCurrentPrograms);
+            populateProgramCombobox();
+        }
     }
 
     private CurrentCruise getCurrentCruise() {
@@ -243,18 +297,14 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
             if (cruiseComboBox.getItemCount() > 0) {
                 cruiseComboBox.removeAllItems();
             }
-            cruiseComboBox.addItem("Choose a Cruise");
+            cruiseComboBox.addItem(NO_CRUISE_SELECTED);
             if (cruises.size() > 0) {
                 for (ICruise cruise : cruises) {
-
                     SwingUtils.addToComboBox(cruiseComboBox, cruise);
-
                 }
-                //cruiseComboBox.setSelectedItem(cruiseComboBox.getItemAt(0));
             } else {
                 cruiseComboBox.addItem("No cruises for selected vessel");
             }
-
         }
         if (currentCruise != null && currentCruise.getConcept() != null) {
             cruiseComboBox.setSelectedItem(currentCruise.getConcept());
@@ -271,19 +321,19 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
     private void populateProgramCombobox() {
 
         if (programComboBox == null) {
-            programComboBox = new JComboBox<>();//YS
+            programComboBox = new JComboBox<>();
         }
         programComboBox.removeItemListener(programIl);
-        if (currentPrograms != null) {
+        if (possibleCurrentPrograms != null) {
             if (programComboBox.getItemCount() > 0) {
                 programComboBox.removeAllItems();
             }
-            if (currentPrograms.size() > 0 && cruiseComboBox.getSelectedIndex() != 0) {
+            if (possibleCurrentPrograms.size() > 0 /*&& cruiseComboBox.getSelectedIndex() != 0*/) {
 
-                for (IProgram program : currentPrograms) {
+                for (IProgram program : possibleCurrentPrograms) {
                     SwingUtils.addToComboBox(programComboBox, program);
                 }
-                if (currentCruise != null && currentCruise.getConcept() != null && (currentProgram == null || currentProgram.getConcept() == null)) {
+                if (/*currentCruise != null && currentCruise.getConcept() != null && */(currentProgram == null || currentProgram.getConcept() == null)) {
                     ProgramBean currentProgramBean = programComboBox.getItemAt(0);
                     programComboBox.setSelectedItem(currentProgramBean);
                     currentProgram = CurrentProgram.getInstance(currentProgramBean);
@@ -291,12 +341,8 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
                     Messaging.report("Current program: " + currentProgram.getConcept().toString(), Message.State.INFO, this.getClass(), false);
                 }
-
             } else {
                 currentProgram = CurrentProgram.getInstance(null);
-                /* programComboBox.addItem("No programs for selected cruise");
-                currentProgram = CurrentProgram.getInstance(null);
-                Messaging.report("There is no current program selected.", Message.State.BAD, this.getClass(), true); */
             }
         }
         if (currentProgram != null && currentProgram.getConcept() != null) {
@@ -312,131 +358,61 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
     public Component getToolbarPresenter() {
         JPanel jPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        JButton o_createCruise = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "CREATE_CRUISE"));
-        o_createCruise.addActionListener(new CreateNewCruiseActionListener());
+        JButton createCruise = new JButton(NbBundle.getMessage(GeneralToolBarAction.class,
+                "CREATE_CRUISE"));
+        createCruise.addActionListener(new CreateNewCruiseActionListener());
 
-        JButton o_createProgram = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "CREATE_PROGRAM"));
-        o_createProgram.addActionListener(new CreateNewProgramActionListener());
+        JButton createProgram = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "CREATE_PROGRAM"));
 
-        JButton o_editCruise = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "UPDATE_CRUISE"));
-        o_editCruise.addActionListener(new EditCruiseActionListener());
+        createProgram.addActionListener(new CreateNewProgramActionListener());
 
-        JButton o_editProgram = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "UPDATE_PROGRAM"));
-        o_editProgram.addActionListener(new EditProgramActionListener());
+        JButton editCruise = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "UPDATE_CRUISE"));
 
-        JButton o_createEvent = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "CREATE_EVENT"));
-        o_createEvent.addActionListener(new CreateEventActionListener());
+        editCruise.addActionListener(new EditCruiseActionListener());
 
+        JButton editProgram = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "UPDATE_PROGRAM"));
+
+        editProgram.addActionListener(new EditProgramActionListener());
+
+        JButton createEvent = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "CREATE_EVENT"));
+
+        createEvent.addActionListener(new CreateEventActionListener());
+
+        /*     JButton manageTrees = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "MANAGE_TREES"));
+        manageTrees.addActionListener(new ManageTreesActionListener());
+
+        JButton browseTerms = new JButton(NbBundle.getMessage(GeneralToolBarAction.class, "BROWSE_TERMS"));
+        browseTerms.addActionListener(new BrowseTermsActionListener());*/
         if (cruiseComboBox == null) {
             cruiseComboBox = new JComboBox<>();
         }
 
         if (programComboBox == null) {
             programComboBox = new JComboBox<>();
-
         }
-        jPanel.add(o_createCruise);
-        jPanel.add(o_createProgram);
-        jPanel.add(o_editCruise);
-        jPanel.add(o_editProgram);
-        jPanel.add(o_createEvent);
-        jPanel.add(new JLabel("Set current program by selecting a cruise:"));
+
+        jPanel.add(createCruise);
+        jPanel.add(createProgram);
+        jPanel.add(editCruise);
+        jPanel.add(editProgram);
+        jPanel.add(createEvent);
+        // jPanel.add(manageTrees);
+        // jPanel.add(browseTerms);
+
+        jPanel.add(
+                new JLabel("cruise:"));
         jPanel.add(cruiseComboBox);
+
+        jPanel.add(
+                new JLabel("program:"));
         jPanel.add(programComboBox);
         return jPanel;
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) { //part after && because of weird behaviour where currentUrlResult does match even when the cruise changes
-        if ((currentVesselResult.matches(ev) || currentUrlResult.matches(ev)) || (currentUrlResult.getCurrent() == null ? null : currentUrlResult.getCurrent().getConcept()) != currentUrl) {
-            if (currentUrlResult.getCurrent() == null) {
-                currentUrl = null;
-            } else {
-                currentUrl = currentUrlResult.getCurrent().getConcept();
-            }
-
-            currentVessel = currentVesselResult.getCurrent();
-            if (cruiseClient == null) {
-                try {
-                    cruiseClient = new RestClientCruise();
-                } catch (ConnectException ex) {
-                    Messaging.report("The webservices are offline.", Message.State.BAD, this.getClass(), false);
-                } catch (EarsException ex) {
-                    Messaging.report(ex.getMessage(), ex, this.getClass(), false);
-                }
-            }
-            if (cruiseClient != null && currentVessel != null && WebserviceUtils.testWS("ears2/getCruise")) {
-                try {
-                    cruises = new TreeSet<>(cruiseClient.getCruiseByPlatform(currentVessel.getConcept()));
-                } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of cruises can't be updated.", ex, this.getClass(), true);
-                }
-            } else {
-                cruises = new TreeSet<>();
-            }
-            if (!cruises.isEmpty()) {
-                if (programClient == null) {
-                    try {
-                        programClient = new RestClientProgram();
-                    } catch (ConnectException ex) {
-                        Messaging.report("The webservices are offline.", Message.State.BAD, this.getClass(), false);
-                    } catch (EarsException ex) {
-                        Messaging.report(ex.getMessage(), ex, this.getClass(), false);
-                    }
-                }
-                List<CruiseBean> list = new ArrayList(cruises);
-
-                if (programClient != null && WebserviceUtils.testWS("ears2/getProgram")) {
-                    currentCruise = currentCruiseResult.getCurrent();
-                    if (currentCruise != null) {
-                        try {
-                            currentPrograms = programClient.getProgramByCruise(currentCruise.getConcept()); //get the programs of the current cruise
-                        } catch (ConnectException ex) {
-                            Messaging.report("Note that the webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
-                        }
-                    } else {
-                        try {
-                            currentPrograms = programClient.getProgramByCruise(list.get(0)); //get the programs of the first cruise in the list
-                        } catch (ConnectException ex) {
-                            Messaging.report("Note that the webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
-                        }
-
-                    }
-
-                } else {
-                    currentPrograms = new TreeSet<>();
-                }
-            } else {
-                currentPrograms = new TreeSet<>();
-            }
-            GlobalActionContextProxy.getInstance().removeAll(IProgram.class);
-            GlobalActionContextProxy.getInstance().addAll(currentPrograms);
-
-            populateComboboxes();
-        }
-
-        if (currentCruiseResult.matches(ev)) {
-            currentCruise = currentCruiseResult.getCurrent();
-            if (programClient != null && currentCruise != null && WebserviceUtils.testWS("ears2/getProgram")) {
-                try {
-                    currentPrograms = new TreeSet<>(programClient.getProgramByCruise(currentCruise.getConcept()));
-                } catch (ConnectException ex) {
-                    Messaging.report("Note that the webservices are offline. The list of programs can't be updated.", ex, this.getClass(), true);
-                }
-            } else {
-                currentPrograms = new TreeSet<>();
-            }
-            GlobalActionContextProxy.getInstance().removeAll(IProgram.class);
-            GlobalActionContextProxy.getInstance().addAll(currentPrograms);
-            populateProgramCombobox();
-        }
     }
 
     private class EditProgramActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-//UpdateProgramTopComponent
             if (UpdateProgramTopComponent.getInstance() instanceof UpdateProgramTopComponent) {
                 UpdateProgramTopComponent currentCruiseTopComponent = UpdateProgramTopComponent.getInstance();
                 currentCruiseTopComponent.close();
@@ -454,10 +430,8 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
             CreateEventTopComponent cnptc = new CreateEventTopComponent();
             cnptc.open();
-
             cnptc.requestActive();
         }
     }
@@ -466,13 +440,11 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
             if (UpdateCruiseTopComponent.getInstance() instanceof UpdateCruiseTopComponent) {//ys01
                 UpdateCruiseTopComponent currentCruiseTopComponent = UpdateCruiseTopComponent.getInstance();//ys01
                 currentCruiseTopComponent.close();//ys01
             }
             Mode toProperties = WindowManager.getDefault().findMode("properties");
-
             UpdateCruiseTopComponent uctc = new UpdateCruiseTopComponent();
             toProperties.dockInto(uctc);
             uctc.open();
@@ -484,7 +456,7 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            CreateCruiseSetupTopComponent cnc = new CreateCruiseSetupTopComponent();
+            CreateCruiseTopComponent cnc = new CreateCruiseTopComponent();
             cnc.open();
             cnc.requestActive();
         }
@@ -494,9 +466,33 @@ public final class GeneralToolBarAction extends AbstractAction implements Presen
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            CreateProgramSetupTopComponent cps = new CreateProgramSetupTopComponent();
+            CreateProgramTopComponent cps = new CreateProgramTopComponent();
             cps.open();
             cps.requestActive();
         }
     }
+
+    private class ManageTreesActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            OntologyFileBrowserTopComponent ofb = new OntologyFileBrowserTopComponent(); // mode = "explorer"            
+
+            ofb.open();
+            ofb.requestActive();
+        }
+    }
+
+    private class BrowseTermsActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ConceptListTopComponent clt = new ConceptListTopComponent();
+
+            // mode = "explorer"
+            clt.open();
+            clt.requestActive();
+        }
+    }
+
 }

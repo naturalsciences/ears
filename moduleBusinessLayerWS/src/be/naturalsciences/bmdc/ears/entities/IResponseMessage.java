@@ -5,19 +5,37 @@
  */
 package be.naturalsciences.bmdc.ears.entities;
 
+import java.util.List;
+
 /**
  *
  * @author Thomas Vandenberghe
  */
-public interface IResponseMessage {
+public interface IResponseMessage<E> {
+
+    public String getIdentifier();
+
+    public void setIdentifier(String identifier);
+
+    public int getCode();
+
+    public void setCode(int code);
+
+    public String getExceptionType();
+
+    public void setExceptionType(String exceptionType);
+
+    public String getMessage();
+
+    public void setMessage(String message);
+
+    public E getObject();
+
+    public void setObject(E entity);
     
-    public String getCode();
-    
-    public String getSummary();
-    
-    public int getStatus();
-    
-    public void setStatus(int status);
-    
+    public List<String> getMessages();
+
     public boolean isBad();
+
+    public boolean isOk();
 }
