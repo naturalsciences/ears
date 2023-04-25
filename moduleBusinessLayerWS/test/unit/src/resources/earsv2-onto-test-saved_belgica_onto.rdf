@@ -1,0 +1,1106 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://ontologies.ef-ears.eu/ears2/1#"
+     xml:base="http://ontologies.ef-ears.eu/ears2/1"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:ears2="http://ontologies.ef-ears.eu/ears2/1#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://ontologies.ef-ears.eu/ears2/1#">
+        <owl:imports rdf:resource="http://ontologies.ef-ears.eu/ears2/owl/earsv2-schema-20160224.owl"/>
+        <owl:versionIRI rdf:resource="http://ontologies.ef-ears.eu/ears2/1/20160527#"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20160527</owl:versionInfo>
+        <scope rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VESSEL</scope>
+        <scopedTo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:C17::11BE</scopedTo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- created -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/created"/>
+    
+
+
+    <!-- creator -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/creator"/>
+    
+
+
+    <!-- date -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- identifier -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/identifier"/>
+    
+
+
+    <!-- modified -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/modified"/>
+    
+
+
+    <!-- publisher -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/publisher"/>
+    
+
+
+    <!-- altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
+
+
+    <!-- definition -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#definition"/>
+    
+
+
+    <!-- prefLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- act_1 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#act_1">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ProcessStep"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_800"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- act_2 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#act_2">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ProcessStep"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_801"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_1000 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_1000">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.301Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.850Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:pry::1e4a50a0-e027-11e3-8d44-525400d08514</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">AUMS</skos:definition>
+        <skos:prefLabel xml:lang="en">Autonomous Underway Measurement System</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_1020 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_1020">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.266Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.855Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:dev::8b2ff3c0-e4c6-11e3-ae57-525400d08514</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">SonTek Accoustic Doppler Profiler</skos:altLabel>
+        <skos:definition xml:lang="en">Undefined</skos:definition>
+        <skos:prefLabel xml:lang="en">SonTek ADP</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_1049 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_1049">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.267Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.851Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:dev::b8b8bbb0-ed5e-11e3-ada4-525400d08514</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Undefined</skos:definition>
+        <skos:prefLabel xml:lang="en">Hyperbenthic sledge</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_1070 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_1070">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.268Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.848Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:dev::07802030-0682-11e4-87f2-525400d08514</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Undefined</skos:definition>
+        <skos:prefLabel xml:lang="en">Alfa Laval suspended matter centrifuge</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_793 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_793">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WaitForApproval</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.271Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.858Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:pro::9f31b050-df23-11e3-89ba-d850e6ba987a</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Undefined</skos:definition>
+        <skos:prefLabel xml:lang="en">Sampling</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_794 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_794">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WaitForApproval</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.270Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.858Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:pro::a631ae50-df23-11e3-89ba-d850e6ba987a</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Undefined</skos:definition>
+        <skos:prefLabel xml:lang="en">Recording</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_800 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_800">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WaitForApproval</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.274Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.860Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:act::d5dc97a0-df23-11e3-89ba-d850e6ba987a</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">Begin</skos:altLabel>
+        <skos:definition xml:lang="en">Undefined</skos:definition>
+        <skos:prefLabel xml:lang="en">Start</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_801 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_801">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WaitForApproval</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.273Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.859Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:act::d8e39610-df23-11e3-89ba-d850e6ba987a</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">Finish</skos:altLabel>
+        <skos:definition xml:lang="en">Undefined</skos:definition>
+        <skos:prefLabel xml:lang="en">End</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- concept_806 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#concept_806">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adminUI</submitter>
+        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-02-09T16:06:36.270Z</dc:created>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.859Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ears:pro::c1aaa490-df3a-11e3-9d89-525400d08514</dc:identifier>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Pulling a net through the water behind a boat.</skos:definition>
+        <skos:prefLabel xml:lang="en">Trawling</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_19 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_19">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/50/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_21 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_21">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/185/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_22 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_22">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/133/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_23 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_23">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/124/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_25 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_25">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/134/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_29 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_29">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/62/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_30 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_30">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/24/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_33 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_33">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/67/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_37 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_37">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/150/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_38 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_38">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/32/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_5 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_5">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/115/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- ctg_6 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#ctg_6">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ToolCategory"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L05/current/30/"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_1000 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_1000">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_1000"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_19 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_19">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0042/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_25"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_23 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_23">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0058/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_25"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_290 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_290">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0653/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_19"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_295 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_295">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0447/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_21"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_296 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_296">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0667/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_22"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_25"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_309 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_309">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0044/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_23"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_25"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_317 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_317">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0022/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_25"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_652 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_652">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0651/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_68 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_68">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0158/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_680 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_680">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/NETT0056/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_70 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_70">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0293/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_769 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_769">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_1020"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_770 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_770">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_1049"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_30"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_771 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_771">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_1070"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_38"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_78 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_78">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0392/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dev_85 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#dev_85">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Tool"/>
+        <asConcept rdf:resource="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0412/"/>
+        <isMemberOf rdf:resource="http://ontologies.ef-ears.eu/ears2/1#ctg_6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- pro_1 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#pro_1">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Process"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_793"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- pro_10 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#pro_10">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Process"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_806"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- pro_2 -->
+
+    <owl:NamedIndividual rdf:about="http://ontologies.ef-ears.eu/ears2/1#pro_2">
+        <rdf:type rdf:resource="http://ontologies.ef-ears.eu/ears2/1#Process"/>
+        <asConcept rdf:resource="http://ontologies.ef-ears.eu/ears2/1#concept_794"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/115/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/115/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.842Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::115</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-02-26T17:11:07Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Instrument that measures current speed and direction at multiple predetermined depths simultaneously.</skos:definition>
+        <skos:prefLabel xml:lang="en">current profilers</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/124/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/124/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.847Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::124</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-11-20T09:34:40Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Systems that measure the attenuation of electromagnetic radiation by the water column. Includes human observer plus Secchi Disk.</skos:definition>
+        <skos:prefLabel xml:lang="en">transmissometers</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/133/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/133/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.847Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::133</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-11-20T09:34:40Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Temperature and conductivity sensors mounted on a sea-surface platform continuously measuring a surface water supply.</skos:definition>
+        <skos:prefLabel xml:lang="en">thermosalinographs</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/134/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/134/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.848Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::134</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-02-26T17:11:07Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">An instrument that measures the temperature of the water with which it is in contact.</skos:definition>
+        <skos:prefLabel xml:lang="en">water temperature sensor</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/150/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/150/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.844Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::150</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-02-26T17:11:07Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">An instrument that measures the size spectrum of particles suspended in the water column.</skos:definition>
+        <skos:prefLabel xml:lang="en">particle sizers</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/185/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/185/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.846Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::185</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-02-26T17:11:07Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Instrument that measures the velocity of sound in seawater.</skos:definition>
+        <skos:prefLabel xml:lang="en">sound velocity sensors</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/24/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/24/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.841Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::24</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-11-20T08:50:03Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">A net or sledge dragged across the seabed designed to sample benthic fauna.</skos:definition>
+        <skos:prefLabel xml:lang="en">benthos samplers</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/30/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/30/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.843Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::30</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-02-26T17:11:07Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">A device that collects an in-situ discrete water sample from any depth and returns it to the surface without contamination by the waters through which it passes, such as a water bottle.</skos:definition>
+        <skos:prefLabel xml:lang="en">discrete water samplers</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/32/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/32/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.845Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::32</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-11-20T08:50:03Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">A system that collects samples of water column particulates such as in-situ high volume filtration systems liks SAPs.</skos:definition>
+        <skos:prefLabel xml:lang="en">particulates samplers</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/50/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/50/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.846Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::50</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-11-20T08:50:03Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">A device that collects a sample of surface sediment including manually deployed equipment like a shovel or bucket.</skos:definition>
+        <skos:prefLabel xml:lang="en">sediment grabs</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/62/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/62/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.841Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::62</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-07-30T09:19:35Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en"></skos:altLabel>
+        <skos:definition xml:lang="en">Nets towed over the sea floor having the horizontal net opening provided by a wooden or metal beam that disrupts the surface of the bed.</skos:definition>
+        <skos:prefLabel xml:lang="en">beam trawls</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L05/current/67/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L05/current/67/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.844Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L05::67</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2011-11-25T11:45:36Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">HSS</skos:altLabel>
+        <skos:definition xml:lang="en">A fine-meshed net or filter towed behind a moving vessel that collects a single sample for a tow. Samples microzooplankton, mesozooplankton and nekton.</skos:definition>
+        <skos:prefLabel xml:lang="en">high-speed plankton samplers</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/NETT0056/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/NETT0056/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.850Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::NETT0056</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2011-10-21T13:18:49Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">Pierce HSS</skos:altLabel>
+        <skos:definition xml:lang="en">Construction comprises a 7 cm mouth opening of front cone which was 16.5 cm long.  17.8 cm diameter cylinder body which was 25.4 cm long. 7 cm conical coarse silk net 16.5 cm long with small jar cod end.</skos:definition>
+        <skos:prefLabel xml:lang="en">High-speed plankton sampler - Pierce (1937)</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0022/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0022/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.853Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0022</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-18T00:39:41Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">SBE 37-IM MicroCAT</skos:altLabel>
+        <skos:definition xml:lang="en">The SBE 37 MicroCAT is a high accuracy conductivity and temperature recorder with an optional pressure sensor designed for depolyment on moorings. The IM model has an inductive modem for real-time data transmission plus internal flash memory data storage. Further information may be found on the BODC document server at URL http://www.bodc.ac.uk/data/documents/nodb/113079/.</skos:definition>
+        <skos:prefLabel xml:lang="en">Sea-Bird SBE 37-IM MicroCAT C-T Sensor</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0042/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0042/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.852Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0042</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-18T00:39:41Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">SBE 19 SEACAT</skos:altLabel>
+        <skos:definition xml:lang="en">A self-contained battery powered CTD with precision semiconductor strain gauge pressure sensor. Water was supplied to the conductivity sensor by a pump. Housing was plastic (up to 600m depth), aluminium (up to 6800m depth) or titanium (up to 10500m depth). Optional oxygen, pH, fluorescence, PAR, light transmission and turbidity sensors could be fitted. Primarily designed for profiling applications but may be used on a short (less than 2 weeks) duration mooring. Replaced by the SBE19plus model in 2001.</skos:definition>
+        <skos:prefLabel xml:lang="en">Sea-Bird SBE 19 SEACAT CTD</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0044/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0044/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.854Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0044</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-11-30T11:56:35Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">LISST</skos:altLabel>
+        <skos:definition xml:lang="en">A self-contained unit which measures the scattering of LASER light at a number of angles. This primary measurement is mathematically inverted to give a grain size distribution, and also scaled to obtain the volume scattering function. The size distribution is presented as concentration in each of the grain-size class bins. Optical transmission, water depth and temperature are recorded as supporting measurements.</skos:definition>
+        <skos:prefLabel xml:lang="en">Sequoia Laser In-Situ Sediment Size Transmissometer</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0058/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0058/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.854Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0058</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-03-13T15:55:10Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">SBE 911+ CTD</skos:altLabel>
+        <skos:definition xml:lang="en">High precision and accuracy CTD comprising an SBE 9plus underwater unit (SBE 3 temperature and SBE 4 conductivity sensors) and an SBE 11plus deck unit. Sensors may be connected to a pump-fed plastic tubing circuit (usually temperature, salinity and oxygen) or stand-alone. All instruments (8 channels available) on the package are logged by the SBE 11. The unit is the production off the shelf version of the SBE 911 (each 911 was custom built to individual specification).</skos:definition>
+        <skos:prefLabel xml:lang="en">Sea-Bird SBE 911plus CTD</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0158/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0158/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.856Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0158</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-05-18T15:10:58Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">RDI 300kHz VM-ADCP</skos:altLabel>
+        <skos:definition xml:lang="en">The 300 kHz Teledyne RDI Narrowband Vessel-Mounted Acoustic Doppler Current Profiler is a 4-beam medium range ADCP designed for vessel mounting.</skos:definition>
+        <skos:prefLabel xml:lang="en">Teledyne RDI 300kHz Narrowband Vessel-Mounted ADCP</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0293/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0293/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.856Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0293</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-08-21T23:43:30Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">RDI Workhorse Sentinel-1200 ADCP</skos:altLabel>
+        <skos:definition xml:lang="en">An ADCP designed for self-contained use on moorings or vessel mounting. It has a patented 1200 kHz broadband signal and a standard depth rating of 200 metres. It operates effectively between temperatures of -5 to 45 C and a range of up to 20m with a depth cell size of 2m.Velocity accuracy is +/- 0.3% or 0.3 cm/sec.</skos:definition>
+        <skos:prefLabel xml:lang="en">Teledyne RDI Workhorse Sentinel-1200 ADCP</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0392/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0392/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.852Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0392</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2011-04-14T08:29:16Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">Aquadopp 400 kHz profiler</skos:altLabel>
+        <skos:definition xml:lang="en">A self-contained 400 kHz Doppler current profiler designed for deployment on the seabed, moorings, buoys or fixed structures. The instrument uses 3 beams to measure water velocities over a range of +/-10 m/s and has a standard depth rating of 100 m. Depth cell size ranges from 2-8 m, with a maximum of 128 cells.</skos:definition>
+        <skos:prefLabel xml:lang="en">Nortek Aquadopp 400 kHz Doppler current profiler</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0412/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0412/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.851Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0412</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2012-06-22T12:43:26Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">Niskin bottle</skos:altLabel>
+        <skos:definition xml:lang="en">A plastic free-flushing water sampling bottle with a capacity of 1.7-30 litres. It has caps with rubber seals at each end joined by a plastic-coated metal spring or elastic cord running through the interior of the bottle. It is deployed with the caps held open against the spring by plastic lanyards. When the bottle reaches the desired depth the lanyards are released by a pressure-actuated switch, command signal or messenger weight and the caps are forced shut and sealed. Bottles may be deployed singly clamped to a wire or in groups of up to 48 on a rosette. Reversing thermometers may be attached to a spring-loaded disk that rotates through 180 degrees on bottle closure.</skos:definition>
+        <skos:prefLabel xml:lang="en">Niskin bottle</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0447/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0447/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.849Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0447</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2012-01-05T09:34:05Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">AML SVP16</skos:altLabel>
+        <skos:definition xml:lang="en">An autonomous, battery-powered sound velocity profiler that uses a &quot;sing-around&quot; sensor to measure sound velocity in the water column. It has a range of 1300-1500 m/s, an accuracy of +/-0.25 m/s and a resolution of 0.13 m/s. A built-in microprocessor enables samples to be logged at pre-determined depth increments or for changes in sound velocity greater than 1 m/s. The standard model has a depth rating of 1000 m but other options are available up to a maximum rating of 5000 m. The instrument is no longer in production.</skos:definition>
+        <skos:prefLabel xml:lang="en">Applied Microsystems Sound Velocity Profiler model 16</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0651/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0651/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.857Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0651</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-11-19T09:51:15Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">Beam trawl</skos:altLabel>
+        <skos:definition xml:lang="en">A net that is held open by a solid wooden or metal beam, attached to plates at the ends that act as runners over the seabed. The beam can vary in length from 2-12m. A chain mat may be fitted to the beam to increase seabed disturbance. The net is towed on the seabed and the resulting disturbance causes fish and shellfish to swim up and get caught in the net.</skos:definition>
+        <skos:prefLabel xml:lang="en">Unknown beam trawl</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0653/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0653/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.857Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0653</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-11-26T08:11:24Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">Van Veen grab</skos:altLabel>
+        <skos:definition xml:lang="en">A simple clam-shell sediment grab penetrating approximately 20cm with a typical sampling area of 0.1m2 (but grab sizes can vary). On descent two levers with buckets at their ends are spread like open scissors that unlock on hitting the seabed. When pulled upwards the two buckets close and grab a sample. This is subject to more disturbance than by Craib or box corers.</skos:definition>
+        <skos:prefLabel xml:lang="en">Van Veen grab</skos:prefLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- &lt;http://vocab.nerc.ac.uk/collection/L22/current/TOOL0667/&gt; -->
+
+    <owl:NamedIndividual rdf:about="http://vocab.nerc.ac.uk/collection/L22/current/TOOL0667/">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <controller rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</controller>
+        <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Validated</status>
+        <submitter rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bodc</submitter>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2016-05-27T14:08:58.853Z</dc:date>
+        <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SDN:L22::TOOL0667</dc:identifier>
+        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2014-03-11T15:53:12Z</dc:modified>
+        <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">earsGov</dc:publisher>
+        <skos:altLabel xml:lang="en">SBE 21 TSG</skos:altLabel>
+        <skos:definition xml:lang="en">A platinum-electrode conductivity sensor and a thermistor mounted in a corrosion-resistant plastic and titanium housing designed to be continuously plumbed into a vessel&apos;s pumped seawater supply. The instrument may be interfaced to a remote SBE 38 temperature sensor mounted either on the hull or in the seawater inlet. Data are both stored in internal memory and output to a serial port for external logging.  Conductivity is measured in the range 0-7 S/m with an accuracy of 0.001 S/m and a resolution  of 0.0001 S/m. Housing temperature is measured in the range -5-35C with an accuracy of 0.01 C and a resolution  of 0.001 C. Remote temperature is measured in the range -5-35C  with an accuracy of 0.001 C and a resolution  of 0.0003 C. More information at http://www.seabird.com/products/spec_sheets/21data.htm.</skos:definition>
+        <skos:prefLabel xml:lang="en">Sea-Bird SBE 21 Thermosalinograph</skos:prefLabel>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.0.2) http://owlapi.sourceforge.net -->
+
